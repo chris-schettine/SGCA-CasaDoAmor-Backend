@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/1.0", produces = "application/json;charset=UTF-8")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:4200"}, allowCredentials = "true")
 public class PessoaFisicaController {
 
     @Autowired
@@ -43,6 +44,14 @@ public class PessoaFisicaController {
 
     @PutMapping(path="/pessoa-fisica/{id}")
     public ResponseEntity<PessoaFisicaDto> updatePessoaFisica(
+            @PathVariable Long id,
+            @RequestBody PessoaFisicaDto pessoaFisicaDto
+    ){
+        return new ResponseEntity<>(this.pessoaFisicaService.updatePessoaFisica(id, pessoaFisicaDto), HttpStatus.OK);
+    }
+
+    @PatchMapping(path="/pessoa-fisica/{id}")
+    public ResponseEntity<PessoaFisicaDto> patchPessoaFisica(
             @PathVariable Long id,
             @RequestBody PessoaFisicaDto pessoaFisicaDto
     ){

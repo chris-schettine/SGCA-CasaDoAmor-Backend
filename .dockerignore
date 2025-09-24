@@ -1,0 +1,61 @@
+# Docker ignore file for SGCA Backend
+# Excludes unnecessary files from Docker build context
+
+# Git
+.git
+.gitignore
+
+# Maven
+target/
+!target/sgca-backend-0.0.1-SNAPSHOT.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.settings/
+.project
+.classpath
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Node modules (if any)
+node_modules/
+
+# Docker files (to avoid copying into container)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# Database files
+*.db
+*.sqlite
+
+# Test files (if you want to exclude them)
+src/test/
+
+# Environment files
+.env
+.env.local
+.env.*.local
