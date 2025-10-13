@@ -1,13 +1,11 @@
 package br.com.casadoamor.sgca.dto;
 
-import br.com.casadoamor.sgca.entity.TipoDocumentoProfissionalSaudeEnum;
+import br.com.casadoamor.sgca.enums.TipoDocumentoProfissionalSaudeEnum;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfissionalSaudeDto {
@@ -19,4 +17,3 @@ public class ProfissionalSaudeDto {
     private String especialidade;
     private PessoaFisicaDto pessoaFisica;
 }
-

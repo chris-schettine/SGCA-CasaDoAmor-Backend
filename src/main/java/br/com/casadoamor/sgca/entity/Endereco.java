@@ -1,27 +1,38 @@
 package br.com.casadoamor.sgca.entity;
 
-
+import br.com.casadoamor.sgca.enums.EstadoEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.Date;
-
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Embeddable
-public class Endereco {
+@Entity
+@Table(name = "enderecos")
+public class Endereco extends BaseEntity {
+    @Column(name = "logradouro", length = 150, nullable = false)
+    private String logradouro;
 
-    private String endereco;
+    @Column(length = 100, nullable = false)
     private String bairro;
-    private Integer numero;
-    private String cidade;
-    private String estado;
-    private String cep;
-    private String complemento;
 
+    @Column
+    private Integer numero;
+
+    @Column(length = 100, nullable = false)
+    private String cidade;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoEnum estado; 
+
+    @Column(length = 10)
+    private String cep;
+
+    @Column(length = 150)
+    private String complemento;
 }

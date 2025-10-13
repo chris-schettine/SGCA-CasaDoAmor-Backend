@@ -1,4 +1,4 @@
-package br.com.casadoamor.sgca.entity;
+package br.com.casadoamor.sgca.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
