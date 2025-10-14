@@ -10,6 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "dados_pessoais")
 public class DadoPessoal extends BaseEntity {
     @Column(nullable = false)

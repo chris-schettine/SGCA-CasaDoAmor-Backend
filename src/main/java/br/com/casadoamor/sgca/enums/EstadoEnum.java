@@ -28,4 +28,13 @@ public enum EstadoEnum {
   SAO_PAULO,
   SERGIPE,
   TOCANTINS;
+  
+  public static boolean isValid(String estado) {
+    for (EstadoEnum e : EstadoEnum.values()) {
+      if (e.name().equalsIgnoreCase(estado)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

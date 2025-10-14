@@ -26,7 +26,7 @@ public class SwaggerConfig {
                         .version("1.0")
                         .description("Documentação da API da casa do amor")
                 )
-                .addServersItem(new Server().url("http://localhost:8080"))
+                .addServersItem(new Server().url("http://localhost:8090"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()

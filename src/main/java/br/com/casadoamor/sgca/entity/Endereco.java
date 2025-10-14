@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.entity;
 import br.com.casadoamor.sgca.enums.EstadoEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "enderecos")
 public class Endereco extends BaseEntity {
     @Column(name = "logradouro", length = 150, nullable = false)
