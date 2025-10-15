@@ -1,6 +1,11 @@
 package br.com.casadoamor.sgca.enums;
 
 public enum TipoUsuarioEnum {
-  RECEPCIONISTA,
-  ADMINISTRADOR
+    ADMINISTRADOR,
+    DENTISTA,
+    ENFERMEIRO,
+    FISIOTERAPEUTA,
+    MEDICO,
+    NUTRICIONISTA,
+    RECEPCIONISTA,
 }

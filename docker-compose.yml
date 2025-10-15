@@ -5,8 +5,10 @@ services:
     container_name: mysql_sgca
     restart: always
     environment:
-      MYSQL_DATABASE: sgca
-      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-sgca}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER:-sgca_user}
+      MYSQL_PASSWORD: ${SGCA_DB_PASSWORD}
     ports:
       - '3316:3306'
     volumes:
@@ -14,7 +16,7 @@ services:
     networks:
       - sgca-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padmin" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER:-sgca_user}", "-p${SGCA_DB_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,9 +27,10 @@ services:
     ports:
       - '8090:8080'
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/sgca
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: admin
+      SGCA_DB_PASSWORD: ${SGCA_DB_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-sgca}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-sgca_user}
+      SPRING_DATASOURCE_PASSWORD: ${SGCA_DB_PASSWORD}
     networks:
       - sgca-network
     depends_on:
