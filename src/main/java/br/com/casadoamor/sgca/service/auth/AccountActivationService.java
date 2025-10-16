@@ -58,14 +58,15 @@ public class AccountActivationService {
 
         // Envia email com link de ativação + senha temporária
         try {
+            log.info("📨 Iniciando envio de email de ativação para: {}", usuario.getEmail());
             emailService.enviarEmailAtivacaoConta(
                     usuario.getEmail(),
                     usuario.getNome(),
                     token,
                     senhaTemporaria);
-            log.info("Email de ativação enviado para: {}", usuario.getEmail());
+            log.info("✅ Email de ativação enviado com sucesso para: {}", usuario.getEmail());
         } catch (Exception e) {
-            log.error("Erro ao enviar email de ativação: {}", e.getMessage(), e);
+            log.error("❌ ERRO ao enviar email de ativação para: {}. Erro: {}", usuario.getEmail(), e.getMessage(), e);
             throw new RuntimeException("Erro ao enviar email de ativação");
         }
     }

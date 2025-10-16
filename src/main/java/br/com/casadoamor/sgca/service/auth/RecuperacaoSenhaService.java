@@ -128,7 +128,9 @@ public class RecuperacaoSenhaService {
      * Envia email de recuperação de senha
      */
     public void enviarEmailRecuperacao(AuthUsuario usuario, String token) {
+        log.info("🔔 INICIANDO enviarEmailRecuperacao para: {}", usuario.getEmail());
         String linkRecuperacao = String.format("%s/reset-password?token=%s", frontendUrl, token);
+        log.info("🔗 Link de recuperação gerado: {}", linkRecuperacao);
         
         String assunto = "Recuperação de Senha - Casa do Amor";
         String mensagem = String.format(
@@ -142,7 +144,9 @@ public class RecuperacaoSenhaService {
             usuario.getNome(), linkRecuperacao, HORAS_VALIDADE
         );
 
+        log.info("📧 Chamando emailService.enviarEmail para: {}", usuario.getEmail());
         emailService.enviarEmail(usuario.getEmail(), assunto, mensagem);
+        log.info("✅ emailService.enviarEmail executado (verificar logs do EmailServiceImp)");
         log.info("Email de recuperação enviado para: {}", usuario.getEmail());
     }
 

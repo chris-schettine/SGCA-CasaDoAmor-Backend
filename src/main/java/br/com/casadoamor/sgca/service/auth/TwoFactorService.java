@@ -57,10 +57,11 @@ public class TwoFactorService {
 
         // Envia código por email
         try {
+            log.info("📨 Iniciando envio de código 2FA para: {}", usuario.getEmail());
             emailService.send2FACode(usuario.getEmail(), codigo);
-            log.info("Código 2FA enviado para email: {}", usuario.getEmail());
+            log.info("✅ Código 2FA enviado com sucesso para: {}", usuario.getEmail());
         } catch (Exception e) {
-            log.error("Erro ao enviar email 2FA: {}", e.getMessage(), e);
+            log.error("❌ ERRO ao enviar email 2FA para: {}. Erro: {}", usuario.getEmail(), e.getMessage(), e);
             throw new RuntimeException("Erro ao enviar código 2FA. Tente novamente.");
         }
 
@@ -154,10 +155,11 @@ public class TwoFactorService {
 
         // Envia por email
         try {
+            log.info("📨 Iniciando envio de código 2FA de login para: {}", usuario.getEmail());
             emailService.send2FACode(usuario.getEmail(), codigo);
-            log.info("Código 2FA de login enviado para: {}", usuario.getEmail());
+            log.info("✅ Código 2FA de login enviado com sucesso para: {}", usuario.getEmail());
         } catch (Exception e) {
-            log.error("Erro ao enviar email 2FA: {}", e.getMessage(), e);
+            log.error("❌ ERRO ao enviar email 2FA de login para: {}. Erro: {}", usuario.getEmail(), e.getMessage(), e);
             throw new RuntimeException("Erro ao enviar código 2FA");
         }
     }

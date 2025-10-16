@@ -52,18 +52,30 @@ public class EmailServiceImp implements EmailService {
 
     @Override
     public void sendSimpleEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        try {
+            log.info("Preparando envio de email para: {}", to);
+            log.info("From: {}, Subject: {}", fromEmail, subject);
+            
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
 
-        mailSender.send(message);
-        log.info("Email sent to: {}", to);
+            log.info("Enviando email via JavaMailSender...");
+            mailSender.send(message);
+            log.info("✅ Email enviado com sucesso para: {}", to);
+        } catch (Exception e) {
+            log.error("❌ ERRO ao enviar email para: {}. Erro: {}", to, e.getMessage(), e);
+            throw new RuntimeException("Falha ao enviar email", e);
+        }
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
+            log.info("📧 Preparando envio de email HTML para: {}", to);
+            log.info("From: {}, Subject: {}", fromEmail, subject);
+            
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -72,10 +84,14 @@ public class EmailServiceImp implements EmailService {
             helper.setSubject(subject);
             helper.setText(htmlBody, true); // true = HTML
 
+            log.info("Enviando email HTML via JavaMailSender...");
             mailSender.send(message);
-            log.info("HTML Email sent to: {}", to);
+            log.info("✅ Email HTML enviado com sucesso para: {}", to);
         } catch (MessagingException e) {
-            log.error("Failed to send email to: {}", to, e);
+            log.error("❌ ERRO (MessagingException) ao enviar email HTML para: {}. Erro: {}", to, e.getMessage(), e);
+            throw new RuntimeException("Failed to send email", e);
+        } catch (Exception e) {
+            log.error("❌ ERRO ao enviar email HTML para: {}. Erro: {}", to, e.getMessage(), e);
             throw new RuntimeException("Failed to send email", e);
         }
     }

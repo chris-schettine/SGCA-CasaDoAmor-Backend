@@ -29,10 +29,12 @@ import br.com.casadoamor.sgca.service.admin.SessaoService;
 import br.com.casadoamor.sgca.util.PasswordValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Serviço de autenticação - contém lógica de negócio para registro e login
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -218,16 +220,21 @@ public class AuthService {
      * Solicita recuperação de senha
      */
     public MessageResponseDTO forgotPassword(ForgotPasswordRequestDTO request) {
+        log.info("🔐 INICIANDO forgotPassword para email: {}", request.getEmail());
         Optional<AuthUsuario> usuarioOpt = authUsuarioRepository.findByEmail(request.getEmail());
 
         // Por segurança, sempre retorna sucesso mesmo se email não existir
         if (usuarioOpt.isEmpty()) {
+            log.warn("⚠️ Email não encontrado: {}", request.getEmail());
             return MessageResponseDTO.success("Se o email estiver cadastrado, você receberá instruções para recuperação");
         }
 
         AuthUsuario usuario = usuarioOpt.get();
+        log.info("✅ Usuário encontrado: {} (ID: {})", usuario.getEmail(), usuario.getId());
         String token = recuperacaoSenhaService.gerarTokenRecuperacao(usuario);
+        log.info("🔑 Token gerado, chamando enviarEmailRecuperacao...");
         recuperacaoSenhaService.enviarEmailRecuperacao(usuario, token);
+        log.info("✅ Processo forgotPassword concluído para: {}", usuario.getEmail());
 
         return MessageResponseDTO.success("Se o email estiver cadastrado, você receberá instruções para recuperação");
     }

@@ -20,7 +20,7 @@ BASE_URL="http://localhost:8090"
 # Função para testar recuperação de senha
 test_forgot_password() {
     echo -e "${YELLOW}Testando: Esqueci minha senha (Forgot Password)${NC}"
-    echo "Endpoint: POST /api/auth/forgot-password"
+    echo "Endpoint: POST /auth/forgot-password"
     echo ""
     
     read -p "Digite o email para teste (exemplo: seu@email.com): " TEST_EMAIL
@@ -28,7 +28,7 @@ test_forgot_password() {
     echo ""
     echo "Enviando requisição..."
     
-    RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "${BASE_URL}/api/auth/forgot-password" \
+    RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "${BASE_URL}/auth/forgot-password" \
       -H "Content-Type: application/json" \
       -d "{\"email\": \"${TEST_EMAIL}\"}")
     
