@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.casadoamor.sgca.entity.common.BaseEntity;
+import br.com.casadoamor.sgca.entity.paciente.Paciente;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

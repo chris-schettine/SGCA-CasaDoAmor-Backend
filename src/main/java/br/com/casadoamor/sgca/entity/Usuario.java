@@ -1,6 +1,9 @@
 package br.com.casadoamor.sgca.entity;
 
 
+import br.com.casadoamor.sgca.entity.common.BaseEntity;
+import br.com.casadoamor.sgca.entity.paciente.DadoPessoal;
+import br.com.casadoamor.sgca.entity.paciente.Endereco;
 import br.com.casadoamor.sgca.enums.TipoUsuarioEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
