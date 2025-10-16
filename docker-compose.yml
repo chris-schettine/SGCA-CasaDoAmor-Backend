@@ -31,6 +31,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-sgca}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-sgca_user}
       SPRING_DATASOURCE_PASSWORD: ${SGCA_DB_PASSWORD}
+    volumes:
+      - uploads_data:/app/uploads
     networks:
       - sgca-network
     depends_on:
@@ -39,6 +41,7 @@ services:
 
 volumes:
   mysql_data:
+  uploads_data:
 
 networks:
   sgca-network:
