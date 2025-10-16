@@ -23,15 +23,24 @@ O Gmail não permite mais o uso de senhas normais para aplicações externas. Vo
 
 ## Passo 3: Atualizar o Arquivo `.env`
 
-Edite o arquivo `.env` e substitua a senha atual pela **Senha de App**:
+⚠️ **IMPORTANTE**: O arquivo `.env` deve estar no `.gitignore` e NUNCA deve ser commitado no git!
+
+Copie o template e edite suas credenciais:
+
+```bash
+# Se não tiver o arquivo .env, copie do template
+cp .env.template .env
+```
+
+Edite o arquivo `.env` e substitua pela sua **Senha de App**:
 
 ```env
 # Configurações de Email
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USERNAME=casadoamoremconquista@gmail.com
-MAIL_PASSWORD=abcdefghijklmnop          # ← Senha de App (sem espaços)
-SGCA_EMAIL_PASSWORD=abcdefghijklmnop    # ← Mesma senha de app
+MAIL_USERNAME=seu-email@gmail.com           # ← SEU email
+MAIL_PASSWORD=sua-senha-app-16-chars        # ← SUA Senha de App (sem espaços)
+SGCA_EMAIL_PASSWORD=sua-senha-app-16-chars  # ← Mesma senha
 ```
 
 ## Passo 4: Reiniciar a Aplicação

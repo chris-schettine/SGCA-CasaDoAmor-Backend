@@ -9,6 +9,7 @@ Sistema de gerenciamento backend para a Casa do Amor, desenvolvido em Spring Boo
 
 ## 📋 Índice
 
+- [🔒 Aviso de Segurança](#-aviso-de-segurança)
 - [Visão Geral](#visão-geral)
 - [Tecnologias](#tecnologias)
 - [Pré-requisitos](#pré-requisitos)
@@ -20,6 +21,16 @@ Sistema de gerenciamento backend para a Casa do Amor, desenvolvido em Spring Boo
 - [Banco de Dados](#banco-de-dados)
 - [Testes](#testes)
 - [Contribuição](#contribuição)
+
+## 🔒 Aviso de Segurança
+
+⚠️ **IMPORTANTE**: Este projeto contém arquivos de configuração sensíveis.
+
+- ❌ **NUNCA** commite o arquivo `.env` 
+- ✅ Use `.env.template` ou `.env.example` como referência
+- 🔐 Mantenha suas credenciais em segurança
+
+**Leia:** [SECURITY_NOTICE.md](SECURITY_NOTICE.md) para mais informações sobre práticas de segurança.
 
 ## 🎯 Visão Geral
 

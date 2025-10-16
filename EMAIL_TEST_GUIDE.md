@@ -110,7 +110,7 @@ docker exec spring_sgca env | grep -E "(MAIL|SGCA_EMAIL)"
 # MAIL_HOST=smtp.gmail.com
 # MAIL_PORT=587
 # MAIL_USERNAME=casadoamoremconquista@gmail.com
-# SGCA_EMAIL_PASSWORD=ousw vapt icro lnva
+# SGCA_EMAIL_PASSWORD=****************
 ```
 
 ## ⚠️ Solução de Problemas
