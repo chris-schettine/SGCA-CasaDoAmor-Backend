@@ -11,16 +11,16 @@ import java.util.Properties;
 @Configuration
 public class EmailConfig {
     
-    @Value("${spring.mail.host}")
+    @Value("${spring.mail.host:smtp.gmail.com}")
     private String host;
     
-    @Value("${spring.mail.port}")
+    @Value("${spring.mail.port:587}")
     private int port;
     
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:noreply@casadoamor.com}")
     private String username;
 
-    @Value("${spring.mail.password}")
+    @Value("${spring.mail.password:dummy_password}")
     private String password;
 
     @Bean

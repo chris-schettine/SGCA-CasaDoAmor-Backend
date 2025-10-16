@@ -26,7 +26,7 @@ CREATE TABLE autenticacao_2fa (
 
 -- Comentários das colunas
 ALTER TABLE autenticacao_2fa 
-    MODIFY COLUMN id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'ID único da configuração 2FA',
+    MODIFY COLUMN id BIGINT AUTO_INCREMENT COMMENT 'ID único da configuração 2FA',
     MODIFY COLUMN usuario_id BIGINT NOT NULL UNIQUE COMMENT 'ID do usuário (FK para auth_usuarios)',
     MODIFY COLUMN habilitado BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Indica se 2FA está ativo',
     MODIFY COLUMN data_habilitacao DATETIME(6) COMMENT 'Data/hora em que 2FA foi habilitado',
