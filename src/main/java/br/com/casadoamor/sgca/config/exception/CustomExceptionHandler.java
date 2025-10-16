@@ -2,7 +2,7 @@ package br.com.casadoamor.sgca.config.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-import br.com.casadoamor.sgca.dto.ErroResponseDTO;
+import br.com.casadoamor.sgca.dto.common.ErroResponseDTO;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
