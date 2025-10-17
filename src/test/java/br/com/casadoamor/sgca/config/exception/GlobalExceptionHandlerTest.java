@@ -1,19 +1,19 @@
 package br.com.casadoamor.sgca.config.exception;
 
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import br.com.casadoamor.sgca.config.exception.RateLimitExceededException;
-import br.com.casadoamor.sgca.config.exception.CustomError;
-import java.util.Map;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler handler;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
         handler = new GlobalExceptionHandler();
     }

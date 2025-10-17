@@ -1,16 +1,18 @@
 package br.com.casadoamor.sgca.aspect;
 
-import br.com.casadoamor.sgca.annotation.RateLimited;
-import br.com.casadoamor.sgca.config.exception.RateLimitExceededException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import br.com.casadoamor.sgca.annotation.RateLimited;
+import br.com.casadoamor.sgca.config.exception.RateLimitExceededException;
+import jakarta.servlet.http.HttpServletRequest;
 
 class RateLimitAspectTest {
 
@@ -23,6 +25,7 @@ class RateLimitAspectTest {
     private RateLimitAspect aspect;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
         aspect = new RateLimitAspect(request);
@@ -33,17 +36,15 @@ class RateLimitAspectTest {
         when(request.getRemoteAddr()).thenReturn("127.0.0.1");
         when(request.getRequestURI()).thenReturn("/test");
 
-        RateLimited rl = new RateLimited() {
-            public Class<? extends java.lang.annotation.Annotation> annotationType() { return RateLimited.class; }
-            public int limit() { return 10; }
-            public int durationSeconds() { return 60; }
-        };
+        // mock da annotation RateLimited
+        RateLimited rl = mock(RateLimited.class);
+        when(rl.limit()).thenReturn(10);
+        when(rl.durationSeconds()).thenReturn(60);
 
         when(joinPoint.proceed()).thenReturn("ok");
 
-        Object res = aspect.rateLimit(joinPoint, rl);
+        aspect.rateLimit(joinPoint, rl);
 
-        // proceed returned
         verify(joinPoint).proceed();
     }
 
@@ -52,17 +53,16 @@ class RateLimitAspectTest {
         when(request.getRemoteAddr()).thenReturn("127.0.0.1");
         when(request.getRequestURI()).thenReturn("/test-exhaust");
 
-        RateLimited rl = new RateLimited() {
-            public Class<? extends java.lang.annotation.Annotation> annotationType() { return RateLimited.class; }
-            public int limit() { return 1; }
-            public int durationSeconds() { return 1; }
-        };
+        RateLimited rl = mock(RateLimited.class);
+        when(rl.limit()).thenReturn(1);
+        when(rl.durationSeconds()).thenReturn(1);
 
-        // consume once
+        // primeira chamada consome o bucket
         aspect.rateLimit(joinPoint, rl);
 
-        // second call should throw
+        // segunda chamada deve lançar exceção
         assertThatThrownBy(() -> aspect.rateLimit(joinPoint, rl))
                 .isInstanceOf(RateLimitExceededException.class);
     }
+
 }

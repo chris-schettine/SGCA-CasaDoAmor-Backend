@@ -1,18 +1,17 @@
 package br.com.casadoamor.sgca.controller.file;
 
-import br.com.casadoamor.sgca.service.file.FileStorageService;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.nio.file.Path;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import br.com.casadoamor.sgca.service.file.FileStorageService;
 
 class FileControllerTest {
 
@@ -23,6 +22,7 @@ class FileControllerTest {
     private FileController controller;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
@@ -33,7 +33,7 @@ class FileControllerTest {
 
         ResponseEntity<Resource> res = controller.servirArquivo("avatars", "notfound.jpg");
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(404);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -43,6 +43,7 @@ class FileControllerTest {
 
         ResponseEntity<Resource> res = controller.servirArquivo("avatars", "error.jpg");
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(500);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }

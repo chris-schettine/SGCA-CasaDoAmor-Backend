@@ -1,5 +1,17 @@
 package br.com.casadoamor.sgca.controller.auth;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+
 import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
 import br.com.casadoamor.sgca.dto.common.MessageResponseDTO;
 import br.com.casadoamor.sgca.dto.twofactor.Enable2FADTO;
@@ -7,17 +19,6 @@ import br.com.casadoamor.sgca.dto.twofactor.Setup2FADTO;
 import br.com.casadoamor.sgca.dto.twofactor.Verify2FADTO;
 import br.com.casadoamor.sgca.service.auth.AuthService;
 import br.com.casadoamor.sgca.service.auth.TwoFactorService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class TwoFactorControllerTest {
 
@@ -31,6 +32,7 @@ class TwoFactorControllerTest {
     private TwoFactorController controller;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
@@ -46,7 +48,7 @@ class TwoFactorControllerTest {
 
         ResponseEntity<Setup2FADTO> res = controller.setup(auth);
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody()).isEqualTo(dto);
     }
 
@@ -61,7 +63,7 @@ class TwoFactorControllerTest {
 
         ResponseEntity<MessageResponseDTO> res = controller.enable(dto, auth);
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
@@ -75,7 +77,7 @@ class TwoFactorControllerTest {
 
         ResponseEntity<?> res = controller.verify(dto);
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(401);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -92,7 +94,7 @@ class TwoFactorControllerTest {
 
         ResponseEntity<?> res = controller.verify(dto);
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody()).isEqualTo(token);
     }
 
@@ -104,6 +106,7 @@ class TwoFactorControllerTest {
 
         ResponseEntity<MessageResponseDTO> res = controller.resend(auth);
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 }

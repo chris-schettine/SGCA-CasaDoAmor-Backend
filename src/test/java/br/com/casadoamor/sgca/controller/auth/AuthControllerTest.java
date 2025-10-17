@@ -1,27 +1,29 @@
 package br.com.casadoamor.sgca.controller.auth;
 
-import br.com.casadoamor.sgca.dto.SessaoDTO;
-import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
-import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO;
-import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
-import br.com.casadoamor.sgca.dto.common.MessageResponseDTO;
-import br.com.casadoamor.sgca.service.admin.SessaoService;
-import br.com.casadoamor.sgca.service.auth.AccountActivationService;
-import br.com.casadoamor.sgca.service.auth.AuthService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+
+import br.com.casadoamor.sgca.dto.SessaoDTO;
+import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
+import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO;
+import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
+import br.com.casadoamor.sgca.service.admin.SessaoService;
+import br.com.casadoamor.sgca.service.auth.AccountActivationService;
+import br.com.casadoamor.sgca.service.auth.AuthService;
 
 class AuthControllerTest {
 
@@ -32,12 +34,14 @@ class AuthControllerTest {
     private SessaoService sessaoService;
 
     @Mock
+    @SuppressWarnings("unused")
     private AccountActivationService accountActivationService;
 
     @InjectMocks
     private AuthController controller;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
@@ -50,7 +54,7 @@ class AuthControllerTest {
 
         ResponseEntity<?> result = controller.register(req);
 
-        assertThat(result.getStatusCodeValue()).isEqualTo(201);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(result.getBody()).isEqualTo(resp);
         verify(authService).register(req);
     }
@@ -62,7 +66,7 @@ class AuthControllerTest {
 
         ResponseEntity<?> result = controller.register(req);
 
-        assertThat(result.getStatusCodeValue()).isEqualTo(409);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         verify(authService).register(req);
     }
 
@@ -74,7 +78,7 @@ class AuthControllerTest {
 
         ResponseEntity<?> result = controller.login(req, null);
 
-        assertThat(result.getStatusCodeValue()).isEqualTo(200);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(resp);
     }
 
@@ -85,7 +89,7 @@ class AuthControllerTest {
 
         ResponseEntity<?> result = controller.login(req, null);
 
-        assertThat(result.getStatusCodeValue()).isEqualTo(401);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -99,7 +103,7 @@ class AuthControllerTest {
 
         ResponseEntity<List<SessaoDTO>> res = controller.listSessions(auth, "Bearer token");
 
-        assertThat(res.getStatusCodeValue()).isEqualTo(200);
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody()).hasSize(1);
     }
 
