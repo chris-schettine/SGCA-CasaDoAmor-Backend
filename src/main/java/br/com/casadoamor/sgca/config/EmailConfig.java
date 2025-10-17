@@ -17,10 +17,10 @@ public class EmailConfig {
     @Value("${MAIL_PORT:587}")
     private int port;
     
-    @Value("${MAIL_USERNAME:casadoamoremconquista@gmail.com}")
+    @Value("${MAIL_USERNAME}")
     private String username;
 
-    @Value("${SGCA_EMAIL_PASSWORD:dummy_password}")
+    @Value("${SGCA_EMAIL_PASSWORD}")
     private String password;
 
     @Bean
