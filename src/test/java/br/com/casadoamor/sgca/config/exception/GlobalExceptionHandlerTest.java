@@ -13,7 +13,7 @@ class GlobalExceptionHandlerTest {
     private GlobalExceptionHandler handler;
 
     @BeforeEach
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     void setup() {
         handler = new GlobalExceptionHandler();
     }

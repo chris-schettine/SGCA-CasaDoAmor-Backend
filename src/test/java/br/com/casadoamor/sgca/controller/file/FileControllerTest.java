@@ -22,7 +22,7 @@ class FileControllerTest {
     private FileController controller;
 
     @BeforeEach
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
     }

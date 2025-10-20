@@ -25,7 +25,7 @@ class RateLimitAspectTest {
     private RateLimitAspect aspect;
 
     @BeforeEach
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
         aspect = new RateLimitAspect(request);

@@ -32,7 +32,7 @@ class TwoFactorControllerTest {
     private TwoFactorController controller;
 
     @BeforeEach
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
     }

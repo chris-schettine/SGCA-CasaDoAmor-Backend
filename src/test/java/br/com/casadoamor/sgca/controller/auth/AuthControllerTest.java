@@ -34,14 +34,14 @@ class AuthControllerTest {
     private SessaoService sessaoService;
 
     @Mock
-    @SuppressWarnings("unused")
+   // @SuppressWarnings("unused")
     private AccountActivationService accountActivationService;
 
     @InjectMocks
     private AuthController controller;
 
     @BeforeEach
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
