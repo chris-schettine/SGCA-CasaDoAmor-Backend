@@ -35,6 +35,8 @@ services:
       MAIL_PORT: ${MAIL_PORT}
       MAIL_USERNAME: ${MAIL_USERNAME}
       SGCA_EMAIL_PASSWORD: ${SGCA_EMAIL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
     volumes:
       - uploads_data:/app/uploads
     networks:

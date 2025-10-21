@@ -23,11 +23,11 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
 
     // Chave secreta para assinar o JWT (deve ser configurada no application.properties)
-    @Value("${jwt.secret:sgca-casa-do-amor-secret-key-2025-muito-segura-por-favor-mude-isso-em-producao}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
     // Tempo de expiração do token em milissegundos (1 hora = 3600000ms)
-    @Value("${jwt.expiration:3600000}")
+    @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
     /**
