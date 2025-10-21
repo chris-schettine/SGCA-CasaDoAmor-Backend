@@ -1,0 +1,17 @@
+### Teste de Login para a API SGCA
+#
+# Para usar com a extensão REST Client no VS Code:
+# 1. Abra este arquivo no VS Code.
+# 2. Certifique-se que sua aplicação Spring Boot está rodando.
+# 3. Substitua o CPF e a senha abaixo por credenciais válidas.
+# 4. Clique no "Send Request" que aparece acima da requisição.
+# 5. A resposta da API aparecerá em uma nova aba ao lado.
+
+POST http://[::1]:8080/auth/login
+Content-Type: application/json
+
+{
+  "cpf": "12345678901",
+  "senha": "senha123"
+}
+
