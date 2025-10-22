@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,7 +21,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Entidade Perfil (Role) - representa os perfis de acesso do sistema
@@ -31,6 +35,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"permissoes", "usuarios"})
+@EqualsAndHashCode(exclude = {"permissoes", "usuarios"})
+@JsonIgnoreProperties({"usuarios"})
 public class Perfil {
 
     @Id
