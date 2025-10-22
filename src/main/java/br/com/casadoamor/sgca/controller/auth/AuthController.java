@@ -101,6 +101,29 @@ public class AuthController {
     }
 
     /**
+     * Endpoint para obter dados do usuário autenticado
+     * GET /auth/me
+     */
+    @GetMapping("/me")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Obter perfil do usuário", description = "Retorna os dados do usuário autenticado pelo token JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dados retornados com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Token inválido ou não fornecido"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        try {
+            String cpf = authentication.getName();
+            var userProfile = authService.getUserProfile(cpf);
+            return ResponseEntity.ok(userProfile);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
      * Endpoint para solicitar recuperação de senha
      * POST /auth/forgot-password
      */

@@ -1,7 +1,9 @@
 package br.com.casadoamor.sgca.service.auth;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.com.casadoamor.sgca.dto.admin.perfil.PerfilDTO;
+import br.com.casadoamor.sgca.dto.admin.permissao.PermissaoDTO;
+import br.com.casadoamor.sgca.dto.admin.user.UserResponseDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ChangePasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ForgotPasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
@@ -335,6 +340,18 @@ public class AuthService {
     }
 
     /**
+     * Busca o perfil completo do usuário autenticado
+     * @param cpf CPF do usuário autenticado
+     * @return UserResponseDTO com os dados do usuário
+     */
+    public UserResponseDTO getUserProfile(String cpf) {
+        AuthUsuario usuario = authUsuarioRepository.findByCpf(cpf)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return toUserResponseDTO(usuario);
+    }
+
+    /**
      * Busca ID do usuário por CPF (lança exceção se não encontrar)
      */
     public Long buscarIdPorCpf(String cpf) {
@@ -385,5 +402,43 @@ public class AuthService {
     private String obterUserAgent(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         return userAgent != null ? userAgent : "Unknown";
+    }
+
+    /**
+     * Converte AuthUsuario para UserResponseDTO
+     */
+    private UserResponseDTO toUserResponseDTO(AuthUsuario usuario) {
+        List<PerfilDTO> perfisDTO = usuario.getPerfis().stream()
+                .filter(p -> !p.isDeletado())
+                .map(p -> PerfilDTO.builder()
+                        .id(p.getId())
+                        .nome(p.getNome())
+                        .descricao(p.getDescricao())
+                        .totalPermissoes(p.getPermissoes().size())
+                        .permissoes(p.getPermissoes().stream()
+                                .map(perm -> PermissaoDTO.builder()
+                                        .id(perm.getId())
+                                        .nome(perm.getNome())
+                                        .descricao(perm.getDescricao())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+
+        return UserResponseDTO.builder()
+                .id(usuario.getId())
+                .uuid(usuario.getUuid())
+                .nome(usuario.getNome())
+                .email(usuario.getEmail())
+                .cpf(usuario.getCpf())
+                .telefone(usuario.getTelefone())
+                .tipo(usuario.getTipo().name())
+                .ativo(usuario.getAtivo())
+                .emailVerificado(usuario.getEmailVerificado())
+                .ultimoLoginEm(usuario.getUltimoLoginEm())
+                .criadoEm(usuario.getCriadoEm())
+                .atualizadoEm(usuario.getAtualizadoEm())
+                .perfis(perfisDTO)
+                .build();
     }
 }

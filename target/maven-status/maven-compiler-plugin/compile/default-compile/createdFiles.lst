@@ -104,6 +104,7 @@ br/com/casadoamor/sgca/entity/ProfissionalSaude$ProfissionalSaudeBuilder.class
 br/com/casadoamor/sgca/repository/auth/AuthUsuarioRepository.class
 br/com/casadoamor/sgca/enums/TipoToken.class
 br/com/casadoamor/sgca/repository/auth/TokenRecuperacaoRepository.class
+br/com/casadoamor/sgca/config/DataSeederConfig.class
 br/com/casadoamor/sgca/dto/admin/user/UpdateUserDTO$UpdateUserDTOBuilder.class
 br/com/casadoamor/sgca/controller/paciente/PacienteController.class
 br/com/casadoamor/sgca/service/paciente/PacienteService.class
@@ -134,6 +135,7 @@ br/com/casadoamor/sgca/service/auth/AuthService.class
 br/com/casadoamor/sgca/controller/auth/AuthController.class
 br/com/casadoamor/sgca/config/exception/RateLimitExceededException.class
 br/com/casadoamor/sgca/dto/common/MessageResponseDTO$MessageResponseDTOBuilder.class
+br/com/casadoamor/sgca/util/PasswordHashGenerator.class
 br/com/casadoamor/sgca/dto/paciente/RegistrarPacienteDTO.class
 br/com/casadoamor/sgca/entity/paciente/DadoClinico.class
 br/com/casadoamor/sgca/SgcaBackendApplication.class
