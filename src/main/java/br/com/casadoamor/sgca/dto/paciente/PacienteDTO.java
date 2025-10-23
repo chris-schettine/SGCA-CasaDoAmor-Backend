@@ -1,13 +1,12 @@
 package br.com.casadoamor.sgca.dto.paciente;
 
 import java.util.Date;
-import java.util.UUID;
 
 import lombok.Builder;
 
 @Builder
 public record PacienteDTO(
-    UUID id,
+    String id,
     String nome,
     String cpf,
     String rg,

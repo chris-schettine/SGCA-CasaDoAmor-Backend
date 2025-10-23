@@ -1,13 +1,12 @@
 package br.com.casadoamor.sgca.controller.paciente;
 
-import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +17,6 @@ import br.com.casadoamor.sgca.dto.paciente.PacienteDTO;
 import br.com.casadoamor.sgca.dto.paciente.RegistrarPacienteDTO;
 import br.com.casadoamor.sgca.service.paciente.PacienteService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,7 @@ public class PacienteController {
   @PostMapping("/")
   @Operation(summary = "Registrar um novo paciente")
   // TODO - ADICIONAR AUTENTICAÇÃO PARA PERMITIR APENAS RECEPCIONISTAS
-  public ResponseEntity<PacienteDTO> registrarPaciente(@Valid @RequestBody  RegistrarPacienteDTO RegistrarPacienteDTO) {
+  public ResponseEntity<PacienteDTO> registrarPaciente(@Valid @RequestBody RegistrarPacienteDTO RegistrarPacienteDTO) {
     PacienteDTO paciente = this.pacienteService.registrarPaciente(RegistrarPacienteDTO);
     return new ResponseEntity<>(paciente, HttpStatus.OK);
   }
@@ -42,7 +40,7 @@ public class PacienteController {
   @Operation(summary = "Editar um paciente existente")
   // TODO - ADICIONAR AUTENTICAÇÃO PARA PERMITIR APENAS RECEPCIONISTAS
   public ResponseEntity<PacienteDTO> editarPaciente(
-    @PathVariable UUID id,
+    @PathVariable String id,
     @Valid @RequestBody EditarPacienteDTO editarPacienteDTO) {
     PacienteDTO paciente = pacienteService.editarPaciente(id, editarPacienteDTO);
     return new ResponseEntity<>(paciente, HttpStatus.OK);

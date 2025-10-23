@@ -9,13 +9,13 @@ import br.com.casadoamor.sgca.entity.paciente.Endereco;
 public class EnderecoMapper {
   public Endereco toEntity (EnderecoInputDTO enderecoInput) {
     return Endereco.builder()
-      .cep(enderecoInput.cep())
-      .logradouro(enderecoInput.logradouro())
-      .numero(enderecoInput.numero())
-      .complemento(enderecoInput.complemento())
-      .bairro(enderecoInput.bairro())
-      .cidade(enderecoInput.cidade())
-      .estado(enderecoInput.estado())
+      .cep(enderecoInput.getCep())
+      .logradouro(enderecoInput.getLogradouro())
+      .numero(enderecoInput.getNumero())
+      .complemento(enderecoInput.getComplemento())
+      .bairro(enderecoInput.getBairro())
+      .cidade(enderecoInput.getCidade())
+      .estado(enderecoInput.getEstado())
       .build();
   }
 }

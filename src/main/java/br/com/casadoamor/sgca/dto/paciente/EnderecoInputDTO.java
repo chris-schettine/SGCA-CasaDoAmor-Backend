@@ -5,29 +5,33 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
-public record EnderecoInputDTO(
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class EnderecoInputDTO {
   @NotBlank(message = "O logradouro é obrigatório")
-  String logradouro,
+  private String logradouro;
 
   @NotNull(message = "O número é obrigatório")
   @Positive(message = "O número deve ser positivo")
-  Integer numero,
+  private Integer numero;
 
-  String complemento,
+  private String complemento;
 
   @NotBlank(message = "O bairro é obrigatório")
-  String bairro,
+  private String bairro;
 
   @NotBlank(message = "A cidade é obrigatória")
-  String cidade,
+  private String cidade;
 
   @NotNull(message = "O estado é obrigatório")
-  EstadoEnum estado,
+  private EstadoEnum estado;
 
   @NotBlank(message = "O CEP é obrigatório")
   @Pattern(regexp = "\\d{5}-?\\d{3}", message = "CEP inválido")
-  String cep
-) {} 
+  private String cep;
+} 

@@ -9,12 +9,12 @@ import br.com.casadoamor.sgca.entity.paciente.DadoPessoal;
 public class DadoPessoalMapper {
   public DadoPessoal toEntity (DadoPessoalInputDTO dadoPessoalInputDTO) {
     return DadoPessoal.builder()
-      .nome(dadoPessoalInputDTO.nome())
-      .dataNascimento(dadoPessoalInputDTO.dataNascimento())
-      .cpf(dadoPessoalInputDTO.cpf())
-      .rg(dadoPessoalInputDTO.rg())
-      .naturalidade(dadoPessoalInputDTO.naturalidade())
-      .telefone(dadoPessoalInputDTO.telefone())
+      .nome(dadoPessoalInputDTO.getNome())
+      .dataNascimento(dadoPessoalInputDTO.getDataNascimento())
+      .cpf(dadoPessoalInputDTO.getCpf())
+      .rg(dadoPessoalInputDTO.getRg())
+      .naturalidade(dadoPessoalInputDTO.getNaturalidade())
+      .telefone(dadoPessoalInputDTO.getTelefone())
       .build();
   }
 }

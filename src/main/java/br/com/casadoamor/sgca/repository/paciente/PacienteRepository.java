@@ -1,7 +1,6 @@
 package br.com.casadoamor.sgca.repository.paciente;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -14,7 +13,7 @@ import org.springframework.lang.Nullable;
 
 import br.com.casadoamor.sgca.entity.paciente.Paciente;
 
-public interface PacienteRepository extends JpaRepository<Paciente, UUID>, JpaSpecificationExecutor<Paciente> {
+public interface PacienteRepository extends JpaRepository<Paciente, String>, JpaSpecificationExecutor<Paciente> {
   @Query("SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Paciente p WHERE p.dadoPessoal.cpf = :cpf")
   Boolean existsByCpf(@Param("cpf") String cpf);
 

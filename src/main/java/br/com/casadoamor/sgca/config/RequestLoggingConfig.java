@@ -47,6 +47,9 @@ public class RequestLoggingConfig {
                 } finally {
                     // Request payload
                     String requestBody = new String(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
+                    System.out.println("===== RAW REQUEST BODY =====");
+                    System.out.println(requestBody);
+                    System.out.println("============================");
                     if (!requestBody.isBlank()) {
                         System.out.println("REQ " + request.getMethod() + " " + request.getRequestURI() +
                                 " Body: " + maskSensitive(requestBody));

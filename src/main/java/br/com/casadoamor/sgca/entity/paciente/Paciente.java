@@ -17,11 +17,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "pacientes")
 public class Paciente extends BaseEntity {
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "dado_pessoal_id")
   private DadoPessoal dadoPessoal;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "endereco_id")
   private Endereco endereco;
 }

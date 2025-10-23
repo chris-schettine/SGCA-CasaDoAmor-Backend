@@ -8,28 +8,33 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record DadoPessoalInputDTO(
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DadoPessoalInputDTO {
   @NotBlank(message = "O nome é obrigatório")
-  String nome,
+  private String nome;
 
   @NotNull(message = "A data de nascimento é obrigatória")
   @Past(message = "A data de nascimento deve ser no passado")
   @JsonFormat(pattern = "yyyy-MM-dd")
-  Date dataNascimento,
+  private Date dataNascimento;
 
   @NotBlank(message = "O CPF é obrigatório")
   @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
-  String cpf,
+  private String cpf;
 
   @NotBlank(message = "O RG é obrigatório")
-  String rg,
+  private String rg;
 
   @NotBlank(message = "A naturalidade é obrigatória")
-  String naturalidade,
+  private String naturalidade;
 
   @NotBlank(message = "O telefone é obrigatório")
   @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
-  String telefone
-) {
+  private String telefone;
 } 

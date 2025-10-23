@@ -1,7 +1,6 @@
 package br.com.casadoamor.sgca.service.imp;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -37,25 +36,25 @@ public class PacienteServiceImp implements PacienteService {
   public PacienteDTO registrarPaciente(RegistrarPacienteDTO registrarPacienteDTO) {
     
     // Validação de campos obrigatórios
-    if (registrarPacienteDTO.dadoPessoal() == null) {
+    if (registrarPacienteDTO.getDadoPessoal() == null) {
       throw new CustomError("Dado pessoal é obrigatório", HttpStatus.BAD_REQUEST);
     }
 
-    if (registrarPacienteDTO.endereco() == null) {
+    if (registrarPacienteDTO.getEndereco() == null) {
       throw new CustomError("Endereço é obrigatório", HttpStatus.BAD_REQUEST);
     }
 
-    if (pacienteRepository.existsByCpf(registrarPacienteDTO.dadoPessoal().cpf())) {
+    if (pacienteRepository.existsByCpf(registrarPacienteDTO.getDadoPessoal().getCpf())) {
       throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
     }
 
-    if (pacienteRepository.existsByRg(registrarPacienteDTO.dadoPessoal().rg())) {
+    if (pacienteRepository.existsByRg(registrarPacienteDTO.getDadoPessoal().getRg())) {
       throw new CustomError("RG já cadastrado", HttpStatus.BAD_REQUEST);
     }
 
-    DadoPessoal dadoPessoal = dadoPessoalMapper.toEntity(registrarPacienteDTO.dadoPessoal());
+    DadoPessoal dadoPessoal = dadoPessoalMapper.toEntity(registrarPacienteDTO.getDadoPessoal());
 
-    Endereco endereco = enderecoMapper.toEntity(registrarPacienteDTO.endereco());
+    Endereco endereco = enderecoMapper.toEntity(registrarPacienteDTO.getEndereco());
 
     Paciente paciente = pacienteMapper.toEntityFromEntities(dadoPessoal, endereco);
 
@@ -64,7 +63,7 @@ public class PacienteServiceImp implements PacienteService {
     return pacienteMapper.toDTO(paciente);
   }
 
-  public PacienteDTO editarPaciente(UUID id, EditarPacienteDTO editarPacienteDTO) {
+  public PacienteDTO editarPaciente(String id, EditarPacienteDTO editarPacienteDTO) {
 
     Paciente pacienteExistente = pacienteRepository.findById(id)
       .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
