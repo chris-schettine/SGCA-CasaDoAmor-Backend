@@ -21,7 +21,7 @@ import br.com.casadoamor.sgca.dto.auth.request.ChangePasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.FirstLoginPasswordChangeDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ForgotPasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
-// import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO; // DESATIVADO
+import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ResetPasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.VerifyEmailRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
@@ -65,17 +65,18 @@ public class AuthController {
     //         @ApiResponse(responseCode = "409", description = "Email ou CPF já cadastrado")
     // })
     // public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
-    //     try {
-    //         AuthResponseDTO response = authService.register(request);
-    //         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    //     } catch (RuntimeException e) {
-    //         return ResponseEntity.status(HttpStatus.CONFLICT)
-    //                 .body(new ErrorResponse(e.getMessage()));
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-    //                 .body(new ErrorResponse("Erro ao registrar usuário: " + e.getMessage()));
-    //     }
-    // }
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
+        try {
+            AuthResponseDTO response = authService.register(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Erro ao registrar usuário: " + e.getMessage()));
+        }
+    }
 
     /**
      * Endpoint para fazer login
@@ -330,7 +331,7 @@ public class AuthController {
 
     // Classes internas para DTOs simples
     @SuppressWarnings("unused")
-    private static class ResendActivationDTO {
+    public static class ResendActivationDTO {
         private String email;
         
         public String getEmail() {

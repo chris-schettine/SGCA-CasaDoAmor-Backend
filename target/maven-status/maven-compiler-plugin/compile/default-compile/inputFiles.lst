@@ -12,6 +12,7 @@
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/exception/GlobalExceptionHandler.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/exception/RateLimitExceededException.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/exception/ValidationExceptionHandler.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/controller/DadoClinicoController.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/controller/admin/AdminController.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/controller/admin/AuditController.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/controller/auth/AuthController.java
@@ -40,6 +41,8 @@
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/common/ErroResponseDTO.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/common/MessageResponseDTO.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/common/PaginatedResponseDTO.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/paciente/DadoClinicoDTO.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/paciente/DadoClinicoInputDTO.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/paciente/DadoPessoalInputDTO.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/paciente/EditarDadoPessoalInputDTO.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/paciente/EditarEnderecoInputDTO.java
@@ -67,15 +70,22 @@
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/entity/paciente/DadoPessoal.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/entity/paciente/Endereco.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/entity/paciente/Paciente.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/CondicaoChegada.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/EstadoEnum.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoDocumentoProfissionalSaudeEnum.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoSondaCirurgica.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoSondaNasal.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoSondaVesical.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoToken.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoTratamento.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/enums/TipoUsuarioEnum.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/exception/ResourceNotFoundException.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/common/PaginatedResponseMapper.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/DadoClinicoMapper.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/DadoPessoalMapper.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/EnderecoMapper.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/PacienteMapper.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/DadoClinicoRepository.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/admin/PerfilRepository.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/admin/PermissaoRepository.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/auth/Autenticacao2FARepository.java
@@ -90,6 +100,7 @@
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/security/JwtAuthenticationFilter.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/security/JwtUtil.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/security/UserDetailsServiceImpl.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/DadoClinicoService.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/AuditoriaService.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/PerfilService.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/PermissaoService.java
@@ -102,6 +113,7 @@
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/auth/TwoFactorService.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/common/EmailService.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/file/FileStorageService.java
+/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/imp/DadoClinicoServiceImp.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/imp/EmailServiceImp.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/imp/LocalFileStorageService.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/imp/PacienteServiceImp.java
