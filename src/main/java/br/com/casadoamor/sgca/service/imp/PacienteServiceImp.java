@@ -21,8 +21,8 @@ import br.com.casadoamor.sgca.mapper.paciente.EnderecoMapper;
 import br.com.casadoamor.sgca.mapper.paciente.PacienteMapper;
 import br.com.casadoamor.sgca.repository.paciente.PacienteRepository;
 import br.com.casadoamor.sgca.service.paciente.PacienteService;
-import lombok.RequiredArgsConstructor;
 import jakarta.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -113,19 +113,65 @@ public class PacienteServiceImp implements PacienteService {
      Specification<Paciente> spec = (root, query, criteriaBuilder) -> {
         Predicate predicate = criteriaBuilder.conjunction(); 
 
-        if (searchText != null && !searchText.isBlank()) {
-            String search = "%" + searchText.toLowerCase() + "%";
+    if (searchText != null && !searchText.isBlank()) {
+      String search = "%" + searchText.toLowerCase() + "%";
+      String searchPlain = searchText.toLowerCase();
+      String searchNorm = searchText.toLowerCase().replaceAll("\\s|\\.|-", "");
 
-            var dadoJoin = root.join("dadoPessoal");
+      var dadoJoin = root.join("dadoPessoal");
 
-            Predicate matchNome = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
-            Predicate matchCpf = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("cpf")), search);
-            Predicate matchRg = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("rg")), search);
+      Predicate matchNome = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
+      Predicate matchCpf = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("cpf")), search);
+      Predicate matchRg = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("rg")), search);
 
-            predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(matchNome, matchCpf, matchRg));
-        }
+      predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(matchNome, matchCpf, matchRg));
 
-        query.orderBy(criteriaBuilder.asc(root.get("id"))); 
+      // build expressions to detect exact matches (normalize cpf/rg in DB)
+      var cpfNormalizedDb = criteriaBuilder.lower(
+        criteriaBuilder.function("REPLACE", String.class,
+          criteriaBuilder.function("REPLACE", String.class,
+            criteriaBuilder.function("REPLACE", String.class,
+              dadoJoin.get("cpf"),
+              criteriaBuilder.literal("."),
+              criteriaBuilder.literal("")
+            ),
+            criteriaBuilder.literal("-"),
+            criteriaBuilder.literal("")
+          ),
+          criteriaBuilder.literal(" "),
+          criteriaBuilder.literal("")
+        )
+      );
+
+      var rgNormalizedDb = criteriaBuilder.lower(
+        criteriaBuilder.function("REPLACE", String.class,
+          criteriaBuilder.function("REPLACE", String.class,
+            criteriaBuilder.function("REPLACE", String.class,
+              dadoJoin.get("rg"),
+              criteriaBuilder.literal("."),
+              criteriaBuilder.literal("")
+            ),
+            criteriaBuilder.literal("-"),
+            criteriaBuilder.literal("")
+          ),
+          criteriaBuilder.literal(" "),
+          criteriaBuilder.literal("")
+        )
+      );
+
+      Predicate exactName = criteriaBuilder.equal(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain);
+      Predicate exactCpf = criteriaBuilder.equal(cpfNormalizedDb, searchNorm);
+      Predicate exactRg = criteriaBuilder.equal(rgNormalizedDb, searchNorm);
+
+      // CASE WHEN (exactName OR exactCpf OR exactRg) THEN 0 ELSE 1 END
+      var caseExpr = criteriaBuilder.selectCase()
+        .when(criteriaBuilder.or(exactName, exactCpf, exactRg), 0)
+        .otherwise(1);
+
+      query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
+    } else {
+      query.orderBy(criteriaBuilder.asc(root.get("id")));
+    }
         return predicate;
     };
 
