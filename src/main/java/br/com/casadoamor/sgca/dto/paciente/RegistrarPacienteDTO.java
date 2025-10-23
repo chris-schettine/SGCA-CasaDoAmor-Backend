@@ -1,10 +1,8 @@
 package br.com.casadoamor.sgca.dto.paciente;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import lombok.Builder;
+import jakarta.validation.constraints.NotNull;
 
-@Builder
 public record RegistrarPacienteDTO(
   @NotNull(message = "Dado pessoal é obrigatório")
   @Valid
