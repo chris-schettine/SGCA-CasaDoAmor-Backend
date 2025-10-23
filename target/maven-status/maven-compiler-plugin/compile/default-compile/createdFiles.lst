@@ -16,6 +16,7 @@ br/com/casadoamor/sgca/repository/admin/PermissaoRepository.class
 br/com/casadoamor/sgca/service/auth/TwoFactorService.class
 br/com/casadoamor/sgca/dto/admin/user/UserResponseDTO.class
 br/com/casadoamor/sgca/service/imp/PacienteServiceImp.class
+br/com/casadoamor/sgca/config/RequestLoggingConfig$1.class
 br/com/casadoamor/sgca/entity/RecebeuAlta$RecebeuAltaBuilder.class
 br/com/casadoamor/sgca/dto/paciente/EditarDadoPessoalInputDTO.class
 br/com/casadoamor/sgca/entity/RecebeuAlta.class
@@ -141,6 +142,7 @@ br/com/casadoamor/sgca/entity/paciente/DadoClinico.class
 br/com/casadoamor/sgca/SgcaBackendApplication.class
 br/com/casadoamor/sgca/controller/admin/AdminController$ErrorResponse.class
 br/com/casadoamor/sgca/entity/auth/SessaoUsuario.class
+br/com/casadoamor/sgca/config/RequestLoggingConfig.class
 br/com/casadoamor/sgca/dto/admin/permissao/CreatePermissaoDTO.class
 br/com/casadoamor/sgca/controller/admin/AuditController$SessoesAtivasResponse.class
 br/com/casadoamor/sgca/aspect/RateLimitAspect$RateLimitException.class

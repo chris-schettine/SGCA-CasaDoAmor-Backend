@@ -4,6 +4,7 @@
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/CorsConfig.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/DataSeederConfig.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/EmailConfig.java
+/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/RequestLoggingConfig.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/SecurityConfig.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/SwaggerConfig.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/config/exception/CustomError.java
