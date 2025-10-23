@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class DadoClinicoController {
   private final DadoClinicoService dadoClinicoService;
 
   @PostMapping
+  @PreAuthorize("hasAuthority('DADOS_CLINICOS_CRIAR') or hasRole('ADMINISTRADOR') or hasRole('COORDENADOR') or hasRole('PROFISSIONAL_SAUDE')")
   @Operation(summary = "Criar novo registro de dados clínicos",
       description = "Cria um novo registro de dados clínicos para o paciente. " +
           "Os registros são cumulativos, mantendo histórico.")
@@ -35,6 +37,7 @@ public class DadoClinicoController {
   }
 
   @PutMapping("/{id}")
+  @PreAuthorize("hasAuthority('DADOS_CLINICOS_EDITAR') or hasRole('ADMINISTRADOR') or hasRole('COORDENADOR') or hasRole('PROFISSIONAL_SAUDE')")
   @Operation(summary = "Atualizar dados clínicos",
       description = "Atualiza um registro específico de dados clínicos")
   public ResponseEntity<DadoClinicoDTO> atualizarDadoClinico(
@@ -46,6 +49,7 @@ public class DadoClinicoController {
   }
 
   @GetMapping
+  @PreAuthorize("hasAuthority('DADOS_CLINICOS_VER') or hasRole('ADMINISTRADOR') or hasRole('COORDENADOR') or hasRole('PROFISSIONAL_SAUDE') or hasRole('VOLUNTARIO')")
   @Operation(summary = "Listar histórico de dados clínicos",
       description = "Retorna todos os registros de dados clínicos do paciente, ordenados do mais recente ao mais antigo")
   public ResponseEntity<List<DadoClinicoDTO>> listarDadosClinicos(
@@ -55,6 +59,7 @@ public class DadoClinicoController {
   }
 
   @GetMapping("/atual")
+  @PreAuthorize("hasAuthority('DADOS_CLINICOS_VER') or hasRole('ADMINISTRADOR') or hasRole('COORDENADOR') or hasRole('PROFISSIONAL_SAUDE') or hasRole('VOLUNTARIO')")
   @Operation(summary = "Buscar dados clínicos atuais",
       description = "Retorna o registro mais recente de dados clínicos do paciente")
   public ResponseEntity<DadoClinicoDTO> buscarDadoClinicoAtual(
@@ -64,6 +69,7 @@ public class DadoClinicoController {
   }
 
   @GetMapping("/{id}")
+  @PreAuthorize("hasAuthority('DADOS_CLINICOS_VER') or hasRole('ADMINISTRADOR') or hasRole('COORDENADOR') or hasRole('PROFISSIONAL_SAUDE') or hasRole('VOLUNTARIO')")
   @Operation(summary = "Buscar dados clínicos por ID",
       description = "Retorna um registro específico de dados clínicos")
   public ResponseEntity<DadoClinicoDTO> buscarPorId(

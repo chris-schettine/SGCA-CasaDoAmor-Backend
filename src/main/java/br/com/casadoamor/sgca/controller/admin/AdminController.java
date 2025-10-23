@@ -66,12 +66,12 @@ public class AdminController {
      * POST /admin/users
      */
     @PostMapping("/users")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('USUARIOS_CRIAR') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Criar usuário", description = "Cria um novo usuário e envia senha temporária por email")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_CRIAR"),
             @ApiResponse(responseCode = "409", description = "Email ou CPF já cadastrado")
     })
     public ResponseEntity<?> criarUsuario(@Valid @RequestBody CreateUserDTO request,
@@ -94,11 +94,11 @@ public class AdminController {
      * GET /admin/users
      */
     @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('USUARIOS_VER') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Listar usuários", description = "Lista todos os usuários com paginação")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista retornada"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN")
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_VER")
     })
     public ResponseEntity<Page<UserResponseDTO>> listarUsuarios(
             @PageableDefault(size = 10, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable,
@@ -112,11 +112,11 @@ public class AdminController {
      * GET /admin/users/{id}
      */
     @GetMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('USUARIOS_VER') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Buscar usuário", description = "Busca usuário por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_VER"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
     public ResponseEntity<?> buscarUsuario(@PathVariable Long id) {
@@ -134,12 +134,12 @@ public class AdminController {
      * PUT /admin/users/{id}
      */
     @PutMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('USUARIOS_EDITAR') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Atualizar usuário", description = "Atualiza dados do usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_EDITAR"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
     public ResponseEntity<?> atualizarUsuario(@PathVariable Long id,
@@ -163,11 +163,11 @@ public class AdminController {
      * DELETE /admin/users/{id}
      */
     @DeleteMapping("/users/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('USUARIOS_EXCLUIR') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Deletar usuário", description = "Deleta usuário (soft delete)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário deletado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_EXCLUIR"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
     public ResponseEntity<?> deletarUsuario(@PathVariable Long id,
@@ -219,11 +219,11 @@ public class AdminController {
      * POST /admin/users/{id}/force-logout
      */
     @PostMapping("/users/{id}/force-logout")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('FORCAR_LOGOUT') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Force logout", description = "Revoga todas as sessões ativas do usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sessões revogadas"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão FORCAR_LOGOUT"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
     public ResponseEntity<?> forceLogout(@PathVariable Long id) {
@@ -243,12 +243,12 @@ public class AdminController {
      * POST /admin/roles
      */
     @PostMapping("/roles")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLES_CRIAR') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Criar perfil", description = "Cria um novo perfil (role)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Perfil criado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão ROLES_CRIAR"),
             @ApiResponse(responseCode = "409", description = "Perfil já existe")
     })
     public ResponseEntity<?> criarPerfil(@Valid @RequestBody CreatePerfilDTO request,
@@ -271,11 +271,11 @@ public class AdminController {
      * GET /admin/roles
      */
     @GetMapping("/roles")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLES_VER') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Listar perfis", description = "Lista todos os perfis (roles)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista retornada"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN")
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão ROLES_VER")
     })
     public ResponseEntity<List<PerfilDTO>> listarPerfis() {
         List<PerfilDTO> perfis = perfilService.listarPerfis();
@@ -309,12 +309,12 @@ public class AdminController {
      * PUT /admin/roles/{id}
      */
     @PutMapping("/roles/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ROLES_EDITAR') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Atualizar perfil", description = "Atualiza dados do perfil")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Perfil atualizado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão ROLES_EDITAR"),
             @ApiResponse(responseCode = "404", description = "Perfil não encontrado")
     })
     public ResponseEntity<?> atualizarPerfil(@PathVariable Long id,
@@ -391,11 +391,11 @@ public class AdminController {
      * GET /admin/permissions
      */
     @GetMapping("/permissions")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('PERMISSOES_VER') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Listar permissões", description = "Lista todas as permissões")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista retornada"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN")
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão PERMISSOES_VER")
     })
     public ResponseEntity<List<PermissaoDTO>> listarPermissoes() {
         List<PermissaoDTO> permissoes = permissaoService.listarPermissoes();
@@ -429,12 +429,12 @@ public class AdminController {
      * PUT /admin/permissions/{id}
      */
     @PutMapping("/permissions/{id}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('PERMISSOES_EDITAR') or hasRole('ADMINISTRADOR')")
     @Operation(summary = "Atualizar permissão", description = "Atualiza dados da permissão")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Permissão atualizada"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão PERMISSOES_EDITAR"),
             @ApiResponse(responseCode = "404", description = "Permissão não encontrada")
     })
     public ResponseEntity<?> atualizarPermissao(@PathVariable Long id,
