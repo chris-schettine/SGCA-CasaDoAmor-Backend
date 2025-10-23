@@ -21,7 +21,7 @@ import br.com.casadoamor.sgca.dto.auth.request.ChangePasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.FirstLoginPasswordChangeDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ForgotPasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
-import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO;
+// import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO; // DESATIVADO
 import br.com.casadoamor.sgca.dto.auth.request.ResetPasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.VerifyEmailRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
@@ -53,28 +53,29 @@ public class AuthController {
     private final AccountActivationService accountActivationService;
 
     /**
-     * Endpoint para registrar um novo usuário
+     * Endpoint para registrar um novo usuário - DESATIVADO
+     * Usar endpoint de admin para criar usuários
      * POST /auth/register
      */
-    @PostMapping("/register")
-    @Operation(summary = "Registrar novo usuário", description = "Cria um novo usuário no sistema e retorna um token JWT")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "409", description = "Email ou CPF já cadastrado")
-    })
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
-        try {
-            AuthResponseDTO response = authService.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ErrorResponse(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse("Erro ao registrar usuário: " + e.getMessage()));
-        }
-    }
+    // @PostMapping("/register")
+    // @Operation(summary = "Registrar novo usuário", description = "Cria um novo usuário no sistema e retorna um token JWT")
+    // @ApiResponses(value = {
+    //         @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso"),
+    //         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+    //         @ApiResponse(responseCode = "409", description = "Email ou CPF já cadastrado")
+    // })
+    // public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
+    //     try {
+    //         AuthResponseDTO response = authService.register(request);
+    //         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    //     } catch (RuntimeException e) {
+    //         return ResponseEntity.status(HttpStatus.CONFLICT)
+    //                 .body(new ErrorResponse(e.getMessage()));
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    //                 .body(new ErrorResponse("Erro ao registrar usuário: " + e.getMessage()));
+    //     }
+    // }
 
     /**
      * Endpoint para fazer login
