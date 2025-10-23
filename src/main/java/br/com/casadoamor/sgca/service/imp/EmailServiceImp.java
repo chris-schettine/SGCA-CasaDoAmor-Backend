@@ -22,6 +22,9 @@ public class EmailServiceImp implements EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @Override
     public void sendVerificationEmail(String to, String verificationCode) {
         String subject = "Verificação de Email - Casa do Amor";
@@ -69,6 +72,30 @@ public class EmailServiceImp implements EmailService {
             log.error("❌ ERRO ao enviar email para: {}. Erro: {}", to, e.getMessage(), e);
             throw new RuntimeException("Falha ao enviar email", e);
         }
+    }
+
+    @Override
+    public void enviarEmailAtivacaoConta(String to, String nome, String token, String senhaTemporaria) {
+        String subject = "Ative sua conta - SGCA Casa do Amor";
+        String activationLink = frontendUrl + "/activate-account?token=" + token;
+        String message = String.format(
+            "Olá %s,\n\n" +
+            "Sua conta foi criada no sistema SGCA - Casa do Amor!\n\n" +
+            "Para ativar sua conta e definir sua senha definitiva, clique no link abaixo:\n" +
+            "%s\n\n" +
+            "Seus dados temporários:\n" +
+            "Email: %s\n" +
+            "Senha temporária: %s\n\n" +
+            "IMPORTANTE:\n" +
+            "- Este link expira em 24 horas\n" +
+            "- Você precisará da senha temporária para ativar a conta\n" +
+            "- Após a ativação, você definirá sua própria senha\n\n" +
+            "Se você não solicitou esta conta, ignore este email.\n\n" +
+            "Atenciosamente,\n" +
+            "Equipe SGCA - Casa do Amor",
+            nome, activationLink, to, senhaTemporaria
+        );
+        sendSimpleEmail(to, subject, message);
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
@@ -124,7 +151,7 @@ public class EmailServiceImp implements EmailService {
     }
 
     private String buildPasswordResetEmailBody(String resetToken) {
-        String resetLink = "http://localhost:3000/reset-password?token=" + resetToken;
+        String resetLink = frontendUrl + "/reset-password?token=" + resetToken;
         return """
                 <html>
                 <body style="font-family: Arial, sans-serif;">

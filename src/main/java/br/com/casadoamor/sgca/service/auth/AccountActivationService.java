@@ -127,6 +127,7 @@ public class AccountActivationService {
 
         // Atualiza usuário
         usuario.setEmailVerificado(true);
+        usuario.setAtivo(true); // Ativa a conta após verificação de email
         usuario.setSenhaTemporaria(false);
         String novaSenhaHash = passwordEncoder.encode(dto.getNovaSenha());
         usuario.setSenhaHash(novaSenhaHash);
