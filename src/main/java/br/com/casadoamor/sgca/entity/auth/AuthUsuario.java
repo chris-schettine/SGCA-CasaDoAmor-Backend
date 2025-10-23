@@ -96,6 +96,14 @@ public class AuthUsuario {
     @Builder.Default
     private Set<Perfil> perfis = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "endereco_id")
+    private AuthUsuarioEndereco endereco;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dados_pessoais_id")
+    private AuthUsuarioDadosPessoais dadosPessoais;
+
     @PrePersist
     protected void onCreate() {
         criadoEm = LocalDateTime.now();

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import br.com.casadoamor.sgca.dto.admin.perfil.PerfilDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,4 +33,6 @@ public class UserResponseDTO {
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
     private List<PerfilDTO> perfis;
+    private AuthUsuarioDadosPessoaisDTO dadosPessoais;
+    private AuthUsuarioEnderecoDTO endereco;
 }

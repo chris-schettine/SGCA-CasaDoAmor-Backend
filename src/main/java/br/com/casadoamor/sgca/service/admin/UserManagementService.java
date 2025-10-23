@@ -17,9 +17,15 @@ import br.com.casadoamor.sgca.dto.admin.user.AtribuirRolesDTO;
 import br.com.casadoamor.sgca.dto.admin.user.CreateUserDTO;
 import br.com.casadoamor.sgca.dto.admin.user.UpdateUserDTO;
 import br.com.casadoamor.sgca.dto.admin.user.UserResponseDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
 import br.com.casadoamor.sgca.entity.admin.Perfil;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
+import br.com.casadoamor.sgca.entity.auth.AuthUsuarioDadosPessoais;
+import br.com.casadoamor.sgca.entity.auth.AuthUsuarioEndereco;
 import br.com.casadoamor.sgca.repository.admin.PerfilRepository;
+import br.com.casadoamor.sgca.repository.auth.AuthUsuarioDadosPessoaisRepository;
+import br.com.casadoamor.sgca.repository.auth.AuthUsuarioEnderecoRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.service.auth.AccountActivationService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +42,8 @@ public class UserManagementService {
     private final PasswordEncoder passwordEncoder;
     private final SessaoService sessaoService;
     private final AccountActivationService accountActivationService;
+    private final AuthUsuarioEnderecoRepository enderecoRepository;
+    private final AuthUsuarioDadosPessoaisRepository dadosPessoaisRepository;
 
     private static final String SAFE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$%";
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -80,6 +88,18 @@ public class UserManagementService {
         AuthUsuario admin = usuarioRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
         usuario.setCriadoPor(admin);
+
+        // Cria dados pessoais se fornecidos
+        if (dto.getDadosPessoais() != null) {
+            AuthUsuarioDadosPessoais dadosPessoais = criarDadosPessoais(dto.getDadosPessoais(), admin);
+            usuario.setDadosPessoais(dadosPessoais);
+        }
+
+        // Cria endereço se fornecido
+        if (dto.getEndereco() != null) {
+            AuthUsuarioEndereco endereco = criarEndereco(dto.getEndereco(), admin);
+            usuario.setEndereco(endereco);
+        }
 
         // Salva usuário
         AuthUsuario salvo = usuarioRepository.save(usuario);
@@ -216,6 +236,30 @@ public class UserManagementService {
                 .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
         usuario.setAtualizadoPor(admin);
 
+        // Atualiza dados pessoais se fornecidos
+        if (dto.getDadosPessoais() != null) {
+            if (usuario.getDadosPessoais() != null) {
+                // Atualiza dados existentes
+                atualizarDadosPessoais(usuario.getDadosPessoais(), dto.getDadosPessoais(), admin);
+            } else {
+                // Cria novos dados
+                AuthUsuarioDadosPessoais dadosPessoais = criarDadosPessoais(dto.getDadosPessoais(), admin);
+                usuario.setDadosPessoais(dadosPessoais);
+            }
+        }
+
+        // Atualiza endereço se fornecido
+        if (dto.getEndereco() != null) {
+            if (usuario.getEndereco() != null) {
+                // Atualiza endereço existente
+                atualizarEndereco(usuario.getEndereco(), dto.getEndereco(), admin);
+            } else {
+                // Cria novo endereço
+                AuthUsuarioEndereco endereco = criarEndereco(dto.getEndereco(), admin);
+                usuario.setEndereco(endereco);
+            }
+        }
+
         AuthUsuario atualizado = usuarioRepository.save(usuario);
         return toDTO(atualizado);
     }
@@ -328,6 +372,159 @@ public class UserManagementService {
     }
 
     /**
+     * Cria dados pessoais a partir do DTO
+     */
+    private AuthUsuarioDadosPessoais criarDadosPessoais(AuthUsuarioDadosPessoaisDTO dto, AuthUsuario admin) {
+        AuthUsuarioDadosPessoais dadosPessoais = AuthUsuarioDadosPessoais.builder()
+                .dataNascimento(dto.getDataNascimento())
+                .sexo(dto.getSexo() != null ? AuthUsuarioDadosPessoais.Sexo.valueOf(dto.getSexo().toUpperCase()) : null)
+                .genero(dto.getGenero() != null ? AuthUsuarioDadosPessoais.Genero.valueOf(dto.getGenero().toUpperCase()) : AuthUsuarioDadosPessoais.Genero.PREFIRO_NAO_INFORMAR)
+                .rg(dto.getRg())
+                .orgaoEmissor(dto.getOrgaoEmissor())
+                .naturalidade(dto.getNaturalidade())
+                .estadoCivil(dto.getEstadoCivil() != null ? AuthUsuarioDadosPessoais.EstadoCivil.valueOf(dto.getEstadoCivil().toUpperCase()) : null)
+                .nomeMae(dto.getNomeMae())
+                .nomePai(dto.getNomePai())
+                .profissao(dto.getProfissao())
+                .criadoPor(admin)
+                .build();
+
+        return dadosPessoaisRepository.save(dadosPessoais);
+    }
+
+    /**
+     * Cria endereço a partir do DTO
+     */
+    private AuthUsuarioEndereco criarEndereco(AuthUsuarioEnderecoDTO dto, AuthUsuario admin) {
+        AuthUsuarioEndereco endereco = AuthUsuarioEndereco.builder()
+                .logradouro(dto.getLogradouro())
+                .numero(dto.getNumero())
+                .complemento(dto.getComplemento())
+                .bairro(dto.getBairro())
+                .cidade(dto.getCidade())
+                .uf(dto.getUf())
+                .cep(dto.getCep())
+                .criadoPor(admin)
+                .build();
+
+        return enderecoRepository.save(endereco);
+    }
+
+    /**
+     * Atualiza dados pessoais a partir do DTO
+     */
+    private void atualizarDadosPessoais(AuthUsuarioDadosPessoais dadosPessoais, AuthUsuarioDadosPessoaisDTO dto, AuthUsuario admin) {
+        if (dto.getDataNascimento() != null) {
+            dadosPessoais.setDataNascimento(dto.getDataNascimento());
+        }
+        if (dto.getSexo() != null) {
+            dadosPessoais.setSexo(AuthUsuarioDadosPessoais.Sexo.valueOf(dto.getSexo().toUpperCase()));
+        }
+        if (dto.getGenero() != null) {
+            dadosPessoais.setGenero(AuthUsuarioDadosPessoais.Genero.valueOf(dto.getGenero().toUpperCase()));
+        }
+        if (dto.getRg() != null) {
+            dadosPessoais.setRg(dto.getRg());
+        }
+        if (dto.getOrgaoEmissor() != null) {
+            dadosPessoais.setOrgaoEmissor(dto.getOrgaoEmissor());
+        }
+        if (dto.getNaturalidade() != null) {
+            dadosPessoais.setNaturalidade(dto.getNaturalidade());
+        }
+        if (dto.getEstadoCivil() != null) {
+            dadosPessoais.setEstadoCivil(AuthUsuarioDadosPessoais.EstadoCivil.valueOf(dto.getEstadoCivil().toUpperCase()));
+        }
+        if (dto.getNomeMae() != null) {
+            dadosPessoais.setNomeMae(dto.getNomeMae());
+        }
+        if (dto.getNomePai() != null) {
+            dadosPessoais.setNomePai(dto.getNomePai());
+        }
+        if (dto.getProfissao() != null) {
+            dadosPessoais.setProfissao(dto.getProfissao());
+        }
+
+        dadosPessoais.setAtualizadoEm(LocalDateTime.now());
+        dadosPessoais.setAtualizadoPor(admin);
+        dadosPessoaisRepository.save(dadosPessoais);
+    }
+
+    /**
+     * Atualiza endereço a partir do DTO
+     */
+    private void atualizarEndereco(AuthUsuarioEndereco endereco, AuthUsuarioEnderecoDTO dto, AuthUsuario admin) {
+        if (dto.getLogradouro() != null) {
+            endereco.setLogradouro(dto.getLogradouro());
+        }
+        if (dto.getNumero() != null) {
+            endereco.setNumero(dto.getNumero());
+        }
+        if (dto.getComplemento() != null) {
+            endereco.setComplemento(dto.getComplemento());
+        }
+        if (dto.getBairro() != null) {
+            endereco.setBairro(dto.getBairro());
+        }
+        if (dto.getCidade() != null) {
+            endereco.setCidade(dto.getCidade());
+        }
+        if (dto.getUf() != null) {
+            endereco.setUf(dto.getUf());
+        }
+        if (dto.getCep() != null) {
+            endereco.setCep(dto.getCep());
+        }
+
+        endereco.setAtualizadoEm(LocalDateTime.now());
+        endereco.setAtualizadoPor(admin);
+        enderecoRepository.save(endereco);
+    }
+
+    /**
+     * Converte dados pessoais para DTO
+     */
+    private AuthUsuarioDadosPessoaisDTO dadosPessoaisToDTO(AuthUsuarioDadosPessoais dadosPessoais) {
+        if (dadosPessoais == null) {
+            return null;
+        }
+
+        return AuthUsuarioDadosPessoaisDTO.builder()
+                .id(dadosPessoais.getId())
+                .dataNascimento(dadosPessoais.getDataNascimento())
+                .sexo(dadosPessoais.getSexo() != null ? dadosPessoais.getSexo().name() : null)
+                .genero(dadosPessoais.getGenero() != null ? dadosPessoais.getGenero().name() : null)
+                .rg(dadosPessoais.getRg())
+                .orgaoEmissor(dadosPessoais.getOrgaoEmissor())
+                .naturalidade(dadosPessoais.getNaturalidade())
+                .estadoCivil(dadosPessoais.getEstadoCivil() != null ? dadosPessoais.getEstadoCivil().name() : null)
+                .nomeMae(dadosPessoais.getNomeMae())
+                .nomePai(dadosPessoais.getNomePai())
+                .profissao(dadosPessoais.getProfissao())
+                .build();
+    }
+
+    /**
+     * Converte endereço para DTO
+     */
+    private AuthUsuarioEnderecoDTO enderecoToDTO(AuthUsuarioEndereco endereco) {
+        if (endereco == null) {
+            return null;
+        }
+
+        return AuthUsuarioEnderecoDTO.builder()
+                .id(endereco.getId())
+                .logradouro(endereco.getLogradouro())
+                .numero(endereco.getNumero())
+                .complemento(endereco.getComplemento())
+                .bairro(endereco.getBairro())
+                .cidade(endereco.getCidade())
+                .uf(endereco.getUf())
+                .cep(endereco.getCep())
+                .build();
+    }
+
+    /**
      * Converte entidade para DTO
      */
     private UserResponseDTO toDTO(AuthUsuario usuario) {
@@ -362,6 +559,8 @@ public class UserManagementService {
                 .criadoEm(usuario.getCriadoEm())
                 .atualizadoEm(usuario.getAtualizadoEm())
                 .perfis(perfisDTO)
+                .dadosPessoais(dadosPessoaisToDTO(usuario.getDadosPessoais()))
+                .endereco(enderecoToDTO(usuario.getEndereco()))
                 .build();
     }
 }

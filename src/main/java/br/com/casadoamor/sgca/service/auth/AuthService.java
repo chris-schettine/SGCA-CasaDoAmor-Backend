@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import br.com.casadoamor.sgca.dto.admin.perfil.PerfilDTO;
 import br.com.casadoamor.sgca.dto.admin.permissao.PermissaoDTO;
 import br.com.casadoamor.sgca.dto.admin.user.UserResponseDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ChangePasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.ForgotPasswordRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
@@ -25,6 +27,8 @@ import br.com.casadoamor.sgca.dto.auth.request.VerifyEmailRequestDTO;
 import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
 import br.com.casadoamor.sgca.dto.common.MessageResponseDTO;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
+import br.com.casadoamor.sgca.entity.auth.AuthUsuarioDadosPessoais;
+import br.com.casadoamor.sgca.entity.auth.AuthUsuarioEndereco;
 import br.com.casadoamor.sgca.entity.auth.TokenRecuperacao;
 import br.com.casadoamor.sgca.enums.TipoToken;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
@@ -407,6 +411,51 @@ public class AuthService {
     /**
      * Converte AuthUsuario para UserResponseDTO
      */
+    // Métodos auxiliares para conversão de dados pessoais e endereço
+    private AuthUsuarioDadosPessoaisDTO dadosPessoaisToDTO(AuthUsuarioDadosPessoais entity) {
+        if (entity == null) {
+            return null;
+        }
+        
+        AuthUsuarioDadosPessoaisDTO dto = new AuthUsuarioDadosPessoaisDTO();
+        dto.setId(entity.getId());
+        dto.setDataNascimento(entity.getDataNascimento());
+        if (entity.getSexo() != null) {
+            dto.setSexo(entity.getSexo().name());
+        }
+        if (entity.getGenero() != null) {
+            dto.setGenero(entity.getGenero().name());
+        }
+        dto.setRg(entity.getRg());
+        dto.setOrgaoEmissor(entity.getOrgaoEmissor());
+        dto.setNaturalidade(entity.getNaturalidade());
+        if (entity.getEstadoCivil() != null) {
+            dto.setEstadoCivil(entity.getEstadoCivil().name());
+        }
+        dto.setNomeMae(entity.getNomeMae());
+        dto.setNomePai(entity.getNomePai());
+        dto.setProfissao(entity.getProfissao());
+        
+        return dto;
+    }
+    
+    private AuthUsuarioEnderecoDTO enderecoToDTO(AuthUsuarioEndereco entity) {
+        if (entity == null) {
+            return null;
+        }
+        
+        AuthUsuarioEnderecoDTO dto = new AuthUsuarioEnderecoDTO();
+        dto.setLogradouro(entity.getLogradouro());
+        dto.setNumero(entity.getNumero());
+        dto.setComplemento(entity.getComplemento());
+        dto.setBairro(entity.getBairro());
+        dto.setCidade(entity.getCidade());
+        dto.setUf(entity.getUf());
+        dto.setCep(entity.getCep());
+        
+        return dto;
+    }
+
     private UserResponseDTO toUserResponseDTO(AuthUsuario usuario) {
         List<PerfilDTO> perfisDTO = usuario.getPerfis().stream()
                 .filter(p -> !p.isDeletado())
@@ -439,6 +488,8 @@ public class AuthService {
                 .criadoEm(usuario.getCriadoEm())
                 .atualizadoEm(usuario.getAtualizadoEm())
                 .perfis(perfisDTO)
+                .dadosPessoais(dadosPessoaisToDTO(usuario.getDadosPessoais()))
+                .endereco(enderecoToDTO(usuario.getEndereco()))
                 .build();
     }
 }

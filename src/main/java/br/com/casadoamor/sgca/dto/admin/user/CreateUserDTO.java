@@ -2,7 +2,10 @@ package br.com.casadoamor.sgca.dto.admin.user;
 
 import java.util.List;
 
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -44,4 +47,12 @@ public class CreateUserDTO {
 
     @Schema(description = "IDs dos perfis (roles) a serem atribuídos", example = "[2, 3]")
     private List<Long> perfisIds; // IDs dos perfis a serem atribuídos
+
+    @Schema(description = "Dados pessoais do usuário (sexo, gênero, etc.)")
+    @Valid
+    private AuthUsuarioDadosPessoaisDTO dadosPessoais;
+
+    @Schema(description = "Endereço do usuário")
+    @Valid
+    private AuthUsuarioEnderecoDTO endereco;
 }

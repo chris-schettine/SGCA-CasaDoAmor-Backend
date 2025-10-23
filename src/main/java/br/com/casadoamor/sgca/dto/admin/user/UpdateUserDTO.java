@@ -1,6 +1,9 @@
 package br.com.casadoamor.sgca.dto.admin.user;
 
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
+import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +33,12 @@ public class UpdateUserDTO {
     
     @Schema(description = "Tipo de usuário", example = "MEDICO", allowableValues = {"ADMINISTRADOR", "MEDICO", "ENFERMEIRO", "PSICOLOGO", "RECEPCIONISTA"})
     private String tipo; // ADMINISTRADOR, MEDICO, etc.
+
+    @Schema(description = "Dados pessoais do usuário (sexo, gênero, etc.)")
+    @Valid
+    private AuthUsuarioDadosPessoaisDTO dadosPessoais;
+
+    @Schema(description = "Endereço do usuário")
+    @Valid
+    private AuthUsuarioEnderecoDTO endereco;
 }
