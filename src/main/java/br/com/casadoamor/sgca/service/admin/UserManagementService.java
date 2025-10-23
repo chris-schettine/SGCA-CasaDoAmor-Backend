@@ -272,6 +272,28 @@ public class UserManagementService {
     }
 
     /**
+     * Obtém permissões efetivas de um usuário (agregadas de todos os perfis)
+     */
+    @Transactional(readOnly = true)
+    public List<PermissaoDTO> obterPermissoesEfetivas(Long usuarioId) {
+        AuthUsuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // Coleta todas as permissões de todos os perfis (sem duplicatas)
+        return usuario.getPerfis().stream()
+                .filter(perfil -> !perfil.isDeletado())
+                .flatMap(perfil -> perfil.getPermissoes().stream())
+                .filter(permissao -> !permissao.isDeletado())
+                .distinct()
+                .map(permissao -> PermissaoDTO.builder()
+                        .id(permissao.getId())
+                        .nome(permissao.getNome())
+                        .descricao(permissao.getDescricao())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Método interno para atribuir perfis
      */
     private void atribuirPerfisInterno(AuthUsuario usuario, List<Long> perfisIds, Long adminId) {

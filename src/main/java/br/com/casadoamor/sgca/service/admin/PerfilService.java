@@ -134,6 +134,64 @@ public class PerfilService {
     }
 
     /**
+     * Adiciona permissões a um perfil (sem remover as existentes)
+     */
+    @Transactional
+    public PerfilDTO adicionarPermissoes(Long perfilId, List<Long> permissoesIds, Long atualizadoPor) {
+        Perfil perfil = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RuntimeException("Perfil não encontrado"));
+
+        if (perfil.isDeletado()) {
+            throw new RuntimeException("Perfil foi deletado");
+        }
+
+        // Busca permissões
+        List<Permissao> permissoes = permissaoRepository.findByIdIn(permissoesIds);
+        if (permissoes.size() != permissoesIds.size()) {
+            throw new RuntimeException("Algumas permissões não foram encontradas");
+        }
+
+        // Adiciona permissões (evita duplicatas)
+        permissoes.forEach(permissao -> {
+            if (permissao.isDeletado()) {
+                throw new RuntimeException("Permissão " + permissao.getNome() + " foi deletada");
+            }
+            perfil.adicionarPermissao(permissao);
+        });
+
+        perfil.setAtualizadoEm(LocalDateTime.now());
+        perfil.setAtualizadoPor(atualizadoPor);
+
+        Perfil atualizado = perfilRepository.save(perfil);
+        return toDTO(atualizado);
+    }
+
+    /**
+     * Remove permissões de um perfil
+     */
+    @Transactional
+    public PerfilDTO removerPermissoes(Long perfilId, List<Long> permissoesIds, Long atualizadoPor) {
+        Perfil perfil = perfilRepository.findById(perfilId)
+                .orElseThrow(() -> new RuntimeException("Perfil não encontrado"));
+
+        if (perfil.isDeletado()) {
+            throw new RuntimeException("Perfil foi deletado");
+        }
+
+        // Busca permissões
+        List<Permissao> permissoes = permissaoRepository.findByIdIn(permissoesIds);
+        
+        // Remove permissões
+        permissoes.forEach(perfil::removerPermissao);
+
+        perfil.setAtualizadoEm(LocalDateTime.now());
+        perfil.setAtualizadoPor(atualizadoPor);
+
+        Perfil atualizado = perfilRepository.save(perfil);
+        return toDTO(atualizado);
+    }
+
+    /**
      * Converte entidade para DTO
      */
     private PerfilDTO toDTO(Perfil perfil) {

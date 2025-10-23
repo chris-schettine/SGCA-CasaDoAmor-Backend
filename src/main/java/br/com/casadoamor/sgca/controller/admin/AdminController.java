@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.casadoamor.sgca.dto.admin.perfil.AtribuirPermissoesDTO;
 import br.com.casadoamor.sgca.dto.admin.perfil.CreatePerfilDTO;
 import br.com.casadoamor.sgca.dto.admin.perfil.PerfilDTO;
 import br.com.casadoamor.sgca.dto.admin.permissao.CreatePermissaoDTO;
@@ -449,6 +450,88 @@ public class AdminController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    // ==================== GESTÃO DE PERMISSÕES EM PERFIS ====================
+
+    /**
+     * Adiciona permissões a um perfil
+     * POST /admin/roles/{roleId}/permissions
+     */
+    @PostMapping("/roles/{roleId}/permissions")
+    @PreAuthorize("hasAuthority('ROLES_EDITAR') or hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Adicionar permissões ao perfil", description = "Adiciona permissões a um perfil existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Permissões adicionadas"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão ROLES_EDITAR"),
+            @ApiResponse(responseCode = "404", description = "Perfil ou permissão não encontrado")
+    })
+    public ResponseEntity<?> adicionarPermissoesAoPerfil(@PathVariable Long roleId,
+                                                          @Valid @RequestBody AtribuirPermissoesDTO request,
+                                                          Authentication authentication) {
+        try {
+            String cpf = authentication.getName();
+            Long adminId = authService.findUserIdByCpf(cpf)
+                    .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
+
+            PerfilDTO response = perfilService.adicionarPermissoes(roleId, request.getPermissoesIds(), adminId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
+     * Remove permissões de um perfil
+     * DELETE /admin/roles/{roleId}/permissions
+     */
+    @DeleteMapping("/roles/{roleId}/permissions")
+    @PreAuthorize("hasAuthority('ROLES_EDITAR') or hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Remover permissões do perfil", description = "Remove permissões de um perfil existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Permissões removidas"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão ROLES_EDITAR"),
+            @ApiResponse(responseCode = "404", description = "Perfil ou permissão não encontrado")
+    })
+    public ResponseEntity<?> removerPermissoesDoPerfil(@PathVariable Long roleId,
+                                                        @Valid @RequestBody AtribuirPermissoesDTO request,
+                                                        Authentication authentication) {
+        try {
+            String cpf = authentication.getName();
+            Long adminId = authService.findUserIdByCpf(cpf)
+                    .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
+
+            PerfilDTO response = perfilService.removerPermissoes(roleId, request.getPermissoesIds(), adminId);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtém permissões efetivas de um usuário
+     * GET /admin/users/{id}/effective-permissions
+     */
+    @GetMapping("/users/{id}/effective-permissions")
+    @PreAuthorize("hasAuthority('USUARIOS_VER') or hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Permissões efetivas do usuário", description = "Retorna todas as permissões efetivas do usuário (agregadas de seus perfis)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Permissões retornadas"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_VER"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<?> obterPermissoesEfetivas(@PathVariable Long id) {
+        try {
+            List<PermissaoDTO> permissoes = userManagementService.obterPermissoesEfetivas(id);
+            return ResponseEntity.ok(permissoes);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse(e.getMessage()));
         }
     }
