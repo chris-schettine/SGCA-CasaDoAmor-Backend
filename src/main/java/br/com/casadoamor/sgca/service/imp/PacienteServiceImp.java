@@ -36,6 +36,15 @@ public class PacienteServiceImp implements PacienteService {
   @Override
   public PacienteDTO registrarPaciente(RegistrarPacienteDTO registrarPacienteDTO) {
     
+    // Validação de campos obrigatórios
+    if (registrarPacienteDTO.dadoPessoal() == null) {
+      throw new CustomError("Dado pessoal é obrigatório", HttpStatus.BAD_REQUEST);
+    }
+
+    if (registrarPacienteDTO.endereco() == null) {
+      throw new CustomError("Endereço é obrigatório", HttpStatus.BAD_REQUEST);
+    }
+
     if (pacienteRepository.existsByCpf(registrarPacienteDTO.dadoPessoal().cpf())) {
       throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
     }
