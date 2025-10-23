@@ -9,8 +9,11 @@ import lombok.Builder;
 public record PacienteDTO(
   UUID id,
   String nome,
+  String cpf,
+  String rg,
   Date dataNascimento,
   String naturalidade,
+  String profissao,
   String telefone,
   String logradouro,
   Integer numero,
