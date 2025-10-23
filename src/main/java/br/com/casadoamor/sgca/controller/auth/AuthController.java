@@ -330,7 +330,6 @@ public class AuthController {
     }
 
     // Classes internas para DTOs simples
-    @SuppressWarnings("unused")
     public static class ResendActivationDTO {
         private String email;
         

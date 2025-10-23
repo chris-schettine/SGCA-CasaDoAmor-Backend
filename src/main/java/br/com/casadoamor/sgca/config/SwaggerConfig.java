@@ -59,14 +59,14 @@ public class SwaggerConfig {
 							.in("query")
 							.description("Número da página (0..N)")
 							.required(false)
-							.schema(new Schema<Integer>().type("integer")._default(0)));
+							.schema(new io.swagger.v3.oas.models.media.IntegerSchema().type("integer")._default(0)));
 
 					operation.addParametersItem(new Parameter()
 							.name("size")
 							.in("query")
 							.description("Quantidade de elementos por página")
 							.required(false)
-							.schema(new Schema<Integer>().type("integer")._default(10)));
+							.schema(new io.swagger.v3.oas.models.media.IntegerSchema().type("integer")._default(10)));
 
 					operation.addParametersItem(new Parameter()
 							.name("sort")

@@ -28,6 +28,7 @@ import br.com.casadoamor.sgca.repository.auth.AuthUsuarioDadosPessoaisRepository
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioEnderecoRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.service.auth.AccountActivationService;
+import jakarta.persistence.criteria.Order;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -173,7 +174,11 @@ public class UserManagementService {
                 .when(cb.or(nomeContains, emailContains, telefoneContains, tipoContains), 2)
                 .otherwise(3);
 
-            query.orderBy(cb.asc(caseExpr), cb.asc(root.get("id")));
+            // Build orders and set ordering only if query is provided (some JPA implementations may pass null)
+            List<Order> orders = List.of(cb.asc(caseExpr), cb.asc(root.get("id")));
+            if (query != null) {
+                query.orderBy(orders);
+            }
 
             predicate = containsPredicate;
 

@@ -180,9 +180,14 @@ public class PacienteServiceImp implements PacienteService {
         .when(criteriaBuilder.or(nameContains, cpfContains, rgContains), 2)
         .otherwise(3);
 
-      query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
+      if (query != null) {
+        query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
+      }
+      
     } else {
-      query.orderBy(criteriaBuilder.asc(root.get("id")));
+      if (query != null) {
+        query.orderBy(criteriaBuilder.asc(root.get("id")));
+      }
     }
         return predicate;
     };
