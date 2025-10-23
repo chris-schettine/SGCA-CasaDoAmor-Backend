@@ -101,8 +101,9 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN")
     })
     public ResponseEntity<Page<UserResponseDTO>> listarUsuarios(
-            @PageableDefault(size = 10, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<UserResponseDTO> usuarios = userManagementService.listarUsuarios(pageable);
+            @PageableDefault(size = 10, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String searchText) {
+        Page<UserResponseDTO> usuarios = userManagementService.listarUsuarios(searchText, pageable);
         return ResponseEntity.ok(usuarios);
     }
 

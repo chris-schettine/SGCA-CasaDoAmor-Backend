@@ -105,8 +105,62 @@ public class UserManagementService {
      */
     @Transactional(readOnly = true)
     public Page<UserResponseDTO> listarUsuarios(Pageable pageable) {
-        return usuarioRepository.findAll(pageable)
-                .map(this::toDTO);
+        return listarUsuarios(null, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserResponseDTO> listarUsuarios(String searchText, Pageable pageable) {
+        if (searchText == null || searchText.isBlank()) {
+            return usuarioRepository.findAll(pageable).map(this::toDTO);
+        }
+
+        String search = "%" + searchText.toLowerCase() + "%";
+    String searchPlain = searchText.toLowerCase();
+
+        org.springframework.data.jpa.domain.Specification<br.com.casadoamor.sgca.entity.auth.AuthUsuario> spec = (root, query, cb) -> {
+            var predicate = cb.disjunction();
+
+            jakarta.persistence.criteria.Expression<String> nome = root.get("nome").as(String.class);
+            jakarta.persistence.criteria.Expression<String> email = root.get("email").as(String.class);
+            jakarta.persistence.criteria.Expression<String> telefone = root.get("telefone").as(String.class);
+
+            // contains predicates
+            var nomeContains = cb.like(cb.lower(nome), search);
+            var emailContains = cb.like(cb.lower(email), search);
+            var telefoneContains = cb.like(cb.lower(telefone), search);
+
+            // tipo (enum) - compare name() as lower-case string
+            jakarta.persistence.criteria.Expression<String> tipoExpr = root.get("tipo").as(String.class);
+            var tipoContains = cb.like(cb.lower(tipoExpr), search);
+
+            jakarta.persistence.criteria.Predicate containsPredicate = cb.or(nomeContains, emailContains, telefoneContains);
+
+            // starts-with
+            var nomeStarts = cb.like(cb.lower(nome), searchPlain + "%");
+            var emailStarts = cb.like(cb.lower(email), searchPlain + "%");
+            var telefoneStarts = cb.like(cb.lower(telefone), searchPlain + "%");
+            var tipoStarts = cb.like(cb.lower(tipoExpr), searchPlain + "%");
+
+            // exact
+            var exactNome = cb.equal(cb.lower(nome), searchPlain);
+            var exactEmail = cb.equal(cb.lower(email), searchPlain);
+            var exactTelefone = cb.equal(cb.lower(telefone), searchPlain);
+            var exactTipo = cb.equal(cb.lower(tipoExpr), searchPlain);
+
+            var caseExpr = cb.selectCase()
+                .when(cb.or(exactNome, exactEmail, exactTelefone, exactTipo), 0)
+                .when(cb.or(nomeStarts, emailStarts, telefoneStarts, tipoStarts), 1)
+                .when(cb.or(nomeContains, emailContains, telefoneContains, tipoContains), 2)
+                .otherwise(3);
+
+            query.orderBy(cb.asc(caseExpr), cb.asc(root.get("id")));
+
+            predicate = containsPredicate;
+
+            return predicate;
+        };
+
+        return usuarioRepository.findAll(spec, pageable).map(this::toDTO);
     }
 
     /**
