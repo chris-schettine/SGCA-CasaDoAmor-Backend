@@ -37,7 +37,7 @@ services:
       SGCA_EMAIL_PASSWORD: ${SGCA_EMAIL_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
     volumes:
       - uploads_data:/app/uploads
     networks:
