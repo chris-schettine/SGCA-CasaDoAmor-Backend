@@ -28,6 +28,7 @@ import br.com.casadoamor.sgca.repository.auth.AuthUsuarioDadosPessoaisRepository
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioEnderecoRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.service.auth.AccountActivationService;
+import br.com.casadoamor.sgca.util.CpfUtil;
 import jakarta.persistence.criteria.Order;
 import lombok.RequiredArgsConstructor;
 
@@ -58,7 +59,11 @@ public class UserManagementService {
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email já cadastrado");
         }
-        if (usuarioRepository.findByCpf(dto.getCpf()).isPresent()) {
+        
+        // Limpa CPF removendo pontos e hífens
+        String cpfLimpo = CpfUtil.limparCpf(dto.getCpf());
+        
+        if (usuarioRepository.findByCpf(cpfLimpo).isPresent()) {
             throw new RuntimeException("CPF já cadastrado");
         }
 
@@ -69,7 +74,7 @@ public class UserManagementService {
         AuthUsuario usuario = AuthUsuario.builder()
                 .nome(dto.getNome())
                 .email(dto.getEmail())
-                .cpf(dto.getCpf())
+                .cpf(cpfLimpo)
                 .telefone(dto.getTelefone())
                 .senhaHash(passwordEncoder.encode(senhaTemporaria))
                 .ativo(true)

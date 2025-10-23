@@ -35,6 +35,7 @@ import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.security.JwtUtil;
 import br.com.casadoamor.sgca.service.admin.AuditoriaService;
 import br.com.casadoamor.sgca.service.admin.SessaoService;
+import br.com.casadoamor.sgca.util.CpfUtil;
 import br.com.casadoamor.sgca.util.PasswordValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,9 @@ public class AuthService {
         // Valida política de senha
         PasswordValidator.validarOuLancarExcecao(request.getSenha());
         
+        // Limpa CPF removendo pontos e hífens
+        String cpfLimpo = CpfUtil.limparCpf(request.getCpf());
+        
         // Verifica se o email já existe
         Optional<AuthUsuario> existingUserByEmail = authUsuarioRepository.findByEmail(request.getEmail());
         if (existingUserByEmail.isPresent()) {
@@ -71,7 +75,7 @@ public class AuthService {
         }
 
         // Verifica se o CPF já existe
-        Optional<AuthUsuario> existingUserByCpf = authUsuarioRepository.findByCpf(request.getCpf());
+        Optional<AuthUsuario> existingUserByCpf = authUsuarioRepository.findByCpf(cpfLimpo);
         if (existingUserByCpf.isPresent()) {
             throw new RuntimeException("CPF já cadastrado no sistema");
         }
@@ -81,7 +85,7 @@ public class AuthService {
                 .nome(request.getNome())
                 .email(request.getEmail())
                 .senhaHash(passwordEncoder.encode(request.getSenha())) // Hash da senha
-                .cpf(request.getCpf())
+                .cpf(cpfLimpo)
                 .telefone(request.getTelefone())
                 .ativo(true)
                 .emailVerificado(false) // Pode implementar verificação de email depois
@@ -134,34 +138,37 @@ public class AuthService {
         String ipOrigem = obterIpOrigem(httpRequest);
         String userAgent = obterUserAgent(httpRequest);
 
+        // Limpa o CPF (remove pontos e hífens)
+        String cpfLimpo = CpfUtil.limparCpf(request.getCpf());
+
         // Verifica se CPF está bloqueado por excesso de tentativas
-        if (auditoriaService.verificarBloqueio(request.getCpf())) {
-            auditoriaService.registrarLoginFalha(request.getCpf(), ipOrigem, userAgent, "CONTA_BLOQUEADA");
+        if (auditoriaService.verificarBloqueio(cpfLimpo)) {
+            auditoriaService.registrarLoginFalha(cpfLimpo, ipOrigem, userAgent, "CONTA_BLOQUEADA");
             throw new RuntimeException("Conta bloqueada temporariamente por excesso de tentativas");
         }
 
         // Busca o usuário pelo CPF
-        AuthUsuario usuario = authUsuarioRepository.findByCpf(request.getCpf())
+        AuthUsuario usuario = authUsuarioRepository.findByCpf(cpfLimpo)
                 .orElseThrow(() -> {
-                    auditoriaService.registrarLoginFalha(request.getCpf(), ipOrigem, userAgent, "CPF_INVALIDO");
+                    auditoriaService.registrarLoginFalha(cpfLimpo, ipOrigem, userAgent, "CPF_INVALIDO");
                     return new RuntimeException("Credenciais inválidas");
                 });
 
         // Verifica se o usuário está ativo
         if (!usuario.getAtivo()) {
-            auditoriaService.registrarLoginFalha(request.getCpf(), ipOrigem, userAgent, "CONTA_INATIVA");
+            auditoriaService.registrarLoginFalha(cpfLimpo, ipOrigem, userAgent, "CONTA_INATIVA");
             throw new RuntimeException("Conta inativa. Entre em contato com o administrador.");
         }
 
         // Verifica se a conta está bloqueada
         if (usuario.getLockedUntil() != null && usuario.getLockedUntil().isAfter(LocalDateTime.now())) {
-            auditoriaService.registrarLoginFalha(request.getCpf(), ipOrigem, userAgent, "CONTA_BLOQUEADA");
+            auditoriaService.registrarLoginFalha(cpfLimpo, ipOrigem, userAgent, "CONTA_BLOQUEADA");
             throw new RuntimeException("Conta bloqueada até: " + usuario.getLockedUntil());
         }
 
         // Verifica se tem senha temporária e email não verificado
         if (usuario.getSenhaTemporaria() && !usuario.getEmailVerificado()) {
-            auditoriaService.registrarLoginFalha(request.getCpf(), ipOrigem, userAgent, "CONTA_NAO_ATIVADA");
+            auditoriaService.registrarLoginFalha(cpfLimpo, ipOrigem, userAgent, "CONTA_NAO_ATIVADA");
             throw new RuntimeException("Você precisa ativar sua conta primeiro. Verifique seu email.");
         }
 
@@ -170,7 +177,7 @@ public class AuthService {
             // IMPORTANTE: CPF é usado como username
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getCpf(), // CPF como username
+                            cpfLimpo, // CPF limpo como username
                             request.getSenha()
                     )
             );

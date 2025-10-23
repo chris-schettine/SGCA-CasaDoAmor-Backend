@@ -20,6 +20,7 @@ import br.com.casadoamor.sgca.mapper.paciente.EnderecoMapper;
 import br.com.casadoamor.sgca.mapper.paciente.PacienteMapper;
 import br.com.casadoamor.sgca.repository.paciente.PacienteRepository;
 import br.com.casadoamor.sgca.service.paciente.PacienteService;
+import br.com.casadoamor.sgca.util.CpfUtil;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +45,10 @@ public class PacienteServiceImp implements PacienteService {
       throw new CustomError("Endereço é obrigatório", HttpStatus.BAD_REQUEST);
     }
 
-    if (pacienteRepository.existsByCpf(registrarPacienteDTO.getDadoPessoal().getCpf())) {
+    // Limpa CPF removendo pontos e hífens
+    String cpfLimpo = CpfUtil.limparCpf(registrarPacienteDTO.getDadoPessoal().getCpf());
+
+    if (pacienteRepository.existsByCpf(cpfLimpo)) {
       throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
     }
 
@@ -53,6 +57,8 @@ public class PacienteServiceImp implements PacienteService {
     }
 
     DadoPessoal dadoPessoal = dadoPessoalMapper.toEntity(registrarPacienteDTO.getDadoPessoal());
+    // Define o CPF limpo na entidade
+    dadoPessoal.setCpf(cpfLimpo);
 
     Endereco endereco = enderecoMapper.toEntity(registrarPacienteDTO.getEndereco());
 
@@ -70,10 +76,13 @@ public class PacienteServiceImp implements PacienteService {
 
     if (editarPacienteDTO.getDadoPessoal() != null) {
         var dados = editarPacienteDTO.getDadoPessoal();
+        
+        // Limpa CPF se fornecido
+        String cpfLimpo = dados.getCpf() != null ? CpfUtil.limparCpf(dados.getCpf()) : null;
 
-        if (dados.getCpf() != null &&
-            !dados.getCpf().equals(pacienteExistente.getDadoPessoal().getCpf()) &&
-            pacienteRepository.existsByCpf(dados.getCpf())) {
+        if (cpfLimpo != null &&
+            !cpfLimpo.equals(pacienteExistente.getDadoPessoal().getCpf()) &&
+            pacienteRepository.existsByCpf(cpfLimpo)) {
             throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
         }
 
@@ -86,7 +95,7 @@ public class PacienteServiceImp implements PacienteService {
         if (dados.getNome() != null) pacienteExistente.getDadoPessoal().setNome(dados.getNome());
         if (dados.getNomeMae() != null) pacienteExistente.getDadoPessoal().setNomeMae(dados.getNomeMae());
         if (dados.getDataNascimento() != null) pacienteExistente.getDadoPessoal().setDataNascimento(dados.getDataNascimento());
-        if (dados.getCpf() != null) pacienteExistente.getDadoPessoal().setCpf(dados.getCpf());
+        if (cpfLimpo != null) pacienteExistente.getDadoPessoal().setCpf(cpfLimpo);
         if (dados.getRg() != null) pacienteExistente.getDadoPessoal().setRg(dados.getRg());
         if (dados.getNaturalidade() != null) pacienteExistente.getDadoPessoal().setNaturalidade(dados.getNaturalidade());
         if (dados.getProfissao() != null) pacienteExistente.getDadoPessoal().setProfissao(dados.getProfissao());
