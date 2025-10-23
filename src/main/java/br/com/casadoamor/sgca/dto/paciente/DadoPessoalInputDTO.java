@@ -2,6 +2,8 @@ package br.com.casadoamor.sgca.dto.paciente;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -13,6 +15,7 @@ public record DadoPessoalInputDTO(
 
   @NotNull(message = "A data de nascimento é obrigatória")
   @Past(message = "A data de nascimento deve ser no passado")
+  @JsonFormat(pattern = "yyyy-MM-dd")
   Date dataNascimento,
 
   @NotBlank(message = "O CPF é obrigatório")
