@@ -379,8 +379,6 @@ public class UserManagementService {
                 .dataNascimento(dto.getDataNascimento())
                 .sexo(dto.getSexo() != null ? AuthUsuarioDadosPessoais.Sexo.valueOf(dto.getSexo().toUpperCase()) : null)
                 .genero(dto.getGenero() != null ? AuthUsuarioDadosPessoais.Genero.valueOf(dto.getGenero().toUpperCase()) : AuthUsuarioDadosPessoais.Genero.PREFIRO_NAO_INFORMAR)
-                .rg(dto.getRg())
-                .orgaoEmissor(dto.getOrgaoEmissor())
                 .naturalidade(dto.getNaturalidade())
                 .estadoCivil(dto.getEstadoCivil() != null ? AuthUsuarioDadosPessoais.EstadoCivil.valueOf(dto.getEstadoCivil().toUpperCase()) : null)
                 .nomeMae(dto.getNomeMae())
@@ -422,12 +420,6 @@ public class UserManagementService {
         }
         if (dto.getGenero() != null) {
             dadosPessoais.setGenero(AuthUsuarioDadosPessoais.Genero.valueOf(dto.getGenero().toUpperCase()));
-        }
-        if (dto.getRg() != null) {
-            dadosPessoais.setRg(dto.getRg());
-        }
-        if (dto.getOrgaoEmissor() != null) {
-            dadosPessoais.setOrgaoEmissor(dto.getOrgaoEmissor());
         }
         if (dto.getNaturalidade() != null) {
             dadosPessoais.setNaturalidade(dto.getNaturalidade());
@@ -494,8 +486,6 @@ public class UserManagementService {
                 .dataNascimento(dadosPessoais.getDataNascimento())
                 .sexo(dadosPessoais.getSexo() != null ? dadosPessoais.getSexo().name() : null)
                 .genero(dadosPessoais.getGenero() != null ? dadosPessoais.getGenero().name() : null)
-                .rg(dadosPessoais.getRg())
-                .orgaoEmissor(dadosPessoais.getOrgaoEmissor())
                 .naturalidade(dadosPessoais.getNaturalidade())
                 .estadoCivil(dadosPessoais.getEstadoCivil() != null ? dadosPessoais.getEstadoCivil().name() : null)
                 .nomeMae(dadosPessoais.getNomeMae())

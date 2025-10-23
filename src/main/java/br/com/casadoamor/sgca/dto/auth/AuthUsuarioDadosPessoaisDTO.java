@@ -30,12 +30,6 @@ public class AuthUsuarioDadosPessoaisDTO {
     @NotNull(message = "Gênero é obrigatório")
     private String genero; // BINARIO, NAO_BINARIO, TRANSGENERO, CISGENERO, PREFIRO_NAO_INFORMAR
 
-    @Size(max = 20, message = "RG deve ter no máximo 20 caracteres")
-    private String rg;
-
-    @Size(max = 10, message = "Órgão emissor deve ter no máximo 10 caracteres")
-    private String orgaoEmissor;
-
     @Size(max = 100, message = "Naturalidade deve ter no máximo 100 caracteres")
     private String naturalidade;
 

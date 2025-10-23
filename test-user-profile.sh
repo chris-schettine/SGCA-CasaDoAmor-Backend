@@ -32,8 +32,8 @@ CREATE_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "${API_ADMIN}/
     -H "Content-Type: application/json" \
     -d '{
         "nome": "João da Silva Teste",
-        "cpf": "12345678901",
-        "email": "joao.teste@example.com",
+        "cpf": "12345678902",
+        "email": "joao.teste2@example.com",
         "telefone": "(11) 98765-4321",
         "tipo": "ENFERMEIRO",
         "perfilIds": [2],
@@ -41,8 +41,6 @@ CREATE_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "${API_ADMIN}/
             "dataNascimento": "1990-05-15",
             "sexo": "MASCULINO",
             "genero": "CISGENERO",
-            "rg": "123456789",
-            "orgaoEmissor": "SSP-SP",
             "naturalidade": "São Paulo",
             "estadoCivil": "SOLTEIRO",
             "nomeMae": "Maria da Silva",
@@ -106,8 +104,6 @@ UPDATE_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X PUT "${API_ADMIN}/u
             "dataNascimento": "1990-05-15",
             "sexo": "MASCULINO",
             "genero": "NAO_BINARIO",
-            "rg": "987654321",
-            "orgaoEmissor": "SSP-RJ",
             "naturalidade": "Rio de Janeiro",
             "estadoCivil": "CASADO",
             "nomeMae": "Maria da Silva Santos",

@@ -46,12 +46,6 @@ public class AuthUsuarioDadosPessoais {
     @Builder.Default
     private Genero genero = Genero.PREFIRO_NAO_INFORMAR;
 
-    @Column(name = "rg", length = 20)
-    private String rg;
-
-    @Column(name = "orgao_emissor", length = 10)
-    private String orgaoEmissor;
-
     @Column(name = "naturalidade", length = 100)
     private String naturalidade;
 

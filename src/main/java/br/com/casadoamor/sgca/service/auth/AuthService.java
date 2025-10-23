@@ -426,8 +426,6 @@ public class AuthService {
         if (entity.getGenero() != null) {
             dto.setGenero(entity.getGenero().name());
         }
-        dto.setRg(entity.getRg());
-        dto.setOrgaoEmissor(entity.getOrgaoEmissor());
         dto.setNaturalidade(entity.getNaturalidade());
         if (entity.getEstadoCivil() != null) {
             dto.setEstadoCivil(entity.getEstadoCivil().name());
