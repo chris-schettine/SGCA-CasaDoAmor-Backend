@@ -120,13 +120,7 @@ public class PacienteServiceImp implements PacienteService {
 
       var dadoJoin = root.join("dadoPessoal");
 
-      Predicate matchNome = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
-      Predicate matchCpf = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("cpf")), search);
-      Predicate matchRg = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("rg")), search);
-
-      predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(matchNome, matchCpf, matchRg));
-
-      // build expressions to detect exact matches (normalize cpf/rg in DB)
+      // normalize DB cpf/rg once and use for starts/contains/exact
       var cpfNormalizedDb = criteriaBuilder.lower(
         criteriaBuilder.function("REPLACE", String.class,
           criteriaBuilder.function("REPLACE", String.class,
@@ -159,14 +153,31 @@ public class PacienteServiceImp implements PacienteService {
         )
       );
 
+      // name predicates (using lower-cased name)
+      Predicate nameContains = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
+      Predicate nameStarts = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain + "%");
       Predicate exactName = criteriaBuilder.equal(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain);
+
+      // cpf predicates (use normalized DB and normalized search)
+      Predicate cpfContains = criteriaBuilder.like(cpfNormalizedDb, "%" + searchNorm + "%");
+      Predicate cpfStarts = criteriaBuilder.like(cpfNormalizedDb, searchNorm + "%");
       Predicate exactCpf = criteriaBuilder.equal(cpfNormalizedDb, searchNorm);
+
+      // rg predicates
+      Predicate rgContains = criteriaBuilder.like(rgNormalizedDb, "%" + searchNorm + "%");
+      Predicate rgStarts = criteriaBuilder.like(rgNormalizedDb, searchNorm + "%");
       Predicate exactRg = criteriaBuilder.equal(rgNormalizedDb, searchNorm);
 
-      // CASE WHEN (exactName OR exactCpf OR exactRg) THEN 0 ELSE 1 END
+      // overall contains predicate (keep to filter results)
+      Predicate anyContains = criteriaBuilder.or(nameContains, cpfContains, rgContains);
+      predicate = criteriaBuilder.and(predicate, anyContains);
+
+      // CASE: exact (0), starts-with (1), contains (2), else 3
       var caseExpr = criteriaBuilder.selectCase()
         .when(criteriaBuilder.or(exactName, exactCpf, exactRg), 0)
-        .otherwise(1);
+        .when(criteriaBuilder.or(nameStarts, cpfStarts, rgStarts), 1)
+        .when(criteriaBuilder.or(nameContains, cpfContains, rgContains), 2)
+        .otherwise(3);
 
       query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
     } else {
