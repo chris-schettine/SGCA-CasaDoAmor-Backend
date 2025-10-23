@@ -18,6 +18,9 @@ public class DadoPessoal extends BaseEntity {
     @Column(nullable = false)
     private String nome;
 
+    @Column(name = "nome_mae")
+    private String nomeMae;
+
     private Date dataNascimento;
 
     @Column(unique = true, nullable = false, length = 11)

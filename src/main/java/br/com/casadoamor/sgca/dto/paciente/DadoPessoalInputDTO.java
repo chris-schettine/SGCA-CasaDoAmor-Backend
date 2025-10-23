@@ -19,6 +19,8 @@ public class DadoPessoalInputDTO {
   @NotBlank(message = "O nome é obrigatório")
   private String nome;
 
+  private String nomeMae;
+
   @NotNull(message = "A data de nascimento é obrigatória")
   @Past(message = "A data de nascimento deve ser no passado")
   @JsonFormat(pattern = "yyyy-MM-dd")
@@ -33,6 +35,8 @@ public class DadoPessoalInputDTO {
 
   @NotBlank(message = "A naturalidade é obrigatória")
   private String naturalidade;
+
+  private String profissao;
 
   @NotBlank(message = "O telefone é obrigatório")
   @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")

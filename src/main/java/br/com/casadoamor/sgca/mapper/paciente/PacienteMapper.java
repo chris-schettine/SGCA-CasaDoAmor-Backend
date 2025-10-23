@@ -23,6 +23,7 @@ public class PacienteMapper {
     return PacienteDTO.builder()
       .id(paciente.getId())
       .nome(dadoPessoal.getNome())
+      .nomeMae(dadoPessoal.getNomeMae())
       .cpf(dadoPessoal.getCpf())
       .rg(dadoPessoal.getRg())
       .dataNascimento(dadoPessoal.getDataNascimento())

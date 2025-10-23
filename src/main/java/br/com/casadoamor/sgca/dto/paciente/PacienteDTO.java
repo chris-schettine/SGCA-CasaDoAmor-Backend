@@ -8,6 +8,7 @@ import lombok.Builder;
 public record PacienteDTO(
     String id,
     String nome,
+    String nomeMae,
     String cpf,
     String rg,
     Date dataNascimento,

@@ -10,6 +10,8 @@ import lombok.Getter;
 public class EditarDadoPessoalInputDTO {
   String nome;
 
+  String nomeMae;
+
   @Past(message = "A data de nascimento deve ser no passado")
   Date dataNascimento;
 
@@ -19,6 +21,8 @@ public class EditarDadoPessoalInputDTO {
   String rg;
 
   String naturalidade;
+
+  String profissao;
 
   @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
   String telefone;

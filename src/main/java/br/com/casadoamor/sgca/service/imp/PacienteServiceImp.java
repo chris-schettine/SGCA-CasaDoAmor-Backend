@@ -84,10 +84,12 @@ public class PacienteServiceImp implements PacienteService {
         }
 
         if (dados.getNome() != null) pacienteExistente.getDadoPessoal().setNome(dados.getNome());
+        if (dados.getNomeMae() != null) pacienteExistente.getDadoPessoal().setNomeMae(dados.getNomeMae());
         if (dados.getDataNascimento() != null) pacienteExistente.getDadoPessoal().setDataNascimento(dados.getDataNascimento());
         if (dados.getCpf() != null) pacienteExistente.getDadoPessoal().setCpf(dados.getCpf());
         if (dados.getRg() != null) pacienteExistente.getDadoPessoal().setRg(dados.getRg());
         if (dados.getNaturalidade() != null) pacienteExistente.getDadoPessoal().setNaturalidade(dados.getNaturalidade());
+        if (dados.getProfissao() != null) pacienteExistente.getDadoPessoal().setProfissao(dados.getProfissao());
         if (dados.getTelefone() != null) pacienteExistente.getDadoPessoal().setTelefone(dados.getTelefone());
     }
 
