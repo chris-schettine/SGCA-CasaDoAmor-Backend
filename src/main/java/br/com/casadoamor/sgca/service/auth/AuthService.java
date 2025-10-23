@@ -226,7 +226,7 @@ public class AuthService {
             authUsuarioRepository.save(usuario);
 
             // Registra tentativa de login falhada
-            auditoriaService.registrarLoginFalha(request.getCpf(), ipOrigem, userAgent, "SENHA_INVALIDA");
+            auditoriaService.registrarLoginFalha(cpfLimpo, ipOrigem, userAgent, "SENHA_INVALIDA");
 
             throw new RuntimeException("Credenciais inválidas");
         }
