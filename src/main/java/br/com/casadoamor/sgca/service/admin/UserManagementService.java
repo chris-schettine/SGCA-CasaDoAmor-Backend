@@ -19,13 +19,16 @@ import br.com.casadoamor.sgca.dto.admin.user.UpdateUserDTO;
 import br.com.casadoamor.sgca.dto.admin.user.UserResponseDTO;
 import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
 import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
+import br.com.casadoamor.sgca.dto.auth.RegistroProfissionalResponseDTO;
 import br.com.casadoamor.sgca.entity.admin.Perfil;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuarioDadosPessoais;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuarioEndereco;
+import br.com.casadoamor.sgca.entity.auth.AuthUsuarioRegistroProfissional;
 import br.com.casadoamor.sgca.repository.admin.PerfilRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioDadosPessoaisRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioEnderecoRepository;
+import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRegistroProfissionalRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.service.auth.AccountActivationService;
 import br.com.casadoamor.sgca.util.CpfUtil;
@@ -46,6 +49,7 @@ public class UserManagementService {
     private final AccountActivationService accountActivationService;
     private final AuthUsuarioEnderecoRepository enderecoRepository;
     private final AuthUsuarioDadosPessoaisRepository dadosPessoaisRepository;
+    private final AuthUsuarioRegistroProfissionalRepository registroProfissionalRepository;
 
     private static final String SAFE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$%";
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -109,6 +113,11 @@ public class UserManagementService {
 
         // Salva usuário
         AuthUsuario salvo = usuarioRepository.save(usuario);
+
+        // Cria registro profissional se fornecido
+        if (dto.getRegistroProfissional() != null) {
+            criarRegistroProfissional(salvo, dto.getRegistroProfissional(), admin);
+        }
 
         // Atribui perfis se fornecidos
         if (dto.getPerfisIds() != null && !dto.getPerfisIds().isEmpty()) {
@@ -419,6 +428,48 @@ public class UserManagementService {
     }
 
     /**
+     * Cria registro profissional a partir do DTO
+     * IMPORTANTE: Registro profissional é IMUTÁVEL - não pode ser editado depois
+     */
+    private AuthUsuarioRegistroProfissional criarRegistroProfissional(AuthUsuario usuario, br.com.casadoamor.sgca.dto.auth.RegistroProfissionalDTO dto, AuthUsuario admin) {
+        // Valida se usuário já tem registro profissional
+        if (registroProfissionalRepository.existsByUsuarioId(usuario.getId())) {
+            throw new RuntimeException("Usuário já possui registro profissional cadastrado");
+        }
+
+        // Valida tipo profissional
+        AuthUsuarioRegistroProfissional.TipoProfissional tipoProfissional;
+        try {
+            tipoProfissional = AuthUsuarioRegistroProfissional.TipoProfissional.valueOf(dto.getTipoProfissional().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Tipo de profissional inválido: " + dto.getTipoProfissional());
+        }
+
+        // Valida se o número de registro já existe para este tipo
+        if (registroProfissionalRepository.existsByTipoProfissionalAndNumeroRegistro(tipoProfissional, dto.getNumeroRegistro())) {
+            throw new RuntimeException("Este número de registro já está cadastrado para um " + tipoProfissional.name());
+        }
+
+        // Valida RQE (obrigatório apenas para médicos e dentistas)
+        if (tipoProfissional.permiteRqe() && dto.getRqe() != null && !dto.getRqe().trim().isEmpty()) {
+            // RQE fornecido, ok
+        } else if (!tipoProfissional.permiteRqe() && dto.getRqe() != null && !dto.getRqe().trim().isEmpty()) {
+            throw new RuntimeException(tipoProfissional.name() + " não utiliza RQE");
+        }
+
+        // Cria o registro profissional
+        AuthUsuarioRegistroProfissional registro = AuthUsuarioRegistroProfissional.builder()
+                .usuario(usuario)
+                .tipoProfissional(tipoProfissional)
+                .numeroRegistro(dto.getNumeroRegistro())
+                .rqe(dto.getRqe() != null && !dto.getRqe().trim().isEmpty() ? dto.getRqe() : null)
+                .criadoPor(admin)
+                .build();
+
+        return registroProfissionalRepository.save(registro);
+    }
+
+    /**
      * Atualiza dados pessoais a partir do DTO
      */
     private void atualizarDadosPessoais(AuthUsuarioDadosPessoais dadosPessoais, AuthUsuarioDadosPessoaisDTO dto, AuthUsuario admin) {
@@ -561,6 +612,23 @@ public class UserManagementService {
                 .perfis(perfisDTO)
                 .dadosPessoais(dadosPessoaisToDTO(usuario.getDadosPessoais()))
                 .endereco(enderecoToDTO(usuario.getEndereco()))
+                .registroProfissional(registroProfissionalToDTO(usuario.getId()))
                 .build();
+    }
+
+    /**
+     * Converte registro profissional para DTO
+     */
+    private RegistroProfissionalResponseDTO registroProfissionalToDTO(Long usuarioId) {
+        return registroProfissionalRepository.findByUsuarioId(usuarioId)
+                .map(registro -> RegistroProfissionalResponseDTO.builder()
+                        .id(registro.getId())
+                        .tipoProfissional(registro.getTipoProfissional().name())
+                        .descricaoTipo(registro.getTipoProfissional().getDescricao())
+                        .numeroRegistro(registro.getNumeroRegistro())
+                        .rqe(registro.getRqe())
+                        .criadoEm(registro.getCriadoEm())
+                        .build())
+                .orElse(null);
     }
 }

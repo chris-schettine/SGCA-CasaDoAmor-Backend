@@ -6,6 +6,7 @@ import java.util.List;
 import br.com.casadoamor.sgca.dto.admin.perfil.PerfilDTO;
 import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
 import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
+import br.com.casadoamor.sgca.dto.auth.RegistroProfissionalResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,4 +36,5 @@ public class UserResponseDTO {
     private List<PerfilDTO> perfis;
     private AuthUsuarioDadosPessoaisDTO dadosPessoais;
     private AuthUsuarioEnderecoDTO endereco;
+    private RegistroProfissionalResponseDTO registroProfissional;
 }

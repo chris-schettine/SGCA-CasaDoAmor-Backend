@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -103,6 +104,9 @@ public class AuthUsuario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dados_pessoais_id")
     private AuthUsuarioDadosPessoais dadosPessoais;
+
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private AuthUsuarioRegistroProfissional registroProfissional;
 
     @PrePersist
     protected void onCreate() {

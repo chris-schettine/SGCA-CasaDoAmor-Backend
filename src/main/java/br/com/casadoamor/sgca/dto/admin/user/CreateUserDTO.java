@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.casadoamor.sgca.dto.auth.AuthUsuarioDadosPessoaisDTO;
 import br.com.casadoamor.sgca.dto.auth.AuthUsuarioEnderecoDTO;
+import br.com.casadoamor.sgca.dto.auth.RegistroProfissionalDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -55,4 +56,8 @@ public class CreateUserDTO {
     @Schema(description = "Endereço do usuário")
     @Valid
     private AuthUsuarioEnderecoDTO endereco;
+
+    @Schema(description = "Registro profissional (CRM, COREN, CRO, CREFITO, CRN) - obrigatório para profissionais de saúde")
+    @Valid
+    private RegistroProfissionalDTO registroProfissional;
 }
