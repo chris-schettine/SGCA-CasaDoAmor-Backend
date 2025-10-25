@@ -20,4 +20,9 @@ public class AuthResponseDTO {
     private String nome;
     private String tipoUsuario;
     private Long expiresIn; // Tempo de expiração em milissegundos
+    
+    // Campos para 2FA
+    private Boolean requires2FA; // Indica se 2FA é necessário
+    private Long userId; // ID do usuário para verificação 2FA
+    private String message; // Mensagem adicional (ex: código enviado)
 }

@@ -57,6 +57,7 @@ public class AuthService {
     private final RecuperacaoSenhaService recuperacaoSenhaService;
     private final SessaoService sessaoService;
     private final HistoricoSenhaService historicoSenhaService;
+    private final TwoFactorService twoFactorService;
 
     /**
      * Registra um novo usuário no sistema
@@ -189,6 +190,31 @@ public class AuthService {
                 authUsuarioRepository.save(usuario);
             }
 
+            // Verifica se 2FA está habilitado para este usuário
+            if (twoFactorService.usuario2FAHabilitado(usuario.getId())) {
+                log.info("Usuário {} tem 2FA habilitado. Enviando código...", usuario.getEmail());
+                
+                // Envia código 2FA
+                try {
+                    twoFactorService.enviarCodigoLogin(usuario.getId());
+                } catch (Exception e) {
+                    log.error("Erro ao enviar código 2FA para usuário {}: {}", usuario.getEmail(), e.getMessage());
+                    throw new RuntimeException("Erro ao enviar código de verificação: " + e.getMessage());
+                }
+
+                // Retorna resposta indicando que 2FA é necessário
+                return AuthResponseDTO.builder()
+                        .token(null) // Não envia o token ainda
+                        .tipo("Bearer")
+                        .email(usuario.getEmail())
+                        .nome(usuario.getNome())
+                        .tipoUsuario(usuario.getTipo().name())
+                        .requires2FA(true) // Flag indicando que 2FA é necessário
+                        .userId(usuario.getId()) // ID para o próximo passo
+                        .message("Código de verificação enviado para seu email")
+                        .build();
+            }
+
             // Atualiza o último login
             usuario.setUltimoLoginEm(LocalDateTime.now());
             authUsuarioRepository.save(usuario);
@@ -212,6 +238,7 @@ public class AuthService {
                     .nome(usuario.getNome())
                     .tipoUsuario(usuario.getTipo().name())
                     .expiresIn(jwtUtil.getExpirationTime())
+                    .requires2FA(false)
                     .build();
 
         } catch (Exception e) {

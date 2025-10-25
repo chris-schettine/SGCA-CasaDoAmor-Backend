@@ -3,8 +3,10 @@ package br.com.casadoamor.sgca.service.auth;
 import br.com.casadoamor.sgca.dto.twofactor.Enable2FADTO;
 import br.com.casadoamor.sgca.dto.twofactor.Setup2FADTO;
 import br.com.casadoamor.sgca.entity.auth.Autenticacao2FA;
+import br.com.casadoamor.sgca.entity.auth.Autenticacao2FARateLimit;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
 import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARepository;
+import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARateLimitRepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.service.common.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 public class TwoFactorService {
 
     private final Autenticacao2FARepository autenticacao2FARepository;
+    private final Autenticacao2FARateLimitRepository rateLimitRepository;
     private final AuthUsuarioRepository authUsuarioRepository;
     private final EmailService emailService;
 
@@ -31,48 +34,53 @@ public class TwoFactorService {
     private static final int CODIGO_LENGTH = 6;
 
     /**
-     * Configura 2FA para o usuário (envia código inicial)
+     * Configura 2FA para o usuário gerando e enviando código
      */
     @Transactional
     public Setup2FADTO configurar2FA(Long usuarioId) {
         log.info("Configurando 2FA para usuário ID: {}", usuarioId);
 
+        // Verifica rate limit antes de enviar código
+        verificarRateLimit(usuarioId);
+
         AuthUsuario usuario = authUsuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        // Busca ou cria configuração 2FA
+        // Busca ou cria configuração
         Autenticacao2FA config = autenticacao2FARepository.findByUsuarioId(usuarioId)
-                .orElse(new Autenticacao2FA());
+                .orElseGet(() -> {
+                    Autenticacao2FA novaConfig = new Autenticacao2FA();
+                    novaConfig.setUsuarioId(usuarioId);
+                    novaConfig.setHabilitado(false);
+                    return novaConfig;
+                });
 
-        config.setUsuarioId(usuarioId);
-
-        // Gera código de 6 dígitos
+        // Gera código
         String codigo = gerarCodigoAleatorio();
         config.setCodigoAtual(codigo);
         config.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(CODIGO_EXPIRACAO_MINUTOS));
-        config.setTentativasFalhas(0);
-        config.setBloqueadoAte(null);
-
         autenticacao2FARepository.save(config);
 
-        // Envia código por email
+        // Envia por email
         try {
-            log.info("📨 Iniciando envio de código 2FA para: {}", usuario.getEmail());
+            log.info("📨 Iniciando envio de código 2FA de configuração para: {}", usuario.getEmail());
             emailService.send2FACode(usuario.getEmail(), codigo);
-            log.info("✅ Código 2FA enviado com sucesso para: {}", usuario.getEmail());
+            log.info("✅ Código 2FA de configuração enviado com sucesso para: {}", usuario.getEmail());
+            
+            // Incrementa contadores de rate limit após envio bem-sucedido
+            incrementarRateLimit(usuarioId);
         } catch (Exception e) {
-            log.error("❌ ERRO ao enviar email 2FA para: {}. Erro: {}", usuario.getEmail(), e.getMessage(), e);
-            throw new RuntimeException("Erro ao enviar código 2FA. Tente novamente.");
+            log.error("❌ ERRO ao enviar email 2FA de configuração para: {}. Erro: {}", usuario.getEmail(), e.getMessage(), e);
+            throw new RuntimeException("Erro ao enviar código 2FA");
         }
 
         return new Setup2FADTO(
-                "Código de verificação enviado para " + maskEmail(usuario.getEmail()),
+                "Código de verificação enviado para " + maskEmail(usuario.getEmail()) + 
+                ". O código expira em " + CODIGO_EXPIRACAO_MINUTOS + " minutos.",
                 config.getHabilitado(),
                 maskEmail(usuario.getEmail())
         );
-    }
-
-    /**
+    }    /**
      * Habilita ou desabilita 2FA após validar código
      */
     @Transactional
@@ -132,6 +140,9 @@ public class TwoFactorService {
     public void enviarCodigoLogin(Long usuarioId) {
         log.info("Enviando código 2FA de login para usuário ID: {}", usuarioId);
 
+        // Verifica rate limit antes de enviar código
+        verificarRateLimit(usuarioId);
+
         AuthUsuario usuario = authUsuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -158,6 +169,9 @@ public class TwoFactorService {
             log.info("📨 Iniciando envio de código 2FA de login para: {}", usuario.getEmail());
             emailService.send2FACode(usuario.getEmail(), codigo);
             log.info("✅ Código 2FA de login enviado com sucesso para: {}", usuario.getEmail());
+            
+            // Incrementa contadores de rate limit após envio bem-sucedido
+            incrementarRateLimit(usuarioId);
         } catch (Exception e) {
             log.error("❌ ERRO ao enviar email 2FA de login para: {}. Erro: {}", usuario.getEmail(), e.getMessage(), e);
             throw new RuntimeException("Erro ao enviar código 2FA");
@@ -228,5 +242,99 @@ public class TwoFactorService {
             return username.charAt(0) + "***@" + domain;
         }
         return username.substring(0, 3) + "***@" + domain;
+    }
+
+    /**
+     * Verifica e valida o rate limit antes de enviar código 2FA
+     * Lança exceção se o usuário excedeu os limites de envio
+     */
+    private void verificarRateLimit(Long usuarioId) {
+        log.debug("Verificando rate limit para usuário ID: {}", usuarioId);
+        
+        // Busca ou cria registro de rate limit
+        Autenticacao2FARateLimit rateLimit = rateLimitRepository.findByUsuarioId(usuarioId)
+                .orElseGet(() -> {
+                    Autenticacao2FARateLimit novoRateLimit = new Autenticacao2FARateLimit();
+                    novoRateLimit.setUsuarioId(usuarioId);
+                    return novoRateLimit;
+                });
+
+        // Reseta contadores se necessário
+        rateLimit.resetarSeNecessario();
+
+        // Verifica se pode enviar novo código
+        if (!rateLimit.podeEnviarNovoCodigo()) {
+            String tempoEspera = rateLimit.getTempoEsperaFormatado();
+            log.warn("Rate limit excedido para usuário ID: {}. Tempo de espera: {}", usuarioId, tempoEspera);
+            throw new RuntimeException("Limite de envios excedido. Por favor, aguarde " + tempoEspera);
+        }
+        
+        log.debug("Rate limit OK para usuário ID: {}", usuarioId);
+    }
+
+    /**
+     * Incrementa os contadores de rate limit após envio bem-sucedido
+     */
+    private void incrementarRateLimit(Long usuarioId) {
+        log.debug("Incrementando contadores de rate limit para usuário ID: {}", usuarioId);
+        
+        Autenticacao2FARateLimit rateLimit = rateLimitRepository.findByUsuarioId(usuarioId)
+                .orElseGet(() -> {
+                    Autenticacao2FARateLimit novoRateLimit = new Autenticacao2FARateLimit();
+                    novoRateLimit.setUsuarioId(usuarioId);
+                    return novoRateLimit;
+                });
+
+        rateLimit.incrementarContadores();
+        rateLimitRepository.save(rateLimit);
+        
+        log.debug("Contadores de rate limit atualizados para usuário ID: {}", usuarioId);
+    }
+
+    /**
+     * Ativa 2FA automaticamente durante ativação de conta
+     * Cria configuração, habilita 2FA e envia primeiro código
+     */
+    @Transactional
+    public void ativar2FAAutomaticamente(Long usuarioId, String email) {
+        log.info("Ativando 2FA automaticamente para usuário ID: {}", usuarioId);
+
+        // Verifica rate limit antes de prosseguir
+        verificarRateLimit(usuarioId);
+
+        // Busca ou cria configuração 2FA
+        Autenticacao2FA config = autenticacao2FARepository.findByUsuarioId(usuarioId)
+                .orElseGet(() -> {
+                    Autenticacao2FA novaConfig = new Autenticacao2FA();
+                    novaConfig.setUsuarioId(usuarioId);
+                    novaConfig.setHabilitado(false);
+                    return novaConfig;
+                });
+
+        // Habilita 2FA
+        config.setHabilitado(true);
+        config.setDataHabilitacao(LocalDateTime.now());
+        config.setDataDesabilitacao(null);
+        config.resetarTentativasFalhas();
+
+        // Gera código inicial
+        String codigo = gerarCodigoAleatorio();
+        config.setCodigoAtual(codigo);
+        config.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(CODIGO_EXPIRACAO_MINUTOS));
+        
+        autenticacao2FARepository.save(config);
+
+        // Envia código por email
+        try {
+            log.info("📨 Enviando código 2FA inicial para: {}", email);
+            emailService.send2FACode(email, codigo);
+            log.info("✅ 2FA ativado automaticamente e código enviado para usuário ID: {}", usuarioId);
+            
+            // Incrementa contadores de rate limit após envio bem-sucedido
+            incrementarRateLimit(usuarioId);
+        } catch (Exception e) {
+            log.error("❌ ERRO ao enviar código 2FA inicial para: {}. Erro: {}", email, e.getMessage(), e);
+            throw new RuntimeException("Erro ao enviar código 2FA de ativação");
+        }
     }
 }

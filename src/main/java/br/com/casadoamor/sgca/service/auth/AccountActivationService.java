@@ -33,6 +33,7 @@ public class AccountActivationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final HistoricoSenhaService historicoSenhaService;
+    private final TwoFactorService twoFactorService;
 
     private static final int TOKEN_EXPIRATION_HOURS = 24;
 
@@ -142,9 +143,20 @@ public class AccountActivationService {
         token.setUsado(true);
         tokenRepository.save(token);
 
+        // Ativa 2FA automaticamente e envia código inicial
+        try {
+            log.info("Ativando 2FA automaticamente para usuário ID: {}", usuario.getId());
+            twoFactorService.ativar2FAAutomaticamente(usuario.getId(), usuario.getEmail());
+            log.info("2FA ativado com sucesso. Código enviado para: {}", usuario.getEmail());
+        } catch (Exception e) {
+            log.error("Erro ao ativar 2FA automaticamente: {}", e.getMessage(), e);
+            // Não lança exceção para não interromper a ativação da conta
+            // O usuário ainda pode ativar 2FA manualmente depois
+        }
+
         log.info("Conta ativada com sucesso para usuário: {}", usuario.getEmail());
 
-        return MessageResponseDTO.success("Conta ativada com sucesso! Você já pode fazer login.");
+        return MessageResponseDTO.success("Conta ativada com sucesso! 2FA foi habilitado e um código de verificação foi enviado para seu email. Use-o no próximo login.");
     }
 
     /**
