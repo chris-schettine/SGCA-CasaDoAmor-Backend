@@ -74,6 +74,11 @@ public class Autenticacao2FARateLimit {
      * Reseta contadores se passou o período
      */
     public void resetarSeNecessario() {
+        // Se nunca enviou código, não há nada para resetar
+        if (ultimoEnvio == null) {
+            return;
+        }
+        
         LocalDateTime agora = LocalDateTime.now();
         
         // Reseta contador de 15 minutos
