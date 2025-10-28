@@ -20,6 +20,8 @@
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/controller/file/FileController.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/controller/paciente/PacienteController.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/SessaoDTO.java
+/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/admin/auditoria/AuditoriaPerfilDTO.java
+/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/admin/auditoria/AuditoriaUsuarioDTO.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/admin/perfil/AtribuirPermissoesDTO.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/admin/perfil/CreatePerfilDTO.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/dto/admin/perfil/PerfilDTO.java
@@ -114,6 +116,7 @@
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/security/JwtUtil.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/security/UserDetailsServiceImpl.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/DadoClinicoService.java
+/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/AuditoriaAdminService.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/AuditoriaService.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/PerfilService.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/service/admin/PermissaoService.java
