@@ -1,21 +1,22 @@
 package br.com.casadoamor.sgca.service.auth;
 
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import br.com.casadoamor.sgca.dto.twofactor.Enable2FADTO;
 import br.com.casadoamor.sgca.dto.twofactor.Setup2FADTO;
 import br.com.casadoamor.sgca.entity.auth.Autenticacao2FA;
 import br.com.casadoamor.sgca.entity.auth.Autenticacao2FARateLimit;
 import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARepository;
 import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARateLimitRepository;
+import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARepository;
 import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
 import br.com.casadoamor.sgca.service.common.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
 
 /**
  * Service para autenticação de dois fatores (2FA) via email
@@ -130,7 +131,10 @@ public class TwoFactorService {
      * Verifica se usuário tem 2FA habilitado
      */
     public boolean usuario2FAHabilitado(Long usuarioId) {
-        return autenticacao2FARepository.existsByUsuarioIdAndHabilitado(usuarioId);
+        // Temporarily disable 2FA system-wide for emergency debugging/maintenance.
+        // To re-enable, restore the original line below.
+        // return autenticacao2FARepository.existsByUsuarioIdAndHabilitado(usuarioId);
+        return false;
     }
 
     /**
