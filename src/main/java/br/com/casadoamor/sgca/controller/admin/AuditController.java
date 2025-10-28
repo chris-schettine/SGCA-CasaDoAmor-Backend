@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.casadoamor.sgca.dto.SessaoDTO;
+import br.com.casadoamor.sgca.dto.admin.auditoria.AuditoriaPerfilDTO;
+import br.com.casadoamor.sgca.dto.admin.auditoria.AuditoriaUsuarioDTO;
 import br.com.casadoamor.sgca.entity.auth.TentativaLogin;
 import br.com.casadoamor.sgca.repository.auth.SessaoUsuarioRepository;
 import br.com.casadoamor.sgca.repository.auth.TentativaLoginRepository;
+import br.com.casadoamor.sgca.service.admin.AuditoriaAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -37,6 +40,7 @@ public class AuditController {
 
     private final TentativaLoginRepository tentativaLoginRepository;
     private final SessaoUsuarioRepository sessaoRepository;
+    private final AuditoriaAdminService auditoriaAdminService;
 
     /**
      * Relatório de tentativas de login
@@ -133,4 +137,57 @@ public class AuditController {
             long totalSessoes,
             List<SessaoDTO> sessoes
     ) {}
+
+    /**
+     * Auditoria completa de um usuário
+     * GET /admin/audit/usuarios/{id}
+     */
+    @GetMapping("/usuarios/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'AUDITOR')")
+    @Operation(summary = "Auditoria de usuário",
+               description = "Retorna informações completas de auditoria de um usuário: quem criou, quem atribuiu perfis, histórico de alterações")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Auditoria retornada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN ou AUDITOR")
+    })
+    public ResponseEntity<AuditoriaUsuarioDTO> auditoriaUsuario(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        AuditoriaUsuarioDTO auditoria = auditoriaAdminService.buscarAuditoriaUsuario(id);
+        return ResponseEntity.ok(auditoria);
+    }
+
+    /**
+     * Auditoria de um perfil
+     * GET /admin/audit/perfis/{id}
+     */
+    @GetMapping("/perfis/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'AUDITOR')")
+    @Operation(summary = "Auditoria de perfil",
+               description = "Retorna informações de auditoria de um perfil: quem criou, quem adicionou permissões, usuários com o perfil")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Auditoria retornada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Perfil não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN ou AUDITOR")
+    })
+    public ResponseEntity<AuditoriaPerfilDTO> auditoriaPerfil(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        AuditoriaPerfilDTO auditoria = auditoriaAdminService.buscarAuditoriaPerfil(id);
+        return ResponseEntity.ok(auditoria);
+    }
+
+    /**
+     * Auditoria de todos os perfis
+     * GET /admin/audit/perfis
+     */
+    @GetMapping("/perfis")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'AUDITOR')")
+    @Operation(summary = "Auditoria de todos os perfis",
+               description = "Retorna informações de auditoria de todos os perfis do sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de auditorias retornada"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN ou AUDITOR")
+    })
+    public ResponseEntity<List<AuditoriaPerfilDTO>> listarAuditoriaPerfis() {
+        List<AuditoriaPerfilDTO> auditorias = auditoriaAdminService.listarAuditoriaPerfis();
+        return ResponseEntity.ok(auditorias);
+    }
 }
