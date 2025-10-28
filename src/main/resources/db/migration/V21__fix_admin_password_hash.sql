@@ -11,9 +11,10 @@
 --
 -- O hash foi gerado usando: bcrypt.hashpw('Admin@123'.encode('utf-8'), bcrypt.gensalt(rounds=12))
 -- e testado para garantir compatibilidade com BCryptPasswordEncoder do Spring Security
+-- IMPORTANTE: Usando formato $2a$ (compatível com Java) em vez de $2b$ (Python)
 
 UPDATE auth_usuarios 
-SET senha_hash = '$2b$12$YMsMFwsmGtdt5pH.LgMTh.KSnXlGjcsds2rE98c8tEmg7TqplFqpm',
+SET senha_hash = '$2a$12$kYK9GWl0W3y7hcJhGW.d0eVxmM9EJkWYT3220KbMU7Iva2QcNFM0e',
     senha_temporaria = FALSE,
     ultima_alteracao_senha_em = CURRENT_TIMESTAMP
 WHERE cpf = '99999999999' 
