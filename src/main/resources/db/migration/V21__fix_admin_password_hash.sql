@@ -1,6 +1,16 @@
 -- Migration V21: Corrigir hash da senha do administrador
+-- 
+-- Contexto: As migrations V19 e V20 tentaram corrigir a senha do admin com CPF 00000000000,
+-- mas o usuário admin correto no sistema usa CPF 99999999999.
+-- Esta migration corrige o hash da senha para o admin correto.
+--
+-- Credenciais do Admin:
+-- CPF: 99999999999
 -- Senha: Admin@123
--- Hash BCrypt com strength 12 ($2b$)
+-- Hash: BCrypt com strength 12 ($2b$ format)
+--
+-- O hash foi gerado usando: bcrypt.hashpw('Admin@123'.encode('utf-8'), bcrypt.gensalt(rounds=12))
+-- e testado para garantir compatibilidade com BCryptPasswordEncoder do Spring Security
 
 UPDATE auth_usuarios 
 SET senha_hash = '$2b$12$YMsMFwsmGtdt5pH.LgMTh.KSnXlGjcsds2rE98c8tEmg7TqplFqpm',
