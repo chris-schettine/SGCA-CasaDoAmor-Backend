@@ -16,29 +16,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DadoPessoalInputDTO {
-  @NotBlank(message = "O nome é obrigatório")
-  private String nome;
+	@NotBlank(message = "O nome é obrigatório")
+	private String nome;
 
-  private String nomeMae;
+	private String nomeMae;
 
-  @NotNull(message = "A data de nascimento é obrigatória")
-  @Past(message = "A data de nascimento deve ser no passado")
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  private Date dataNascimento;
+	@NotNull(message = "A data de nascimento é obrigatória")
+	@Past(message = "A data de nascimento deve ser no passado")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date dataNascimento;
 
-  @NotBlank(message = "O CPF é obrigatório")
-  @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
-  private String cpf;
+	@NotBlank(message = "O CPF é obrigatório")
+	@Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
+	private String cpf;
 
-  @NotBlank(message = "O RG é obrigatório")
-  private String rg;
+	@NotBlank(message = "O RG é obrigatório")
+	private String rg;
 
-  @NotBlank(message = "A naturalidade é obrigatória")
-  private String naturalidade;
+	@NotBlank(message = "A naturalidade é obrigatória")
+	private String naturalidade;
 
-  private String profissao;
+	private String profissao;
 
-  @NotBlank(message = "O telefone é obrigatório")
-  @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
-  private String telefone;
-} 
+	@NotBlank(message = "O telefone é obrigatório")
+	@Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
+	private String telefone;
+}

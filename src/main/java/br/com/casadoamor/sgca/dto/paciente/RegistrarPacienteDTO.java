@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistrarPacienteDTO {
-  @NotNull(message = "Dado pessoal é obrigatório")
-  @Valid
-  private DadoPessoalInputDTO dadoPessoal;
+    @NotNull(message = "Dado pessoal é obrigatório")
+    @Valid
+    private DadoPessoalInputDTO dadoPessoal;
 
-  @NotNull(message = "Endereço é obrigatório")
-  @Valid
-  private EnderecoInputDTO endereco;
+    @NotNull(message = "Endereço é obrigatório")
+    @Valid
+    private EnderecoInputDTO endereco;
 }

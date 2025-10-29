@@ -8,22 +8,22 @@ import lombok.Getter;
 
 @Getter
 public class EditarDadoPessoalInputDTO {
-  String nome;
+    String nome;
 
-  String nomeMae;
+    String nomeMae;
 
-  @Past(message = "A data de nascimento deve ser no passado")
-  Date dataNascimento;
+    @Past(message = "A data de nascimento deve ser no passado")
+    Date dataNascimento;
 
-  @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
-  String cpf;
+    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
+    String cpf;
 
-  String rg;
+    String rg;
 
-  String naturalidade;
+    String naturalidade;
 
-  String profissao;
+    String profissao;
 
-  @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
-  String telefone;
+    @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
+    String telefone;
 }

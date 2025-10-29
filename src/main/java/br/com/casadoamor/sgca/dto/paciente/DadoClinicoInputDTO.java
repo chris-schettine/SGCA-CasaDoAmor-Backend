@@ -10,29 +10,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DadoClinicoInputDTO {
-  
-  private String diagnostico;
 
-  private TipoTratamento tratamento;
+    private String diagnostico;
 
-  private String tratamentoOutroDescricao;
+    private TipoTratamento tratamento;
 
-  private CondicaoChegada condicaoChegada;
+    private String tratamentoOutroDescricao;
 
-  @NotNull(message = "Informação sobre uso de sonda é obrigatória")
-  private Boolean usaSonda;
+    private CondicaoChegada condicaoChegada;
 
-  private TipoSondaNasal tipoSondaNasal;
+    @NotNull(message = "Informação sobre uso de sonda é obrigatória")
+    private Boolean usaSonda;
 
-  private TipoSondaCirurgica tipoSondaCirurgica;
+    private TipoSondaNasal tipoSondaNasal;
 
-  private TipoSondaVesical tipoSondaVesical;
+    private TipoSondaCirurgica tipoSondaCirurgica;
 
-  private String sondaOutraDescricao;
+    private TipoSondaVesical tipoSondaVesical;
 
-  @NotNull(message = "Informação sobre uso de curativo é obrigatória")
-  private Boolean usaCurativo;
+    private String sondaOutraDescricao;
 
-  @NotNull(message = "Informação sobre uso de oxigenoterapia é obrigatória")
-  private Boolean usaOxigenoterapia;
+    @NotNull(message = "Informação sobre uso de curativo é obrigatória")
+    private Boolean usaCurativo;
+
+    @NotNull(message = "Informação sobre uso de oxigenoterapia é obrigatória")
+    private Boolean usaOxigenoterapia;
 }

@@ -7,19 +7,18 @@ import java.time.LocalDateTime;
 
 @Builder
 public record DadoClinicoDTO(
-    String id,
-    String diagnostico,
-    TipoTratamento tratamento,
-    String tratamentoOutroDescricao,
-    CondicaoChegada condicaoChegada,
-    Boolean usaSonda,
-    TipoSondaNasal tipoSondaNasal,
-    TipoSondaCirurgica tipoSondaCirurgica,
-    TipoSondaVesical tipoSondaVesical,
-    String sondaOutraDescricao,
-    Boolean usaCurativo,
-    Boolean usaOxigenoterapia,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt
-) {
+        String id,
+        String diagnostico,
+        TipoTratamento tratamento,
+        String tratamentoOutroDescricao,
+        CondicaoChegada condicaoChegada,
+        Boolean usaSonda,
+        TipoSondaNasal tipoSondaNasal,
+        TipoSondaCirurgica tipoSondaCirurgica,
+        TipoSondaVesical tipoSondaVesical,
+        String sondaOutraDescricao,
+        Boolean usaCurativo,
+        Boolean usaOxigenoterapia,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {
 }

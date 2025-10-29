@@ -5,8 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record PaginatedResponseDTO<T>(
-  List<T> nodes,
-  boolean hasNextPage,
-  boolean hasPreviousPage,
-  int totalCount
-) {}
+        List<T> nodes,
+        boolean hasNextPage,
+        boolean hasPreviousPage,
+        int totalCount) {
+}

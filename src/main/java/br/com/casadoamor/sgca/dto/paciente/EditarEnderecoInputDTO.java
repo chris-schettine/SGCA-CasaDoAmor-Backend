@@ -7,19 +7,19 @@ import lombok.Getter;
 
 @Getter
 public class EditarEnderecoInputDTO {
-  String logradouro;
+    String logradouro;
 
-  @Positive(message = "O número deve ser positivo")
-  Integer numero;
+    @Positive(message = "O número deve ser positivo")
+    Integer numero;
 
-  String complemento;
+    String complemento;
 
-  String bairro;
+    String bairro;
 
-  String cidade;
+    String cidade;
 
-  EstadoEnum estado;
+    EstadoEnum estado;
 
-  @Pattern(regexp = "\\d{5}-?\\d{3}", message = "CEP inválido")
-  String cep;
+    @Pattern(regexp = "\\d{5}-?\\d{3}", message = "CEP inválido")
+    String cep;
 }

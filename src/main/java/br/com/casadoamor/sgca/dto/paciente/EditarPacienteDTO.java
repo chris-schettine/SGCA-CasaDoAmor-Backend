@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 public class EditarPacienteDTO {
-  @Valid
-  EditarDadoPessoalInputDTO dadoPessoal;
+	@Valid
+	EditarDadoPessoalInputDTO dadoPessoal;
 
-  @Valid
-  EditarEnderecoInputDTO endereco;
+	@Valid
+	EditarEnderecoInputDTO endereco;
 }
