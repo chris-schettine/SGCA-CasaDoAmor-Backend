@@ -23,4 +23,22 @@ public class SessaoDTO {
     private LocalDateTime expiraEm;
     private Boolean ativo;
     private Boolean atual; // Indica se é a sessão atual do usuário
+    
+    // Informações do usuário (adicionado para auditoria)
+    private UsuarioSessaoDTO usuario;
+    
+    /**
+     * DTO resumido do usuário na sessão
+     */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UsuarioSessaoDTO {
+        private Long id;
+        private String nome;
+        private String email;
+        private String cpf;
+        private String tipo;
+    }
 }

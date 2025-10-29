@@ -116,15 +116,25 @@ public class SessaoService {
                 .findByUsuarioIdAndAtivoAndExpiraEmAfter(usuarioId, true, LocalDateTime.now());
 
         return sessoes.stream()
-                .map(sessao -> SessaoDTO.builder()
-                        .id(sessao.getId())
-                        .ipOrigem(sessao.getIpOrigem())
-                        .userAgent(sessao.getUserAgent())
-                        .criadoEm(sessao.getCriadoEm())
-                        .expiraEm(sessao.getExpiraEm())
-                        .ativo(sessao.getAtivo())
-                        .atual(sessao.getTokenJwt().equals(tokenAtual))
-                        .build())
+                .map(sessao -> {
+                    var usuario = sessao.getUsuario();
+                    return SessaoDTO.builder()
+                            .id(sessao.getId())
+                            .ipOrigem(sessao.getIpOrigem())
+                            .userAgent(sessao.getUserAgent())
+                            .criadoEm(sessao.getCriadoEm())
+                            .expiraEm(sessao.getExpiraEm())
+                            .ativo(sessao.getAtivo())
+                            .atual(sessao.getTokenJwt().equals(tokenAtual))
+                            .usuario(SessaoDTO.UsuarioSessaoDTO.builder()
+                                    .id(usuario.getId())
+                                    .nome(usuario.getNome())
+                                    .email(usuario.getEmail())
+                                    .cpf(usuario.getCpf())
+                                    .tipo(usuario.getTipo().name())
+                                    .build())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
