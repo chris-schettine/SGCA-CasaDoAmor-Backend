@@ -16,10 +16,12 @@ import br.com.casadoamor.sgca.dto.SessaoDTO;
 import br.com.casadoamor.sgca.dto.admin.auditoria.AuditoriaPerfilDTO;
 import br.com.casadoamor.sgca.dto.admin.auditoria.AuditoriaUsuarioDTO;
 import br.com.casadoamor.sgca.dto.admin.auditoria.TentativaLoginDTO;
+import br.com.casadoamor.sgca.dto.common.MessageResponseDTO;
 import br.com.casadoamor.sgca.entity.auth.TentativaLogin;
 import br.com.casadoamor.sgca.repository.auth.SessaoUsuarioRepository;
 import br.com.casadoamor.sgca.repository.auth.TentativaLoginRepository;
 import br.com.casadoamor.sgca.service.admin.AuditoriaAdminService;
+import br.com.casadoamor.sgca.service.admin.SessaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -42,6 +44,7 @@ public class AuditController {
 	private final TentativaLoginRepository tentativaLoginRepository;
 	private final SessaoUsuarioRepository sessaoRepository;
 	private final AuditoriaAdminService auditoriaAdminService;
+	private final SessaoService sessaoService;
 
 	/**
 	 * Relatório de tentativas de login
@@ -101,7 +104,8 @@ public class AuditController {
 								.email(usuario.getEmail())
 								.tipo(usuario.getTipo().name())
 								.ativo(usuario.getAtivo())
-								.bloqueado(usuario.getLockedUntil() != null && usuario.getLockedUntil().isAfter(LocalDateTime.now()))
+								.bloqueado(usuario.getLockedUntil() != null
+										&& usuario.getLockedUntil().isAfter(LocalDateTime.now()))
 								.build());
 					}
 
@@ -226,5 +230,49 @@ public class AuditController {
 	public ResponseEntity<List<AuditoriaPerfilDTO>> listarAuditoriaPerfis() {
 		List<AuditoriaPerfilDTO> auditorias = auditoriaAdminService.listarAuditoriaPerfis();
 		return ResponseEntity.ok(auditorias);
+	}
+
+	/**
+	 * Revogar sessão específica de qualquer usuário (Admin only)
+	 * DELETE /admin/audit/sessions/{id}
+	 */
+	@org.springframework.web.bind.annotation.DeleteMapping("/sessions/{id}")
+	@PreAuthorize("hasRole('ADMINISTRADOR')")
+	@Operation(summary = "Revogar sessão (Admin)", description = "Revoga uma sessão específica de qualquer usuário - força logout imediato")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Sessão revogada com sucesso"),
+			@ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMINISTRADOR"),
+			@ApiResponse(responseCode = "404", description = "Sessão não encontrada")
+	})
+	public ResponseEntity<?> revogarSessaoAdmin(@org.springframework.web.bind.annotation.PathVariable Long id) {
+		var sessao = sessaoRepository.findById(id)
+				.orElseThrow(() -> new br.com.casadoamor.sgca.exception.ResourceNotFoundException(
+						"Sessão não encontrada"));
+
+		sessao.revogar();
+		sessaoRepository.save(sessao);
+
+		return ResponseEntity.ok(MessageResponseDTO.success(
+				"Sessão revogada com sucesso. Usuário será deslogado na próxima requisição."));
+	}
+
+	/**
+	 * Revogar TODAS as sessões de um usuário específico (Admin only)
+	 * DELETE /admin/audit/users/{userId}/sessions
+	 */
+	@org.springframework.web.bind.annotation.DeleteMapping("/users/{userId}/sessions")
+	@PreAuthorize("hasRole('ADMINISTRADOR')")
+	@Operation(summary = "Revogar todas sessões do usuário (Admin)", description = "Revoga TODAS as sessões de um usuário específico - força logout total")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Todas as sessões revogadas com sucesso"),
+			@ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMINISTRADOR"),
+			@ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+	})
+	public ResponseEntity<?> revogarTodasSessoesUsuario(
+			@org.springframework.web.bind.annotation.PathVariable Long userId) {
+		sessaoService.revogarTodasSessoes(userId);
+
+		return ResponseEntity.ok(MessageResponseDTO.success(
+				"Todas as sessões do usuário foram revogadas. Force logout realizado."));
 	}
 }

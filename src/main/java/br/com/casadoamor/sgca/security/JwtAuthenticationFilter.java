@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import br.com.casadoamor.sgca.service.admin.SessaoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private SessaoService sessaoService;
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -46,8 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // Carrega os detalhes do usuário do banco de dados
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                    // Valida o token
-                    if (jwtUtil.validateToken(jwt, userDetails)) {
+                    // Valida o token JWT e verifica se a sessão está ativa
+                    if (jwtUtil.validateToken(jwt, userDetails) && sessaoService.sessaoValida(jwt)) {
                         // Cria a autenticação
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(

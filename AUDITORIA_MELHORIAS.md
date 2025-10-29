@@ -268,10 +268,144 @@ curl -X GET "http://localhost:8080/auth/me" \
 |----------|-------------|------|------------------------|
 | `GET /auth/me` | ✅ | Qualquer | ✅ Sim (próprio) |
 | `GET /auth/sessions` | ✅ | Qualquer | ✅ Sim (próprio) |
+| `DELETE /auth/sessions/{id}` | ✅ | Qualquer | ❌ Não (revoga própria sessão) |
 | `GET /admin/audit/sessions` | ✅ | ADMIN/AUDITOR | ✅ Sim (todos) |
+| `DELETE /admin/audit/sessions/{id}` | ✅ | ADMIN | ❌ Não (revoga sessão de qualquer usuário) |
+| `DELETE /admin/audit/users/{userId}/sessions` | ✅ | ADMIN | ❌ Não (revoga todas sessões do usuário) |
 | `GET /admin/audit/logins` | ✅ | ADMIN/AUDITOR | ✅ Sim (se encontrado) |
 | `GET /admin/audit/usuarios/{id}` | ✅ | ADMIN/AUDITOR | ✅ Sim |
 | `GET /admin/audit/perfis/{id}` | ✅ | ADMIN/AUDITOR | ✅ Sim |
+
+---
+
+## 🔐 Novos Endpoints de Gerenciamento de Sessões (Admin)
+
+### 1. Revogar Sessão Específica de Qualquer Usuário
+**Endpoint:** `DELETE /admin/audit/sessions/{id}`
+**Permissão:** ADMINISTRADOR apenas
+
+Permite que administradores revoguem qualquer sessão específica do sistema.
+
+```bash
+# Login como Admin
+TOKEN=$(curl -s -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"cpf":"00000000000","senha":"Admin@123"}' | jq -r '.token')
+
+# Ver todas as sessões ativas
+curl -X GET "http://localhost:8080/admin/audit/sessions" \
+  -H "Authorization: Bearer $TOKEN" | jq .
+
+# Revogar sessão específica (força logout do usuário)
+curl -X DELETE "http://localhost:8080/admin/audit/sessions/123" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Sessão revogada com sucesso. Usuário será deslogado na próxima requisição."
+}
+```
+
+**Use quando:**
+- Detectar atividade suspeita em uma sessão específica
+- Necessitar deslogar um usuário remotamente por motivos de segurança
+- Responder a incidentes de segurança
+
+---
+
+### 2. Revogar TODAS as Sessões de um Usuário (Force Logout)
+**Endpoint:** `DELETE /admin/audit/users/{userId}/sessions`
+**Permissão:** ADMINISTRADOR apenas
+
+Revoga todas as sessões ativas de um usuário específico, forçando logout total.
+
+```bash
+# Revogar todas as sessões do usuário ID 5
+curl -X DELETE "http://localhost:8080/admin/audit/users/5/sessions" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Todas as sessões do usuário foram revogadas. Force logout realizado."
+}
+```
+
+**Use quando:**
+- Conta comprometida (precisa deslogar de todos os dispositivos)
+- Bloqueio de conta por violação de políticas
+- Reset de segurança após mudança de senha forçada
+- Desativar usuário temporariamente
+
+---
+
+## 🎯 Fluxo Completo de Gerenciamento de Sessões
+
+### Cenário 1: Detectar e Deslogar Usuário Suspeito
+
+```bash
+# 1. Ver todas as sessões ativas
+curl -X GET "http://localhost:8080/admin/audit/sessions" \
+  -H "Authorization: Bearer $TOKEN" | jq .
+
+# Resposta mostra:
+# {
+#   "totalSessoes": 5,
+#   "sessoes": [
+#     {
+#       "id": 42,
+#       "ipOrigem": "192.168.1.100",
+#       "usuario": {
+#         "id": 10,
+#         "nome": "Maria Silva",
+#         "email": "maria@email.com"
+#       }
+#     }
+#   ]
+# }
+
+# 2. Identificar sessão suspeita e revogar
+curl -X DELETE "http://localhost:8080/admin/audit/sessions/42" \
+  -H "Authorization: Bearer $TOKEN"
+
+# ✅ Usuário Maria será deslogado imediatamente
+```
+
+---
+
+### Cenário 2: Conta Comprometida - Force Logout Total
+
+```bash
+# 1. Ver tentativas de login suspeitas
+curl -X GET "http://localhost:8080/admin/audit/logins?sucesso=false" \
+  -H "Authorization: Bearer $TOKEN" | jq .
+
+# 2. Identificar usuário comprometido (ID: 10)
+# 3. Revogar TODAS as sessões
+curl -X DELETE "http://localhost:8080/admin/audit/users/10/sessions" \
+  -H "Authorization: Bearer $TOKEN"
+
+# ✅ Usuário deslogado de TODOS os dispositivos
+# ✅ Próxima tentativa de acesso exigirá novo login
+```
+
+---
+
+### Cenário 3: Reset de Segurança Após Trocar Senha
+
+```bash
+# 1. Admin força troca de senha do usuário (endpoint /admin/users/{id}/reset-password)
+# 2. Imediatamente após, revoga todas as sessões antigas
+curl -X DELETE "http://localhost:8080/admin/audit/users/10/sessions" \
+  -H "Authorization: Bearer $TOKEN"
+
+# ✅ Usuário precisa fazer login com nova senha em todos os dispositivos
+```
 
 ---
 
