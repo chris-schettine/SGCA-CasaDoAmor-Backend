@@ -107,4 +107,29 @@ class AuthControllerTest {
         assertThat(res.getBody()).hasSize(1);
     }
 
+    @Test
+    void revokeSession_Success_ReturnsOk() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("cpf");
+        when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.of(1L));
+
+        // call
+        ResponseEntity<?> res = controller.revokeSession(123L, auth);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(sessaoService).revogarSessao(123L, 1L);
+    }
+
+    @Test
+    void revokeSession_UserNotFound_ReturnsBadRequest() {
+        Authentication auth = mock(Authentication.class);
+        when(auth.getName()).thenReturn("cpf");
+        when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.empty());
+
+        // call
+        ResponseEntity<?> res = controller.revokeSession(123L, auth);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
 }

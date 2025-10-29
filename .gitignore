@@ -44,3 +44,10 @@ target/
 # OS files
 .DS_Store
 Thumbs.db
+/target
+*.lst
+*.lst
+*.lst
+/target/maven-status/maven-compiler-plugin
+/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile
+/target/maven-status/maven-compiler-plugin/testCompile

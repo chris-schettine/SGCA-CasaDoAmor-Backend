@@ -53,7 +53,9 @@ class UserDetailsServiceImplTest {
     void UserDetailsServiceImpl_loadUserByUsername_NonExistingUser_ThrowsUsernameNotFound() {
         when(repository.findByCpf("00000000000")).thenReturn(Optional.empty());
 
-        assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("00000000000"));
+    UsernameNotFoundException ex1 = assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("00000000000"));
+    assertNotNull(ex1.getMessage());
+    assertFalse(ex1.getMessage().isBlank());
     }
 
     @Test
@@ -67,7 +69,9 @@ class UserDetailsServiceImplTest {
 
         when(repository.findByCpf("22233344455")).thenReturn(Optional.of(u));
 
-        assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("22233344455"));
+    UsernameNotFoundException ex2 = assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("22233344455"));
+    assertNotNull(ex2.getMessage());
+    assertFalse(ex2.getMessage().isBlank());
     }
 
     @Test
@@ -82,6 +86,8 @@ class UserDetailsServiceImplTest {
 
         when(repository.findByCpf("99988877766")).thenReturn(Optional.of(u));
 
-        assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("99988877766"));
+    UsernameNotFoundException ex3 = assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("99988877766"));
+    assertNotNull(ex3.getMessage());
+    assertFalse(ex3.getMessage().isBlank());
     }
 }

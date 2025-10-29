@@ -37,6 +37,7 @@ class PasswordValidatorTest {
 
     @Test
     void PasswordValidator_validarOuLancarExcecao_Invalid_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> PasswordValidator.validarOuLancarExcecao("short"));
+    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> PasswordValidator.validarOuLancarExcecao("short"));
+    assertTrue(ex.getMessage() != null && !ex.getMessage().isBlank());
     }
 }

@@ -1,9 +1,9 @@
 br/com/casadoamor/sgca/aspect/RateLimitAspectTest.class
-br/com/casadoamor/sgca/controller/auth/TwoFactorControllerTest.class
-br/com/casadoamor/sgca/config/exception/GlobalExceptionHandlerTest.class
-br/com/casadoamor/sgca/security/JwtUtilTest.class
 br/com/casadoamor/sgca/controller/file/FileControllerTest.class
+br/com/casadoamor/sgca/security/UserDetailsServiceImplTest.class
+br/com/casadoamor/sgca/config/exception/GlobalExceptionHandlerTest.class
+br/com/casadoamor/sgca/controller/auth/TwoFactorControllerTest.class
+br/com/casadoamor/sgca/security/JwtUtilTest.class
 br/com/casadoamor/sgca/util/PasswordValidatorTest.class
 br/com/casadoamor/sgca/controller/auth/AuthControllerTest.class
 br/com/casadoamor/sgca/SgcaBackendApplicationTests.class
-br/com/casadoamor/sgca/security/UserDetailsServiceImplTest.class
