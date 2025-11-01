@@ -29,6 +29,7 @@ public class SwaggerConfig {
 				.addServersItem(new Server().url("http://144.22.182.60:8888"))
 				.addServersItem(new Server().url("http://localhost:8080"))
 				.addServersItem(new Server().url("http://localhost:8090"))
+				.addServersItem(new Server().url("https://casadoamor.duckdns.org"))
 				.components(new Components()
 						.addSecuritySchemes("bearerAuth",
 								new SecurityScheme()

@@ -13,7 +13,9 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns(
                     "http://localhost:*",
                     "http://127.0.0.1:*",
-                    "http://144.22.182.60:*"
+                    "http://144.22.182.60:*",
+                    "https://casadoamor.duckdns.org:*",
+                    "https://sgca-casa-do-amor-git-3202e4-christian-rochas-projects-b9fd90ab.vercel.app:*"
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
