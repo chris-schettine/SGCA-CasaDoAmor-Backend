@@ -14,8 +14,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
+import br.com.casadoamor.sgca.infra.security.UserDetailsServiceImpl;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.AuthUsuarioRepository;
 
 class UserDetailsServiceImplTest {
 

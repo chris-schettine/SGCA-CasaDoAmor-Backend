@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import br.com.casadoamor.sgca.infra.config.exception.CustomError;
+import br.com.casadoamor.sgca.infra.config.exception.GlobalExceptionHandler;
+import br.com.casadoamor.sgca.infra.config.exception.RateLimitExceededException;
+
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler handler;

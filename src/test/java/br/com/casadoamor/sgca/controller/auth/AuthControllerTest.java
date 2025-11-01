@@ -17,13 +17,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
-import br.com.casadoamor.sgca.dto.SessaoDTO;
-import br.com.casadoamor.sgca.dto.auth.request.LoginRequestDTO;
-import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO;
-import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
-import br.com.casadoamor.sgca.service.admin.SessaoService;
-import br.com.casadoamor.sgca.service.auth.AccountActivationService;
-import br.com.casadoamor.sgca.service.auth.AuthService;
+import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
+import br.com.casadoamor.sgca.modules.auth.controller.AuthController;
+import br.com.casadoamor.sgca.modules.auth.dtos.SessaoDTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.request.LoginRequestDTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.request.RegisterRequestDTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.response.AuthResponseDTO;
+import br.com.casadoamor.sgca.modules.auth.service.AccountActivationService;
+import br.com.casadoamor.sgca.modules.auth.service.AuthService;
 
 class AuthControllerTest {
 

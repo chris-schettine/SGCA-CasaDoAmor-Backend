@@ -11,7 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.com.casadoamor.sgca.service.file.FileStorageService;
+import br.com.casadoamor.sgca.modules.common.controller.FileController;
+import br.com.casadoamor.sgca.modules.common.service.FileStorageService;
 
 class FileControllerTest {
 

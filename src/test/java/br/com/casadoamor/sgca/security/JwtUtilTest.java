@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import br.com.casadoamor.sgca.infra.security.JwtUtil;
+
 class JwtUtilTest {
 
     private JwtUtil jwtUtil;

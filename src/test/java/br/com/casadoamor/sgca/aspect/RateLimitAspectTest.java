@@ -10,8 +10,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import br.com.casadoamor.sgca.annotation.RateLimited;
-import br.com.casadoamor.sgca.config.exception.RateLimitExceededException;
+import br.com.casadoamor.sgca.infra.annotation.RateLimited;
+import br.com.casadoamor.sgca.infra.aspect.RateLimitAspect;
+import br.com.casadoamor.sgca.infra.config.exception.RateLimitExceededException;
 import jakarta.servlet.http.HttpServletRequest;
 
 class RateLimitAspectTest {

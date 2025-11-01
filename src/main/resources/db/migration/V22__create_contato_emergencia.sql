@@ -1,0 +1,10 @@
+CREATE TABLE contatos_emergencia (
+  id CHAR(36) NOT NULL PRIMARY KEY,
+  paciente_id CHAR(36),
+  nome VARCHAR(255),
+  telefone VARCHAR(20),
+  email VARCHAR(255),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_paciente_contato FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
+);

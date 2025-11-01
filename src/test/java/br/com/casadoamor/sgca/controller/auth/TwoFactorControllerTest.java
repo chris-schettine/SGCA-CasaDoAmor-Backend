@@ -12,13 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
-import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
-import br.com.casadoamor.sgca.dto.common.MessageResponseDTO;
-import br.com.casadoamor.sgca.dto.twofactor.Enable2FADTO;
-import br.com.casadoamor.sgca.dto.twofactor.Setup2FADTO;
-import br.com.casadoamor.sgca.dto.twofactor.Verify2FADTO;
-import br.com.casadoamor.sgca.service.auth.AuthService;
-import br.com.casadoamor.sgca.service.auth.TwoFactorService;
+import br.com.casadoamor.sgca.modules.auth.controller.TwoFactorController;
+import br.com.casadoamor.sgca.modules.auth.dtos.response.AuthResponseDTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.twofactor.Enable2FADTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.twofactor.Setup2FADTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.twofactor.Verify2FADTO;
+import br.com.casadoamor.sgca.modules.auth.service.AuthService;
+import br.com.casadoamor.sgca.modules.auth.service.TwoFactorService;
+import br.com.casadoamor.sgca.modules.common.dto.MessageResponseDTO;
 
 class TwoFactorControllerTest {
 
