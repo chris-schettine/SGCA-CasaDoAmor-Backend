@@ -1,6 +1,7 @@
 package br.com.casadoamor.sgca.modules.paciente.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -24,4 +25,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, String>, Jpa
   @EntityGraph(attributePaths = {"dadoPessoal", "endereco"})
   @NonNull
   List<Paciente> findAll(@Nullable Specification<Paciente> spec);
+
+  Optional<Paciente> findByEmail(String email);
 }

@@ -24,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import br.com.casadoamor.sgca.infra.security.JwtAuthenticationFilter;
 import br.com.casadoamor.sgca.infra.security.UserDetailsServiceImpl;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // Habilita @PreAuthorize, @Secured, etc.

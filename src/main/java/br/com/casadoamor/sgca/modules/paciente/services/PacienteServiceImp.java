@@ -18,8 +18,13 @@ import br.com.casadoamor.sgca.modules.common.repository.DadoPessoalRepository;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarPacienteDTO;
+import br.com.casadoamor.sgca.modules.paciente.entity.ContatoEmergencia;
+import br.com.casadoamor.sgca.modules.paciente.entity.HistoricoPaciente;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
+import br.com.casadoamor.sgca.modules.paciente.mapper.ContatoEmergenciaMapper;
+import br.com.casadoamor.sgca.modules.paciente.mapper.HistoricoPacienteMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.PacienteMapper;
+import br.com.casadoamor.sgca.modules.paciente.repository.HistoricoPacienteRepository;
 import br.com.casadoamor.sgca.modules.paciente.repository.PacienteRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +38,9 @@ public class PacienteServiceImp implements PacienteService {
   private final PacienteMapper pacienteMapper;
   private final PaginatedResponseMapper paginatedMapper;
   private final PacienteRepository pacienteRepository;
+  private final HistoricoPacienteMapper historicoPacienteMapper;
+  private final HistoricoPacienteRepository historicoRepository;
+  private final ContatoEmergenciaMapper contatoEmergenciaMapper;
 
   @Override
   public PacienteDTO registrarPaciente(RegistrarPacienteDTO registrarPacienteDTO) {
@@ -47,13 +55,29 @@ public class PacienteServiceImp implements PacienteService {
       throw new CustomError("RG já cadastrado no sistema", HttpStatus.BAD_REQUEST);
     });
 
+    String email = registrarPacienteDTO.getEmail().toLowerCase();
+    pacienteRepository.findByEmail(email).ifPresent(paciente -> {
+      throw new CustomError("Email já cadastrado no sistema", HttpStatus.BAD_REQUEST);
+    });
+
     DadoPessoal dadoPessoal = dadoPessoalMapper.toEntity(registrarPacienteDTO.getDadoPessoal());
 
     Endereco endereco = enderecoMapper.toEntity(registrarPacienteDTO.getEndereco());
 
-    Paciente paciente = pacienteMapper.toEntityFromEntities(dadoPessoal, endereco);
+    Paciente paciente = pacienteMapper.toEntityFromEntities(dadoPessoal, endereco, email);
 
     pacienteRepository.save(paciente);
+
+    List<ContatoEmergencia> contatos = contatoEmergenciaMapper.toEntityList(registrarPacienteDTO.getContatosDeEmergencia(), paciente);
+    paciente.setContatosEmergencia(contatos);
+
+    HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
+      paciente, 
+      null,
+      "Registro inicial do paciente"
+    );
+
+    historicoRepository.save(historicoPaciente);
 
     return pacienteMapper.toDTO(paciente);
   }
@@ -104,6 +128,14 @@ public class PacienteServiceImp implements PacienteService {
     }
 
     pacienteRepository.save(pacienteExistente);
+
+    HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
+      pacienteExistente, 
+      null,
+      "Dados do paciente editados."
+    );
+
+    historicoRepository.save(historicoPaciente);
 
     return pacienteMapper.toDTO(pacienteExistente);
   }

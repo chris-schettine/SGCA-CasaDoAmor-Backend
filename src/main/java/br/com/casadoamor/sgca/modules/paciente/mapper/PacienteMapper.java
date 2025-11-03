@@ -1,5 +1,6 @@
 package br.com.casadoamor.sgca.modules.paciente.mapper;
 
+
 import org.springframework.stereotype.Component;
 
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
@@ -9,10 +10,11 @@ import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 
 @Component
 public class PacienteMapper {
-  public Paciente toEntityFromEntities (DadoPessoal dadoPessoal, Endereco endereco) {
+  public Paciente toEntityFromEntities (DadoPessoal dadoPessoal, Endereco endereco, String email) {
     return Paciente.builder()
       .dadoPessoal(dadoPessoal)
       .endereco(endereco)
+      .email(email)
       .build();
   }
 
