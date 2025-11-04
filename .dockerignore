@@ -2,8 +2,6 @@
 # Excludes unnecessary files from Docker build context
 
 # Git
-.git
-.gitignore
 
 # Maven
 target/
