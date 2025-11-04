@@ -27,37 +27,37 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/pacientes")
 @Tag(name = "Paciente", description = "Endpoints para gerenciar pacientes")
 public class PacienteController {
-    private final PacienteService pacienteService;
+	private final PacienteService pacienteService;
 
-    @PostMapping("/")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')")
-    @Operation(summary = "Registrar um novo paciente")
-    // ✅ AUTENTICAÇÃO IMPLEMENTADA - PERMITE ADMINISTRADOR E RECEPCIONISTA
-    public ResponseEntity<PacienteDTO> registrarPaciente(
-            @Valid @RequestBody RegistrarPacienteDTO RegistrarPacienteDTO) {
-        PacienteDTO paciente = this.pacienteService.registrarPaciente(RegistrarPacienteDTO);
-        return new ResponseEntity<>(paciente, HttpStatus.OK);
-    }
+	@PostMapping("/")
+	@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')")
+	@Operation(summary = "Registrar um novo paciente")
+	// ✅ AUTENTICAÇÃO IMPLEMENTADA - PERMITE ADMINISTRADOR E RECEPCIONISTA
+	public ResponseEntity<PacienteDTO> registrarPaciente(
+			@Valid @RequestBody RegistrarPacienteDTO RegistrarPacienteDTO) {
+		PacienteDTO paciente = this.pacienteService.registrarPaciente(RegistrarPacienteDTO);
+		return new ResponseEntity<>(paciente, HttpStatus.OK);
+	}
 
-    @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')")
-    @Operation(summary = "Editar um paciente existente")
-    // ✅ AUTENTICAÇÃO IMPLEMENTADA - PERMITE ADMINISTRADOR E RECEPCIONISTA
-    public ResponseEntity<PacienteDTO> editarPaciente(
-            @PathVariable String id,
-            @Valid @RequestBody EditarPacienteDTO editarPacienteDTO) {
-        PacienteDTO paciente = pacienteService.editarPaciente(id, editarPacienteDTO);
-        return new ResponseEntity<>(paciente, HttpStatus.OK);
-    }
+	@PatchMapping("/{id}")
+	@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')")
+	@Operation(summary = "Editar um paciente existente")
+	// ✅ AUTENTICAÇÃO IMPLEMENTADA - PERMITE ADMINISTRADOR E RECEPCIONISTA
+	public ResponseEntity<PacienteDTO> editarPaciente(
+			@PathVariable String id,
+			@Valid @RequestBody EditarPacienteDTO editarPacienteDTO) {
+		PacienteDTO paciente = pacienteService.editarPaciente(id, editarPacienteDTO);
+		return new ResponseEntity<>(paciente, HttpStatus.OK);
+	}
 
-    @GetMapping("/")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')")
-    // ✅ AUTENTICAÇÃO IMPLEMENTADA - PERMITE ADMINISTRADOR E RECEPCIONISTA
-    @Operation(summary = "Listar pacientes com paginação e filtro opcional")
-    public PaginatedResponseDTO<PacienteDTO> pacientesPaginados(
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(required = false) String searchText) {
-        return pacienteService.pacientesPaginados(searchText, limit, offset);
-    }
+	@GetMapping("/")
+	@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA')")
+	// ✅ AUTENTICAÇÃO IMPLEMENTADA - PERMITE ADMINISTRADOR E RECEPCIONISTA
+	@Operation(summary = "Listar pacientes com paginação e filtro opcional")
+	public PaginatedResponseDTO<PacienteDTO> pacientesPaginados(
+			@RequestParam(defaultValue = "10") int limit,
+			@RequestParam(defaultValue = "0") int offset,
+			@RequestParam(required = false) String searchText) {
+		return pacienteService.pacientesPaginados(searchText, limit, offset);
+	}
 }
