@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 
 /**
- * Service para ativação de contas criadas por administradores
+ * Service para ativação de contas criadas por administradores 
  */
 @Service
 @RequiredArgsConstructor
