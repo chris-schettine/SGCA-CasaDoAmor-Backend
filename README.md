@@ -46,6 +46,8 @@ O SGCA Backend é uma API REST desenvolvida para gerenciar operações da Casa d
 - **Autenticação e Autorização**: Sistema completo com JWT e 2FA
 - **Gestão de Usuários**: Controle de acesso por perfis (Admin, Recepcionista, etc.)
 - **Pacientes**: Cadastro completo com dados pessoais, clínicos e endereços
+- **Acompanhantes**: Gestão de acompanhantes dos pacientes com relacionamentos familiares
+- **Contatos de Emergência**: Registro de contatos para situações de emergência
 - **Profissionais de Saúde**: Gestão de profissionais com documentos e especialidades
 - **Upload de Arquivos**: Sistema de gerenciamento de fotos de perfil
 - **Auditoria**: Rastreamento de sessões e tentativas de login
@@ -314,6 +316,22 @@ PUT    /pacientes/{id}             # Atualizar paciente
 DELETE /pacientes/{id}             # Deletar paciente
 ```
 
+#### Acompanhantes (Requer autenticação)
+```http
+POST   /acompanhantes/             # Registrar acompanhante
+PATCH  /acompanhantes/{id}         # Editar acompanhante
+GET    /acompanhantes/             # Listar acompanhantes (paginação)
+```
+
+#### Contatos de Emergência (Requer autenticação)
+```http
+POST   /contatos-emergencia        # Criar contato de emergência
+GET    /contatos-emergencia        # Listar contatos
+GET    /contatos-emergencia/{id}   # Buscar por ID
+PUT    /contatos-emergencia/{id}   # Atualizar contato
+DELETE /contatos-emergencia/{id}   # Deletar contato
+```
+
 #### Upload de Arquivos
 ```http
 POST   /api/files/upload           # Upload de foto (multipart/form-data)
@@ -359,19 +377,22 @@ curl -X GET http://localhost:8080/pacientes \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
-### Exemplo de Requisição: Criar Paciente
+### Exemplo de Requisição: Criar Acompanhante
 
 ```bash
-curl -X POST http://localhost:8080/pacientes \
+curl -X POST http://localhost:8080/acompanhantes/ \
   -H "Authorization: Bearer {seu_token}" \
   -H "Content-Type: application/json" \
   -d '{
+    "pacienteId": "uuid-do-paciente",
+    "podeAjudarNaCozinha": true,
+    "parentesco": "FILHO",
     "dadoPessoal": {
-      "nome": "João Silva",
-      "cpf": "12345678900",
-      "dataNascimento": "1990-01-01",
+      "nome": "João Silva Filho",
+      "cpf": "12345678901",
+      "dataNascimento": "2000-01-01",
       "telefone": "(11) 99999-9999",
-      "email": "joao@email.com"
+      "email": "joao.filho@email.com"
     },
     "endereco": {
       "logradouro": "Rua das Flores",
@@ -380,12 +401,6 @@ curl -X POST http://localhost:8080/pacientes \
       "cidade": "São Paulo",
       "estado": "SP",
       "cep": "01234567"
-    },
-    "dadoClinico": {
-      "diagnostico": "Hipertensão",
-      "tratamento": "Medicação contínua",
-      "usaSonda": false,
-      "usaCurativo": false
     }
   }'
 ```
@@ -412,12 +427,15 @@ src/main/java/br/com/casadoamor/sgca/
 │   ├── auth/                      # Autenticação
 │   │   ├── AuthController.java
 │   │   └── TwoFactorController.java
+│   ├── acompanhante/              # Gestão de acompanhantes
+│   │   └── AcompanhanteController.java
 │   ├── file/                      # Upload de arquivos
 │   │   └── FileController.java
 │   └── paciente/                  # Gestão de pacientes
 │       └── PacienteController.java
 ├── dto/                           # Data Transfer Objects
 │   ├── admin/                     # DTOs administrativos
+│   ├── acompanhante/              # DTOs de acompanhantes
 │   ├── auth/                      # DTOs de autenticação
 │   ├── common/                    # DTOs comuns
 │   ├── paciente/                  # DTOs de pacientes
@@ -428,6 +446,8 @@ src/main/java/br/com/casadoamor/sgca/
 │   │   ├── Perfil.java
 │   │   ├── SessaoUsuario.java
 │   │   └── HistoricoSenha.java
+│   ├── acompanhante/              # Entidades de acompanhantes
+│   │   └── Acompanhante.java
 │   ├── auth/                      # Entidades de autenticação
 │   │   ├── TentativaLogin.java
 │   │   ├── TokenRecuperacao.java
@@ -447,6 +467,8 @@ src/main/java/br/com/casadoamor/sgca/
 │   └── ResourceNotFoundException.java
 ├── mapper/                        # Mapeadores (Entity <-> DTO)
 ├── repository/                    # Repositórios JPA
+│   ├── acompanhante/
+│   │   └── AcompanhanteRepository.java
 │   ├── admin/
 │   ├── auth/
 │   └── paciente/
@@ -455,6 +477,8 @@ src/main/java/br/com/casadoamor/sgca/
 │   ├── JwtAuthenticationFilter.java  # Filtro JWT
 │   └── UserDetailsServiceImpl.java   # Carregamento de usuários
 ├── service/                       # Serviços de negócio
+│   ├── acompanhante/              # Serviços de acompanhantes
+│   │   └── AcompanhanteService.java
 │   ├── admin/                     # Serviços administrativos
 │   │   ├── UserManagementService.java
 │   │   ├── PerfilService.java
@@ -631,7 +655,30 @@ src/main/resources/db/migration/
 ├── V02__create_tables.sql              # Tabelas adicionais
 ├── V03__create_autenticacao_2fa.sql    # Suporte a 2FA
 ├── V04__add_senha_temporaria.sql       # Senhas temporárias
-└── V05__add_foto_columns.sql           # Colunas para fotos
+├── V05__add_foto_columns.sql           # Colunas para fotos
+├── V06__seed_initial_data.sql          # Dados iniciais
+├── V07__seed_dados_pessoais.sql        # Dados pessoais seed
+├── V08__seed_enderecos_pacientes.sql   # Endereços de pacientes
+├── V09__add_nome_mae_profissao.sql     # Nome da mãe e profissão
+├── V10__update_dados_clinicos.sql      # Atualização dados clínicos
+├── V11__seed_recepcionista_test.sql    # Usuário recepcionista teste
+├── V12__add_granular_permissions.sql   # Permissões granulares
+├── V13__add_auth_usuarios.sql          # Usuários de autenticação
+├── V14__remove_rg_orgao_emissor.sql    # Remoção RG e órgão emissor
+├── V15__clean_cpf_formatting.sql       # Limpeza formatação CPF
+├── V16__create_registros_profissionais.sql # Registros profissionais
+├── V17__create_2fa_rate_limit.sql      # Rate limit para 2FA
+├── V18__enable_2fa_existing_users.sql  # Habilitar 2FA usuários existentes
+├── V19__fix_admin_password.sql         # Correção senha admin
+├── V20__fix_admin_credentials.sql      # Correção credenciais admin
+├── V21__fix_admin_password_hash.sql    # Hash senha admin
+├── V22__fix_admin_final.sql            # Correção final admin
+├── V23__fix_cors_and_admin.sql         # Correção CORS e admin
+├── V24__update_table_acompanhente.sql  # Tabela acompanhantes
+├── V25__create_historico_paciente.sql  # Histórico do paciente
+├── V26__create_roles_acompanhantes.sql # Roles para acompanhantes
+├── V27__alter_paciente_table.sql       # Alteração tabela pacientes
+└── V28__create_contato_emergencia.sql  # Contatos de emergência
 ```
 
 ### Principais Tabelas
@@ -986,6 +1033,34 @@ Ao reportar bugs, inclua:
 
 ## 📝 Changelog
 
+### [0.0.2-SNAPSHOT] - 2025-11-04
+
+#### ✨ Added
+- **Módulo Acompanhantes**: Sistema completo para gestão de acompanhantes dos pacientes
+  - CRUD de acompanhantes com paginação e filtros
+  - Relacionamento com pacientes via parentesco
+  - Permissões granulares (criar, editar, visualizar, excluir)
+- **Contatos de Emergência**: Cadastro de contatos para situações de emergência
+  - Vinculação com pacientes
+  - Informações de contato (nome, telefone, email)
+- **Histórico do Paciente**: Rastreamento de alterações nos dados dos pacientes
+- **Dados Adicionais**: Nome da mãe e profissão nos dados pessoais
+- **Migrações de Banco**: 23 novas migrações (V06-V28) com dados iniciais e estrutura aprimorada
+- **Correções de Segurança**: Ajustes em CORS e configurações administrativas
+
+#### 🔒 Security
+- ✅ Permissões granulares para acompanhantes
+- ✅ Rate limiting aprimorado para 2FA
+- ✅ Correções em configurações de CORS
+- ✅ Validação de dados pessoais atualizada
+
+#### 🗄️ Database
+- ✅ Tabela `acompanhantes` com relacionamentos
+- ✅ Tabela `contatos_emergencia` 
+- ✅ Tabela `historico_paciente`
+- ✅ Índices otimizados para performance
+- ✅ Dados iniciais populados
+
 ### [0.0.1-SNAPSHOT] - 2025-10-17
 
 #### ✨ Added
@@ -1083,7 +1158,7 @@ curl http://localhost:8090/actuator/health
 ## 📊 Status do Projeto
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
-![Versão](https://img.shields.io/badge/Vers%C3%A3o-0.0.1--SNAPSHOT-blue)
+![Versão](https://img.shields.io/badge/Vers%C3%A3o-0.0.2--SNAPSHOT-blue)
 ![Cobertura](https://img.shields.io/badge/Cobertura%20de%20Testes-~70%25-green)
 ![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-blue)
 
@@ -1091,6 +1166,12 @@ curl http://localhost:8090/actuator/health
 - [ ] Implementar refresh tokens
 - [ ] Adicionar testes de integração E2E
 - [ ] Configurar CI/CD com GitHub Actions
+- [ ] Implementar módulo de profissionais de saúde
+- [ ] Adicionar dashboard administrativo
+- [ ] Sistema de notificações
+- [ ] Exportação de relatórios em PDF/Excel
+- [ ] Histórico médico completo
+- [ ] Agendamento de consultas
 - [ ] Deploy em ambiente de produção
 - [ ] Documentação de arquitetura detalhada
 
