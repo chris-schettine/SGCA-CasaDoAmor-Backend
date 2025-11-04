@@ -157,6 +157,17 @@
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
 				<version>4.0.4</version>
+				<configuration>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<verbose>false</verbose>
+					<includeOnlyProperties>
+						<includeOnlyProperty>git.commit.id</includeOnlyProperty>
+						<includeOnlyProperty>git.commit.id.abbrev</includeOnlyProperty>
+						<includeOnlyProperty>git.commit.id.describe</includeOnlyProperty>
+						<includeOnlyProperty>git.commit.message.short</includeOnlyProperty>
+						<includeOnlyProperty>git.commit.user.name</includeOnlyProperty>
+					</includeOnlyProperties>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>

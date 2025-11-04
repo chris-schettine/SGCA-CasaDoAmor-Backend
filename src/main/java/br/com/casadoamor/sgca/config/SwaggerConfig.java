@@ -63,11 +63,17 @@ public class SwaggerConfig {
 		}
 
 		String title = "Casa do Amor API";
+
+		StringBuilder description = new StringBuilder("Documentação da API da casa do amor");
+		description.append("\n\nCommit: ").append(version);
+		if (commitUser != null && !commitUser.isEmpty()) {
+			description.append("\n\nAutor: ").append(commitUser);
+		}
 		if (commitMessage != null && !commitMessage.isEmpty()) {
-			title = title + " - " + commitMessage;
+			description.append("\n\nMensagem: ").append(commitMessage);
 		}
 
-		Info info = new Info().title(title).version(version).description("Documentação da API da casa do amor");
+		Info info = new Info().title(title).version(version).description(description.toString());
 		if (commitUser != null && !commitUser.isEmpty()) {
 			info.setContact(new Contact().name(commitUser));
 		}
