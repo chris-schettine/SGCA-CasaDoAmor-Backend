@@ -15,8 +15,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import br.com.casadoamor.sgca.entity.auth.HistoricoSenha;
-import br.com.casadoamor.sgca.repository.auth.HistoricoSenhaRepository;
+import br.com.casadoamor.sgca.modules.auth.entity.HistoricoSenha;
+import br.com.casadoamor.sgca.modules.auth.repository.HistoricoSenhaRepository;
+import br.com.casadoamor.sgca.modules.auth.service.HistoricoSenhaService;
+
 
 class HistoricoSenhaServiceTest {
 

@@ -13,11 +13,17 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import br.com.casadoamor.sgca.dto.auth.request.RegisterRequestDTO;
-import br.com.casadoamor.sgca.dto.auth.response.AuthResponseDTO;
-import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
-import br.com.casadoamor.sgca.security.JwtUtil;
+import br.com.casadoamor.sgca.infra.security.JwtUtil;
+import br.com.casadoamor.sgca.modules.admin.service.AuditoriaService;
+import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
+import br.com.casadoamor.sgca.modules.auth.dtos.request.RegisterRequestDTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.response.AuthResponseDTO;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.AuthUsuarioRepository;
+import br.com.casadoamor.sgca.modules.auth.service.AuthService;
+import br.com.casadoamor.sgca.modules.auth.service.HistoricoSenhaService;
+import br.com.casadoamor.sgca.modules.auth.service.RecuperacaoSenhaService;
+import br.com.casadoamor.sgca.modules.auth.service.TwoFactorService;
 
 class AuthServiceTest {
 
@@ -32,10 +38,10 @@ class AuthServiceTest {
 
     // other dependencies mocked as no-op for register tests
     @Mock private org.springframework.security.authentication.AuthenticationManager authenticationManager;
-    @Mock private br.com.casadoamor.sgca.service.admin.AuditoriaService auditoriaService;
+    @Mock private AuditoriaService auditoriaService;
     @Mock private RecuperacaoSenhaService recuperacaoSenhaService;
-    @Mock private br.com.casadoamor.sgca.service.admin.SessaoService sessaoService;
-    @Mock private br.com.casadoamor.sgca.service.auth.HistoricoSenhaService historicoSenhaService;
+    @Mock private SessaoService sessaoService;
+    @Mock private HistoricoSenhaService historicoSenhaService;
     @Mock private TwoFactorService twoFactorService;
 
     @InjectMocks

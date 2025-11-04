@@ -24,12 +24,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import br.com.casadoamor.sgca.dto.SessaoDTO;
-import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.entity.auth.SessaoUsuario;
-import br.com.casadoamor.sgca.exception.ResourceNotFoundException;
-import br.com.casadoamor.sgca.repository.auth.SessaoUsuarioRepository;
-import br.com.casadoamor.sgca.security.JwtUtil;
+import br.com.casadoamor.sgca.infra.exception.ResourceNotFoundException;
+import br.com.casadoamor.sgca.infra.security.JwtUtil;
+import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
+import br.com.casadoamor.sgca.modules.auth.dtos.SessaoDTO;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.entity.SessaoUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.SessaoUsuarioRepository;
 
 class SessaoServiceTest {
 

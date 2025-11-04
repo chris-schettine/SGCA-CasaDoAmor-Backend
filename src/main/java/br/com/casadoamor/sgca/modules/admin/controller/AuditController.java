@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.casadoamor.sgca.infra.exception.ResourceNotFoundException;
+import br.com.casadoamor.sgca.modules.admin.dtos.auditoria.AuditoriaPerfilDTO;
+import br.com.casadoamor.sgca.modules.admin.dtos.auditoria.AuditoriaUsuarioDTO;
+import br.com.casadoamor.sgca.modules.admin.dtos.auditoria.TentativaLoginDTO;
+import br.com.casadoamor.sgca.modules.admin.service.AuditoriaAdminService;
+import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
 import br.com.casadoamor.sgca.modules.auth.dtos.SessaoDTO;
 import br.com.casadoamor.sgca.modules.auth.entity.TentativaLogin;
 import br.com.casadoamor.sgca.modules.auth.repository.SessaoUsuarioRepository;
 import br.com.casadoamor.sgca.modules.auth.repository.TentativaLoginRepository;
+import br.com.casadoamor.sgca.modules.common.dto.MessageResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -240,7 +247,7 @@ public class AuditController {
 	})
 	public ResponseEntity<?> revogarSessaoAdmin(@org.springframework.web.bind.annotation.PathVariable Long id) {
 		var sessao = sessaoRepository.findById(id)
-				.orElseThrow(() -> new br.com.casadoamor.sgca.exception.ResourceNotFoundException(
+				.orElseThrow(() -> new ResourceNotFoundException(
 						"Sessão não encontrada"));
 
 		sessao.revogar();

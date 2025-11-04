@@ -18,16 +18,18 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import br.com.casadoamor.sgca.security.UserDetailsServiceImpl;
+
+import br.com.casadoamor.sgca.infra.security.JwtAuthenticationFilter;
+import br.com.casadoamor.sgca.infra.security.JwtUtil;
+import br.com.casadoamor.sgca.infra.security.UserDetailsServiceImpl;
+import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.entity.SessaoUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.SessaoUsuarioRepository;
+
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.entity.auth.SessaoUsuario;
-import br.com.casadoamor.sgca.repository.auth.SessaoUsuarioRepository;
-import br.com.casadoamor.sgca.security.JwtUtil;
-import br.com.casadoamor.sgca.security.JwtAuthenticationFilter;
 
 /*
  * Login flow: generate JWT, create session, revoke session and re-check

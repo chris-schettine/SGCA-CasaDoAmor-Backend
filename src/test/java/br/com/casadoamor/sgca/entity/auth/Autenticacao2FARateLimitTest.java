@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
+import br.com.casadoamor.sgca.modules.auth.entity.Autenticacao2FARateLimit;
+
 class Autenticacao2FARateLimitTest {
 
     @Test

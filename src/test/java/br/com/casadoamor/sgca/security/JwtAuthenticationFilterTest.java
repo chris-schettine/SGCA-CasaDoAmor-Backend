@@ -21,7 +21,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import br.com.casadoamor.sgca.service.admin.SessaoService;
+import br.com.casadoamor.sgca.infra.security.JwtAuthenticationFilter;
+import br.com.casadoamor.sgca.infra.security.JwtUtil;
+import br.com.casadoamor.sgca.infra.security.UserDetailsServiceImpl;
+import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
 
 class JwtAuthenticationFilterTest {
 

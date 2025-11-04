@@ -18,11 +18,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.entity.auth.TokenRecuperacao;
-import br.com.casadoamor.sgca.enums.TipoToken;
-import br.com.casadoamor.sgca.repository.auth.TokenRecuperacaoRepository;
-import br.com.casadoamor.sgca.service.common.EmailService;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.entity.TokenRecuperacao;
+import br.com.casadoamor.sgca.modules.auth.repository.TokenRecuperacaoRepository;
+import br.com.casadoamor.sgca.modules.auth.service.RecuperacaoSenhaService;
+import br.com.casadoamor.sgca.modules.common.enums.TipoToken;
+import br.com.casadoamor.sgca.modules.common.service.EmailService;
+
 
 class RecuperacaoSenhaServiceTest {
 
@@ -90,7 +92,7 @@ class RecuperacaoSenhaServiceTest {
                 .id(5L)
                 .usado(false)
                 .build();
-        br.com.casadoamor.sgca.entity.auth.AuthUsuario u = new br.com.casadoamor.sgca.entity.auth.AuthUsuario();
+        AuthUsuario u = new AuthUsuario();
         u.setEmail("x@example.com");
         tr.setUsuario(u);
 

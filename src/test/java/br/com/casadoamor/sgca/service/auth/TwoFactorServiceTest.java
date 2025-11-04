@@ -13,14 +13,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import br.com.casadoamor.sgca.dto.twofactor.Setup2FADTO;
-import br.com.casadoamor.sgca.entity.auth.Autenticacao2FA;
-import br.com.casadoamor.sgca.entity.auth.Autenticacao2FARateLimit;
-import br.com.casadoamor.sgca.entity.auth.AuthUsuario;
-import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARateLimitRepository;
-import br.com.casadoamor.sgca.repository.auth.Autenticacao2FARepository;
-import br.com.casadoamor.sgca.repository.auth.AuthUsuarioRepository;
-import br.com.casadoamor.sgca.service.common.EmailService;
+import br.com.casadoamor.sgca.modules.auth.dtos.twofactor.Setup2FADTO;
+import br.com.casadoamor.sgca.modules.auth.entity.Autenticacao2FA;
+import br.com.casadoamor.sgca.modules.auth.entity.Autenticacao2FARateLimit;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.Autenticacao2FARateLimitRepository;
+import br.com.casadoamor.sgca.modules.auth.repository.Autenticacao2FARepository;
+import br.com.casadoamor.sgca.modules.auth.repository.AuthUsuarioRepository;
+import br.com.casadoamor.sgca.modules.auth.service.TwoFactorService;
+import br.com.casadoamor.sgca.modules.common.service.EmailService;
+
 
 class TwoFactorServiceTest {
 
