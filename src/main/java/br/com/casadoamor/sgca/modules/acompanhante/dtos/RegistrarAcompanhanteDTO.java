@@ -1,8 +1,8 @@
 package br.com.casadoamor.sgca.modules.acompanhante.dtos;
 
 import br.com.casadoamor.sgca.modules.common.enums.Parentesco;
-import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalDTO;
-import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalInputDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoInputDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 public class RegistrarAcompanhanteDTO {
   @NotNull(message = "Dado pessoal é obrigatório")
   @Valid
-  private DadoPessoalDTO dadoPessoal;
+  private DadoPessoalInputDTO dadoPessoal;
 
   @NotNull(message = "Endereço é obrigatório")
   @Valid
-  private EnderecoDTO endereco;
+  private EnderecoInputDTO endereco;
 
   @NotNull(message = "Parentesco é obrigatório")
   private Parentesco parentesco;

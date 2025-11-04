@@ -5,6 +5,7 @@ import java.util.List;
 import br.com.casadoamor.sgca.modules.common.entity.BaseEntity;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
+import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,4 +37,7 @@ public class Paciente extends BaseEntity {
 
   @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ContatoEmergencia> contatosEmergencia;
+
+  @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<DadoClinico> dadosClinicos;
 }

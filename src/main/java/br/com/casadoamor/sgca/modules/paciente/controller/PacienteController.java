@@ -39,7 +39,7 @@ public class PacienteController {
 
   @PatchMapping("/{id}")
   @Operation(summary = "Editar um paciente existente")
-  @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTE_EDITAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   public ResponseEntity<PacienteDTO> editarPaciente(
     @PathVariable String id,
     @Valid @RequestBody EditarPacienteDTO editarPacienteDTO) {
@@ -48,7 +48,7 @@ public class PacienteController {
   }
 
   @GetMapping("/")
-  @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTE_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   @Operation(summary = "Listar pacientes com paginação e filtro opcional")
   public PaginatedResponseDTO<PacienteDTO> pacientesPaginados(
     @RequestParam(defaultValue = "10") int limit,

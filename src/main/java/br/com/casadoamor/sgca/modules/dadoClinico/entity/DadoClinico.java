@@ -13,10 +13,6 @@ import lombok.*;
 @Entity
 @Table(name = "dados_clinicos")
 public class DadoClinico extends BaseEntity {
-  
-  @Column(columnDefinition = "TEXT")
-  private String obituario;
-
   @Column(columnDefinition = "TEXT")
   private String diagnostico;
 

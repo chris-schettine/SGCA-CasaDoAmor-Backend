@@ -4,10 +4,11 @@ import org.springframework.stereotype.Component;
 
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoInputDTO;
 
 @Component
 public class EnderecoMapper {
-  public Endereco toEntity (EnderecoDTO enderecoInput) {
+  public Endereco toEntity (EnderecoInputDTO enderecoInput) {
     return Endereco.builder()
       .cep(enderecoInput.getCep())
       .logradouro(enderecoInput.getLogradouro())
@@ -21,6 +22,7 @@ public class EnderecoMapper {
 
   public EnderecoDTO mapToDTO(Endereco endereco) {
     return EnderecoDTO.builder()
+      .id(endereco.getId())
       .cep(endereco.getCep())
       .logradouro(endereco.getLogradouro())
       .numero(endereco.getNumero())

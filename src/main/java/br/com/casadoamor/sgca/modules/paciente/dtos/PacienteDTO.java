@@ -1,25 +1,18 @@
 package br.com.casadoamor.sgca.modules.paciente.dtos;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Builder;
 
 @Builder
-public record PacienteDTO(
-        String id,
-        String nome,
-        String nomeMae,
-        String cpf,
-        String rg,
-        Date dataNascimento,
-        String naturalidade,
-        String profissao,
-        String telefone,
-        String logradouro,
-        Integer numero,
-        String complemento,
-        String bairro,
-        String cidade,
-        String estado,
-        String cep) {
+public class PacienteDTO {
+    private String id;
+    private DadoPessoalDTO dadoPessoal;
+    private EnderecoDTO endereco;
+    private String email;
+    private String imageUrl;
+    private LocalDateTime createdAt;
+    private List<ContatoEmergenciaDTO> contatosDeEmergencia;
+    private List<DadoClinicoDTO> dadosClinicos;
 }

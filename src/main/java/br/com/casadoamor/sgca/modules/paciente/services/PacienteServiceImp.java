@@ -56,6 +56,7 @@ public class PacienteServiceImp implements PacienteService {
     });
 
     String email = registrarPacienteDTO.getEmail().toLowerCase();
+
     pacienteRepository.findByEmail(email).ifPresent(paciente -> {
       throw new CustomError("Email já cadastrado no sistema", HttpStatus.BAD_REQUEST);
     });
@@ -69,7 +70,10 @@ public class PacienteServiceImp implements PacienteService {
     pacienteRepository.save(paciente);
 
     List<ContatoEmergencia> contatos = contatoEmergenciaMapper.toEntityList(registrarPacienteDTO.getContatosDeEmergencia(), paciente);
+    
     paciente.setContatosEmergencia(contatos);
+    
+    pacienteRepository.save(paciente);
 
     HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
       paciente, 

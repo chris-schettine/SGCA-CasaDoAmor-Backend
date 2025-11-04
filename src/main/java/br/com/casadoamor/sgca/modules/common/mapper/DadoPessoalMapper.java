@@ -5,10 +5,11 @@ import org.springframework.stereotype.Component;
 import br.com.casadoamor.sgca.infra.util.CpfUtil;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalInputDTO;
 
 @Component
 public class DadoPessoalMapper {
-  public DadoPessoal toEntity (DadoPessoalDTO dadoPessoalInputDTO) {
+  public DadoPessoal toEntity (DadoPessoalInputDTO dadoPessoalInputDTO) {
     String cpfLimpo = CpfUtil.limparCpf(dadoPessoalInputDTO.getCpf());
 
     return DadoPessoal.builder()
@@ -25,6 +26,7 @@ public class DadoPessoalMapper {
 
   public DadoPessoalDTO mapToDTO(DadoPessoal dadoPessoal) {
     return DadoPessoalDTO.builder()
+      .id(dadoPessoal.getId())
       .nome(dadoPessoal.getNome())
       .nomeMae(dadoPessoal.getNomeMae())
       .dataNascimento(dadoPessoal.getDataNascimento())

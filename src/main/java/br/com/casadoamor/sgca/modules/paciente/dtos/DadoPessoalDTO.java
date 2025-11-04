@@ -2,12 +2,6 @@ package br.com.casadoamor.sgca.modules.paciente.dtos;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,29 +12,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class DadoPessoalDTO {
-  @NotBlank(message = "O nome é obrigatório")
+  private String id;
+  
   private String nome;
 
 	private String nomeMae;
 
-	@NotNull(message = "A data de nascimento é obrigatória")
-	@Past(message = "A data de nascimento deve ser no passado")
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date dataNascimento;
+  private Date dataNascimento;
 
-	@NotBlank(message = "O CPF é obrigatório")
-	@Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
-	private String cpf;
+  private String cpf;
 
-	@NotBlank(message = "O RG é obrigatório")
-	private String rg;
+  private String rg;
 
-	@NotBlank(message = "A naturalidade é obrigatória")
-	private String naturalidade;
+  private String naturalidade;
 
 	private String profissao;
 
-	@NotBlank(message = "O telefone é obrigatório")
-	@Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
-	private String telefone;
-}
+  private String telefone;
+} 

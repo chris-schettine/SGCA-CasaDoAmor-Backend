@@ -8,6 +8,8 @@ public class EditarPacienteDTO {
 	@Valid
 	EditarDadoPessoalInputDTO dadoPessoal;
 
-	@Valid
-	EditarEnderecoInputDTO endereco;
+  @Valid
+  EditarEnderecoInputDTO endereco;
+
+  private String email;
 }

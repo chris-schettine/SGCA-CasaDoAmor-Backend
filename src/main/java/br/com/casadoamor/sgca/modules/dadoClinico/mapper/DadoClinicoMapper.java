@@ -1,5 +1,7 @@
 package br.com.casadoamor.sgca.modules.dadoClinico.mapper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
@@ -42,6 +44,12 @@ public class DadoClinicoMapper {
         .createdAt(entity.getCreatedAt())
         .updatedAt(entity.getUpdatedAt())
         .build();
+  }
+
+  public List<DadoClinicoDTO> toEntityList(List<DadoClinico> entities) {
+    return entities.stream()
+        .map(this::toDTO)
+        .toList();
   }
 
   public void updateEntity(DadoClinico entity, DadoClinicoInputDTO dto) {
