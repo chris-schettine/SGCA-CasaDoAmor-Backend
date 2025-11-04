@@ -97,7 +97,6 @@
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/DadoPessoalMapper.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/EnderecoMapper.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/mapper/paciente/PacienteMapper.java
-/Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/controller/PacienteController.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/DadoClinicoRepository.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/admin/PerfilRepository.java
 /Users/cauraguiar/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/repository/admin/PermissaoRepository.java
