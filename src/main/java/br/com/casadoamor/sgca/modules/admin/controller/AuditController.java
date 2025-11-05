@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import br.com.casadoamor.sgca.infra.exception.ResourceNotFoundException;
 import br.com.casadoamor.sgca.modules.admin.dtos.auditoria.AuditoriaPerfilDTO;
 import br.com.casadoamor.sgca.modules.admin.dtos.auditoria.AuditoriaUsuarioDTO;
@@ -46,6 +48,7 @@ public class AuditController {
 	private final SessaoUsuarioRepository sessaoRepository;
 	private final AuditoriaAdminService auditoriaAdminService;
 	private final SessaoService sessaoService;
+	private final HttpServletRequest request;
 
 	/**
 	 * Relatório de tentativas de login
@@ -134,11 +137,19 @@ public class AuditController {
 			@ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN ou AUDITOR")
 	})
 	public ResponseEntity<?> sessoesAtivas() {
+		// Extrair o token atual da requisição
+		String tokenAtual = extrairTokenDoHeader();
+		
 		var sessoes = sessaoRepository.findByAtivoAndExpiraEmAfter(true, LocalDateTime.now());
 
 		var sessoesDTO = sessoes.stream()
 				.map(s -> {
 					var usuario = s.getUsuario();
+					// Verificar se é a sessão atual comparando os tokens
+					boolean isSessaoAtual = tokenAtual != null && 
+							s.getTokenJwt() != null && 
+							s.getTokenJwt().equals(tokenAtual);
+					
 					return SessaoDTO.builder()
 							.id(s.getId())
 							.ipOrigem(s.getIpOrigem())
@@ -146,7 +157,7 @@ public class AuditController {
 							.criadoEm(s.getCriadoEm())
 							.expiraEm(s.getExpiraEm())
 							.ativo(s.getAtivo())
-							.atual(false)
+							.atual(isSessaoAtual)
 							.usuario(SessaoDTO.UsuarioSessaoDTO.builder()
 									.id(usuario.getId())
 									.nome(usuario.getNome())
@@ -275,5 +286,16 @@ public class AuditController {
 
 		return ResponseEntity.ok(MessageResponseDTO.success(
 				"Todas as sessões do usuário foram revogadas. Force logout realizado."));
+	}
+
+	/**
+	 * Método auxiliar para extrair o token JWT do header Authorization
+	 */
+	private String extrairTokenDoHeader() {
+		String authHeader = request.getHeader("Authorization");
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			return authHeader.substring(7); // Remove "Bearer " prefix
+		}
+		return null;
 	}
 }
