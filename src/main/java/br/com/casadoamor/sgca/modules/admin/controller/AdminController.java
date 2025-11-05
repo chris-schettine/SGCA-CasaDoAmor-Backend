@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -231,6 +232,37 @@ public class AdminController {
         try {
             userManagementService.forceLogout(id);
             return ResponseEntity.ok(MessageResponseDTO.success("Todas as sessões do usuário foram revogadas"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
+     * Ativar/Desativar usuário
+     * PATCH /admin/users/{id}/toggle-status
+     */
+    @PatchMapping("/users/{id}/toggle-status")
+    @PreAuthorize("hasAuthority('USUARIOS_EDITAR') or hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Ativar/Desativar usuário", description = "Alterna o status ativo/inativo do usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status alterado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado - requer permissão USUARIOS_EDITAR"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<?> toggleUserStatus(@PathVariable Long id,
+                                               Authentication authentication) {
+        try {
+            String cpf = authentication.getName();
+            Long adminId = authService.findUserIdByCpf(cpf)
+                    .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
+
+            UserResponseDTO response = userManagementService.toggleUserStatus(id, adminId);
+            String status = response.getAtivo() ? "ativado" : "desativado";
+            return ResponseEntity.ok(new StatusChangeResponse(
+                    response,
+                    "Usuário " + status + " com sucesso"
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(e.getMessage()));
@@ -646,6 +678,28 @@ public class AdminController {
 
         public String getFotoUrl() {
             return fotoUrl;
+        }
+    }
+
+    /**
+     * Classe interna para resposta de mudança de status
+     */
+    @SuppressWarnings("unused")
+    private static class StatusChangeResponse {
+        private final UserResponseDTO user;
+        private final String message;
+
+        public StatusChangeResponse(UserResponseDTO user, String message) {
+            this.user = user;
+            this.message = message;
+        }
+
+        public UserResponseDTO getUser() {
+            return user;
+        }
+
+        public String getMessage() {
+            return message;
         }
     }
 

@@ -336,6 +336,36 @@ public class UserManagementService {
     }
 
     /**
+     * Ativa ou desativa um usuário (toggle)
+     */
+    @Transactional
+    public UserResponseDTO toggleUserStatus(Long usuarioId, Long adminId) {
+        // Impede admin desativar a si mesmo
+        if (usuarioId.equals(adminId)) {
+            throw new RuntimeException("Você não pode alterar o status da sua própria conta");
+        }
+
+        AuthUsuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // Alterna o status
+        usuario.setAtivo(!usuario.getAtivo());
+
+        // Se estiver desativando, revoga todas as sessões
+        if (!usuario.getAtivo()) {
+            sessaoService.revogarTodasSessoes(usuarioId);
+        }
+
+        // Busca admin que está atualizando
+        AuthUsuario admin = usuarioRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
+        usuario.setAtualizadoPor(admin);
+
+        AuthUsuario atualizado = usuarioRepository.save(usuario);
+        return toDTO(atualizado);
+    }
+
+    /**
      * Obtém permissões efetivas de um usuário (agregadas de todos os perfis)
      */
     @Transactional(readOnly = true)
