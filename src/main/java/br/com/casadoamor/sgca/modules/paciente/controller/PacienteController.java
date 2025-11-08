@@ -31,7 +31,7 @@ public class PacienteController {
 
   @PostMapping("/")
   @Operation(summary = "Registrar um novo paciente (Apenas dados brutos)")
-  // @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   public ResponseEntity<PacienteDTO> registrarPaciente(@Valid @RequestBody RegistrarPacienteDTO registrarPacienteDTO) {
     PacienteDTO paciente = this.pacienteService.registrarPaciente(registrarPacienteDTO);
     return new ResponseEntity<>(paciente, HttpStatus.CREATED);
