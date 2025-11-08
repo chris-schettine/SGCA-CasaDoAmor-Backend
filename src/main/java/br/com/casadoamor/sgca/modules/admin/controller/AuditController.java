@@ -242,39 +242,18 @@ public class AuditController {
 	 */
 	@GetMapping("/perfis")
 	@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'AUDITOR')")
-	@Operation(summary = "Auditoria completa do sistema", description = "Retorna informações de auditoria de todos os perfis do sistema e relatório de tentativas de login")
+	@Operation(summary = "Auditoria completa do sistema", description = "Retorna informações de auditoria de todos os perfis do sistema e relatório das últimas 100 tentativas de login")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Auditoria completa retornada"),
 			@ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN ou AUDITOR")
 	})
-	public ResponseEntity<?> listarAuditoriaPerfis(
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-			@RequestParam(required = false) Boolean sucesso,
-			@RequestParam(required = false) String cpf) {
+	public ResponseEntity<?> listarAuditoriaPerfis() {
 		
 		// Busca auditoria de perfis
 		List<AuditoriaPerfilDTO> auditoriasPerfis = auditoriaAdminService.listarAuditoriaPerfis();
 		
-		// Busca tentativas de login com os mesmos filtros do endpoint /logins
-		List<TentativaLogin> tentativas;
-
-		if (startDate != null && endDate != null) {
-			if (sucesso != null) {
-				tentativas = tentativaLoginRepository
-						.findByDataTentativaBetweenAndSucesso(startDate, endDate, sucesso);
-			} else {
-				tentativas = tentativaLoginRepository
-						.findByDataTentativaBetween(startDate, endDate);
-			}
-		} else if (cpf != null) {
-			tentativas = tentativaLoginRepository.findByCpf(cpf);
-		} else if (sucesso != null) {
-			tentativas = tentativaLoginRepository.findBySucesso(sucesso);
-		} else {
-			// Últimas 100 tentativas
-			tentativas = tentativaLoginRepository.findTop100ByOrderByDataTentativaDesc();
-		}
+		// Busca últimas 100 tentativas de login
+		List<TentativaLogin> tentativas = tentativaLoginRepository.findTop100ByOrderByDataTentativaDesc();
 
 		// Converte tentativas para DTO com informações do usuário
 		List<TentativaLoginDTO> tentativasDTO = tentativas.stream()
