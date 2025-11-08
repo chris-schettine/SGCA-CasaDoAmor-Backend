@@ -1,5 +1,6 @@
 package br.com.casadoamor.sgca.modules.paciente.dtos;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import jakarta.validation.constraints.Past;
@@ -13,7 +14,7 @@ public class EditarDadoPessoalInputDTO {
     String nomeMae;
 
     @Past(message = "A data de nascimento deve ser no passado")
-    Date dataNascimento;
+    LocalDate dataNascimento;
 
     @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
     String cpf;

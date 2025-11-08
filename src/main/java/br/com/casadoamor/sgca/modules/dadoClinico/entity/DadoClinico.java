@@ -58,4 +58,8 @@ public class DadoClinico extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "paciente_id", nullable = false)
   private Paciente paciente;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "tipo_sanguineo", nullable = false)
+  private TipoSanguineoEnum tipoSanguineo;
 }

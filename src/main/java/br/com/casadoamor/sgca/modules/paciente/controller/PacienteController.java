@@ -27,14 +27,14 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/pacientes")
 @Tag(name = "Paciente", description = "Endpoints para gerenciar pacientes")
 public class PacienteController {
-    private final PacienteService pacienteService;
+  private final PacienteService pacienteService;
 
   @PostMapping("/")
-  @Operation(summary = "Registrar um novo paciente")
-  @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
-  public ResponseEntity<PacienteDTO> registrarPaciente(@Valid @RequestBody RegistrarPacienteDTO RegistrarPacienteDTO) {
-    PacienteDTO paciente = this.pacienteService.registrarPaciente(RegistrarPacienteDTO);
-    return new ResponseEntity<>(paciente, HttpStatus.OK);
+  @Operation(summary = "Registrar um novo paciente (Apenas dados brutos)")
+  // @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  public ResponseEntity<PacienteDTO> registrarPaciente(@Valid @RequestBody RegistrarPacienteDTO registrarPacienteDTO) {
+    PacienteDTO paciente = this.pacienteService.registrarPaciente(registrarPacienteDTO);
+    return new ResponseEntity<>(paciente, HttpStatus.CREATED);
   }
 
   @PatchMapping("/{id}")

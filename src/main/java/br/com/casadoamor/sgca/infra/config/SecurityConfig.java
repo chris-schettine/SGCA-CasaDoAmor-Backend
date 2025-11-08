@@ -92,7 +92,8 @@ public class SecurityConfig {
                                 "/auth/activate-account", // Ativação de conta (usuário não está autenticado)
                                 "/auth/resend-activation", // Reenvio de email de ativação
                                 "/auth/2fa/**", // Endpoints de 2FA (verify, resend, setup)
-                                "/api/files/**" // Servir arquivos estáticos (fotos)
+                                "/api/files/**", // Servir arquivos estáticos (fotos)
+                                "/pacientes/"
                         ).permitAll()
 
                         // All other endpoints require authentication

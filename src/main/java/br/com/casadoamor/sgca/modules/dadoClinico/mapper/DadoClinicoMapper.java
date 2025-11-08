@@ -24,6 +24,7 @@ public class DadoClinicoMapper {
     entity.setSondaOutraDescricao(dto.getSondaOutraDescricao());
     entity.setUsaCurativo(dto.getUsaCurativo());
     entity.setUsaOxigenoterapia(dto.getUsaOxigenoterapia());
+    entity.setTipoSanguineo(dto.getTipoSanguineo());
     return entity;
   }
 
@@ -43,10 +44,15 @@ public class DadoClinicoMapper {
         .usaOxigenoterapia(entity.getUsaOxigenoterapia())
         .createdAt(entity.getCreatedAt())
         .updatedAt(entity.getUpdatedAt())
+        .tipoSanguineo(entity.getTipoSanguineo())
         .build();
   }
 
-  public List<DadoClinicoDTO> toEntityList(List<DadoClinico> entities) {
+  public List<DadoClinicoDTO> toDTOList(List<DadoClinico> entities) {
+    if (entities == null) {
+      return null;
+    }
+
     return entities.stream()
         .map(this::toDTO)
         .toList();
@@ -85,6 +91,10 @@ public class DadoClinicoMapper {
     }
     if (dto.getUsaOxigenoterapia() != null) {
       entity.setUsaOxigenoterapia(dto.getUsaOxigenoterapia());
+    }
+
+    if (dto.getTipoSanguineo() != null) {
+      entity.setTipoSanguineo(dto.getTipoSanguineo());
     }
   }
 }

@@ -35,4 +35,7 @@ public class DadoClinicoInputDTO {
 
     @NotNull(message = "Informação sobre uso de oxigenoterapia é obrigatória")
     private Boolean usaOxigenoterapia;
+
+    @NotNull(message = "O tipo sanguíneo é obrigatório")
+    private TipoSanguineoEnum tipoSanguineo;
 }
