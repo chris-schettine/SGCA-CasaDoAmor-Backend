@@ -193,6 +193,14 @@ public class AuditController {
 	}
 
 	/**
+	 * DTO de resposta para auditoria completa (perfis + logins)
+	 */
+	private record AuditoriaCompletaResponse(
+			List<AuditoriaPerfilDTO> perfis,
+			RelatorioLoginsResponse relatorioLogins) {
+	}
+
+	/**
 	 * Auditoria completa de um usuário
 	 * GET /admin/audit/usuarios/{id}
 	 */
@@ -234,14 +242,80 @@ public class AuditController {
 	 */
 	@GetMapping("/perfis")
 	@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'AUDITOR')")
-	@Operation(summary = "Auditoria de todos os perfis", description = "Retorna informações de auditoria de todos os perfis do sistema")
+	@Operation(summary = "Auditoria completa do sistema", description = "Retorna informações de auditoria de todos os perfis do sistema e relatório de tentativas de login")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Lista de auditorias retornada"),
+			@ApiResponse(responseCode = "200", description = "Auditoria completa retornada"),
 			@ApiResponse(responseCode = "403", description = "Acesso negado - requer ADMIN ou AUDITOR")
 	})
-	public ResponseEntity<List<AuditoriaPerfilDTO>> listarAuditoriaPerfis() {
-		List<AuditoriaPerfilDTO> auditorias = auditoriaAdminService.listarAuditoriaPerfis();
-		return ResponseEntity.ok(auditorias);
+	public ResponseEntity<?> listarAuditoriaPerfis(
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+			@RequestParam(required = false) Boolean sucesso,
+			@RequestParam(required = false) String cpf) {
+		
+		// Busca auditoria de perfis
+		List<AuditoriaPerfilDTO> auditoriasPerfis = auditoriaAdminService.listarAuditoriaPerfis();
+		
+		// Busca tentativas de login com os mesmos filtros do endpoint /logins
+		List<TentativaLogin> tentativas;
+
+		if (startDate != null && endDate != null) {
+			if (sucesso != null) {
+				tentativas = tentativaLoginRepository
+						.findByDataTentativaBetweenAndSucesso(startDate, endDate, sucesso);
+			} else {
+				tentativas = tentativaLoginRepository
+						.findByDataTentativaBetween(startDate, endDate);
+			}
+		} else if (cpf != null) {
+			tentativas = tentativaLoginRepository.findByCpf(cpf);
+		} else if (sucesso != null) {
+			tentativas = tentativaLoginRepository.findBySucesso(sucesso);
+		} else {
+			// Últimas 100 tentativas
+			tentativas = tentativaLoginRepository.findTop100ByOrderByDataTentativaDesc();
+		}
+
+		// Converte tentativas para DTO com informações do usuário
+		List<TentativaLoginDTO> tentativasDTO = tentativas.stream()
+				.map(t -> {
+					TentativaLoginDTO.TentativaLoginDTOBuilder builder = TentativaLoginDTO.builder()
+							.id(t.getId())
+							.cpf(t.getCpf())
+							.ipOrigem(t.getIpOrigem())
+							.userAgent(t.getUserAgent())
+							.dataTentativa(t.getDataTentativa())
+							.sucesso(t.getSucesso())
+							.motivoFalha(t.getMotivoFalha())
+							.bloqueado(t.getBloqueado());
+
+					// Incluir dados do usuário se existir
+					if (t.getUsuario() != null) {
+						var usuario = t.getUsuario();
+						builder.usuario(TentativaLoginDTO.UsuarioTentativaDTO.builder()
+								.id(usuario.getId())
+								.nome(usuario.getNome())
+								.email(usuario.getEmail())
+								.tipo(usuario.getTipo().name())
+								.ativo(usuario.getAtivo())
+								.bloqueado(usuario.getLockedUntil() != null
+										&& usuario.getLockedUntil().isAfter(LocalDateTime.now()))
+								.build());
+					}
+
+					return builder.build();
+				})
+				.toList();
+
+		// Estatísticas de login
+		long totalLogins = tentativasDTO.size();
+		long sucessosLogins = tentativasDTO.stream().filter(TentativaLoginDTO::getSucesso).count();
+		long falhasLogins = totalLogins - sucessosLogins;
+
+		return ResponseEntity.ok(new AuditoriaCompletaResponse(
+				auditoriasPerfis,
+				new RelatorioLoginsResponse(totalLogins, sucessosLogins, falhasLogins, tentativasDTO)
+		));
 	}
 
 	/**
