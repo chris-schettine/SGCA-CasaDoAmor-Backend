@@ -204,13 +204,16 @@ public class AuditoriaAdminService {
 
         return perfilRepository.findAll().stream()
                 .map(perfil -> {
+                    // Conta usuarios sem carregar a coleção inteira (evita StackOverflowError)
+                    long totalUsuarios = authUsuarioRepository.countUsuariosByPerfilId(perfil.getId());
+                    
                     AuditoriaPerfilDTO dto = AuditoriaPerfilDTO.builder()
                             .id(perfil.getId())
                             .nome(perfil.getNome())
                             .descricao(perfil.getDescricao())
                             .criadoEm(perfil.getCriadoEm())
                             .atualizadoEm(perfil.getAtualizadoEm())
-                            .totalUsuarios(perfil.getUsuarios() != null ? perfil.getUsuarios().size() : 0)
+                            .totalUsuarios((int) totalUsuarios)
                             .build();
 
                     // Quem criou
