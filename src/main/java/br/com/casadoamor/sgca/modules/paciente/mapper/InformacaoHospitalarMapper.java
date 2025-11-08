@@ -9,6 +9,9 @@ import br.com.casadoamor.sgca.modules.paciente.entity.InformacaoHospitalar;
 @Component
 public class InformacaoHospitalarMapper {
   public InformacaoHospitalarDTO toDTO (InformacaoHospitalar informacaoHospitalar) {
+    if (informacaoHospitalar == null) {
+      return null;
+    }
     return InformacaoHospitalarDTO.builder()
       .nomeHospitalReferencia(informacaoHospitalar.getNomeHospitalReferencia())
       .medicoResponsavel(informacaoHospitalar.getMedicoResponsavel())

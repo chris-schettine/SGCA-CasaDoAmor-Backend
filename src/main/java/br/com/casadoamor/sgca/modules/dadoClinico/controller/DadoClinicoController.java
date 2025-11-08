@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import br.com.casadoamor.sgca.modules.dadoClinico.service.DadoClinicoService;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoInputDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EditarDadoClinicoInputDTO;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class DadoClinicoController {
   public ResponseEntity<DadoClinicoDTO> atualizarDadoClinico(
       @PathVariable String pacienteId,
       @PathVariable String id,
-      @Valid @RequestBody DadoClinicoInputDTO dto) {
+      @Valid @RequestBody EditarDadoClinicoInputDTO dto) {
     DadoClinicoDTO atualizado = dadoClinicoService.atualizarDadoClinico(id, dto);
     return ResponseEntity.ok(atualizado);
   }

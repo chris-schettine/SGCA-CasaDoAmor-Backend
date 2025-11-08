@@ -138,32 +138,53 @@ public class PacienteServiceImp implements PacienteService {
             throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
         }
 
-        if (dados.getRg() != null &&
-            !dados.getRg().equals(pacienteExistente.getDadoPessoal().getRg()) &&
-            pacienteRepository.existsByRg(dados.getRg())) {
+        String rgLimpo = dados.getRg() != null ? RgUtil.limparRg(dados.getRg()) : null;
+
+        if (rgLimpo != null &&
+            !rgLimpo.equals(pacienteExistente.getDadoPessoal().getRg()) &&
+            pacienteRepository.existsByRg(rgLimpo)) {
             throw new CustomError("RG já cadastrado", HttpStatus.BAD_REQUEST);
         }
 
-        if (dados.getNome() != null) pacienteExistente.getDadoPessoal().setNome(dados.getNome());
-        if (dados.getNomeMae() != null) pacienteExistente.getDadoPessoal().setNomeMae(dados.getNomeMae());
-        if (dados.getDataNascimento() != null) pacienteExistente.getDadoPessoal().setDataNascimento(dados.getDataNascimento());
-        if (cpfLimpo != null) pacienteExistente.getDadoPessoal().setCpf(cpfLimpo);
-        if (dados.getRg() != null) pacienteExistente.getDadoPessoal().setRg(dados.getRg());
-        if (dados.getNaturalidade() != null) pacienteExistente.getDadoPessoal().setNaturalidade(dados.getNaturalidade());
-        if (dados.getProfissao() != null) pacienteExistente.getDadoPessoal().setProfissao(dados.getProfissao());
-        if (dados.getTelefone() != null) pacienteExistente.getDadoPessoal().setTelefone(dados.getTelefone());
+        DadoPessoal dadoPessoalAtual = pacienteExistente.getDadoPessoal();
+        DadoPessoal dadoPessoalAtualizado = dadoPessoalMapper.updateEntity(dadoPessoalAtual, dados);
+        pacienteExistente.setDadoPessoal(dadoPessoalAtualizado);
     }
 
     if (editarPacienteDTO.getEndereco() != null) {
-        var end = editarPacienteDTO.getEndereco();
+      var end = editarPacienteDTO.getEndereco();
+      Endereco enderecoAtual = pacienteExistente.getEndereco();
+      Endereco enderecoAtualizado = enderecoMapper.updateEntity(enderecoAtual, end);
+      pacienteExistente.setEndereco(enderecoAtualizado);
+    }
 
-        if (end.getLogradouro() != null) pacienteExistente.getEndereco().setLogradouro(end.getLogradouro());
-        if (end.getNumero() != null) pacienteExistente.getEndereco().setNumero(end.getNumero());
-        if (end.getComplemento() != null) pacienteExistente.getEndereco().setComplemento(end.getComplemento());
-        if (end.getBairro() != null) pacienteExistente.getEndereco().setBairro(end.getBairro());
-        if (end.getCidade() != null) pacienteExistente.getEndereco().setCidade(end.getCidade());
-        if (end.getEstado() != null) pacienteExistente.getEndereco().setEstado(end.getEstado());
-        if (end.getCep() != null) pacienteExistente.getEndereco().setCep(end.getCep());
+    if (editarPacienteDTO.getEmail() != null) {
+      String emailLower = editarPacienteDTO.getEmail().toLowerCase();
+      if (!emailLower.equals(pacienteExistente.getEmail()) &&
+          pacienteRepository.existsByEmail(emailLower)) {
+          throw new CustomError("Email já cadastrado", HttpStatus.BAD_REQUEST);
+      }
+      pacienteExistente.setEmail(emailLower);
+    }
+
+    if (editarPacienteDTO.getDadoSocial() != null) {
+      var dadoSocialDTO = editarPacienteDTO.getDadoSocial();
+      DadoSocial dadoSocial = pacienteExistente.getDadoSocial();
+
+      if (dadoSocialDTO.getRendaFamiliar() != null) dadoSocial.setRendaFamiliar(dadoSocialDTO.getRendaFamiliar());
+      if (dadoSocialDTO.getComposicaoFamiliar() != null) dadoSocial.setComposicaoFamiliar(dadoSocialDTO.getComposicaoFamiliar());
+      if (dadoSocialDTO.getSituacaoMoradia() != null) dadoSocial.setSituacaoMoradia(dadoSocialDTO.getSituacaoMoradia());
+      if (dadoSocialDTO.getNecessidadesEspeciais() != null) dadoSocial.setNecessidadesEspeciais(dadoSocialDTO.getNecessidadesEspeciais());
+    }
+
+    if (editarPacienteDTO.getInformacaoHospitalar() != null) {
+      var infoDTO = editarPacienteDTO.getInformacaoHospitalar();
+      InformacaoHospitalar info = pacienteExistente.getInformacaoHospitalar();
+
+      if (infoDTO.getNomeHospitalReferencia() != null) info.setNomeHospitalReferencia(infoDTO.getNomeHospitalReferencia());
+      if (infoDTO.getMedicoResponsavel() != null) info.setMedicoResponsavel(infoDTO.getMedicoResponsavel());
+      if (infoDTO.getSetorAla() != null) info.setSetorAla(infoDTO.getSetorAla());
+      if (infoDTO.getDataInternacao() != null) info.setDataInternacao(infoDTO.getDataInternacao());
     }
 
     pacienteRepository.save(pacienteExistente);

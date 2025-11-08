@@ -11,5 +11,11 @@ public class EditarPacienteDTO {
   @Valid
   EditarEnderecoInputDTO endereco;
 
+  @Valid
+  EditarDadoSocialInputDTO dadoSocial;
+
+  @Valid
+  EditarInformacaoHospitalarInputDTO informacaoHospitalar;
+  
   private String email;
 }

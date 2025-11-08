@@ -31,4 +31,6 @@ public class EditarDadoClinicoInputDTO {
   private Boolean usaCurativo;
 
   private Boolean usaOxigenoterapia;
+
+  private TipoSanguineoEnum tipoSanguineo;
 }

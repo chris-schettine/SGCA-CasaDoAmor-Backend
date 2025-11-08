@@ -27,4 +27,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, String>, Jpa
   List<Paciente> findAll(@Nullable Specification<Paciente> spec);
 
   Optional<Paciente> findByEmail(String email);
+
+  Boolean existsByEmail(String email);
 }

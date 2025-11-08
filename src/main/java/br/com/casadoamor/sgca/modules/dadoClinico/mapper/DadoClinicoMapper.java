@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoInputDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EditarDadoClinicoInputDTO;
 
 @Component
 public class DadoClinicoMapper {
@@ -58,7 +59,7 @@ public class DadoClinicoMapper {
         .toList();
   }
 
-  public void updateEntity(DadoClinico entity, DadoClinicoInputDTO dto) {
+  public void updateEntity(DadoClinico entity, EditarDadoClinicoInputDTO dto) {
     if (dto.getDiagnostico() != null) {
       entity.setDiagnostico(dto.getDiagnostico());
     }
@@ -92,7 +93,6 @@ public class DadoClinicoMapper {
     if (dto.getUsaOxigenoterapia() != null) {
       entity.setUsaOxigenoterapia(dto.getUsaOxigenoterapia());
     }
-
     if (dto.getTipoSanguineo() != null) {
       entity.setTipoSanguineo(dto.getTipoSanguineo());
     }

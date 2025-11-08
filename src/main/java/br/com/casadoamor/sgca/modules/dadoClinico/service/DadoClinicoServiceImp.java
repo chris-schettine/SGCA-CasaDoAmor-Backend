@@ -9,6 +9,7 @@ import br.com.casadoamor.sgca.modules.dadoClinico.mapper.DadoClinicoMapper;
 import br.com.casadoamor.sgca.modules.dadoClinico.repository.DadoClinicoRepository;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoInputDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EditarDadoClinicoInputDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 import br.com.casadoamor.sgca.modules.paciente.repository.PacienteRepository;
 
@@ -38,7 +39,7 @@ public class DadoClinicoServiceImp implements DadoClinicoService {
 
   @Override
   @Transactional
-  public DadoClinicoDTO atualizarDadoClinico(String id, DadoClinicoInputDTO dto) {
+  public DadoClinicoDTO atualizarDadoClinico(String id, EditarDadoClinicoInputDTO dto) {
     DadoClinico dadoClinico = dadoClinicoRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Dado clínico não encontrado com ID: " + id));
 
