@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.modules.common.mapper;
 import org.springframework.stereotype.Component;
 
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EditarEnderecoInputDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoInputDTO;
 
@@ -31,5 +32,31 @@ public class EnderecoMapper {
       .cidade(endereco.getCidade())
       .estado(endereco.getEstado())
       .build();
+  }
+
+  public Endereco updateEntity (Endereco endereco, EditarEnderecoInputDTO dto) {
+    if (dto.getCep() != null) {
+      endereco.setCep(dto.getCep());
+    }
+    if (dto.getLogradouro() != null) {
+      endereco.setLogradouro(dto.getLogradouro());
+    }
+    if (dto.getNumero() != null) {
+      endereco.setNumero(dto.getNumero());
+    }
+    if (dto.getComplemento() != null) {
+      endereco.setComplemento(dto.getComplemento());
+    }
+    if (dto.getBairro() != null) {
+      endereco.setBairro(dto.getBairro());
+    }
+    if (dto.getCidade() != null) {
+      endereco.setCidade(dto.getCidade());
+    }
+    if (dto.getEstado() != null) {
+      endereco.setEstado(dto.getEstado());
+    }
+
+    return endereco;
   }
 }

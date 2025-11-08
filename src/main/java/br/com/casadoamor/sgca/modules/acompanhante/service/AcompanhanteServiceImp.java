@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.casadoamor.sgca.infra.config.exception.CustomError;
 import br.com.casadoamor.sgca.infra.util.CpfUtil;
+import br.com.casadoamor.sgca.infra.util.RgUtil;
 import br.com.casadoamor.sgca.modules.acompanhante.dtos.AcompanhanteDTO;
 import br.com.casadoamor.sgca.modules.acompanhante.dtos.EditarAcompanhanteDTO;
 import br.com.casadoamor.sgca.modules.acompanhante.dtos.RegistrarAcompanhanteDTO;
@@ -85,23 +86,35 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
       acompanhante.setPodeAjudarNaCozinha(dto.getPodeAjudarNaCozinha());
 
     if (dto.getDadoPessoal() != null) {
+      var dados = dto.getDadoPessoal();
       
-      String novoCpf = dto.getDadoPessoal().getCpf();
-      String cpfLimpo = CpfUtil.limparCpf(novoCpf);
+      // Limpa CPF se fornecido
+      String cpfLimpo = dados.getCpf() != null ? CpfUtil.limparCpf(dados.getCpf()) : null;
 
-      if (!cpfLimpo.equals(acompanhante.getDadoPessoal().getCpf())) {
-        dadoPessoalRepository.findByCpf(cpfLimpo).ifPresent(dadoPessoal -> {
-          throw new CustomError("CPF já cadastrado no sistema", HttpStatus.BAD_REQUEST);
-        });
+      if (cpfLimpo != null &&
+          !cpfLimpo.equals(acompanhante.getDadoPessoal().getCpf()) &&
+          pacienteRepository.existsByCpf(cpfLimpo)) {
+          throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
       }
 
-      DadoPessoal dadoPessoalAtualizado = dadoPessoalMapper.toEntity(dto.getDadoPessoal());
+      String rgLimpo = dados.getRg() != null ? RgUtil.limparRg(dados.getRg()) : null;
+
+      if (rgLimpo != null &&
+          !rgLimpo.equals(acompanhante.getDadoPessoal().getRg()) &&
+          pacienteRepository.existsByRg(rgLimpo)) {
+          throw new CustomError("RG já cadastrado", HttpStatus.BAD_REQUEST);
+      }
+
+      DadoPessoal dadoPessoalAtual = acompanhante.getDadoPessoal();
+      DadoPessoal dadoPessoalAtualizado = dadoPessoalMapper.updateEntity(dadoPessoalAtual, dados);
       acompanhante.setDadoPessoal(dadoPessoalAtualizado);
     }
 
     if (dto.getEndereco() != null) {
-      Endereco endereco = enderecoMapper.toEntity(dto.getEndereco());
-      acompanhante.setEndereco(endereco);
+      var end = dto.getEndereco();
+      Endereco enderecoAtual = acompanhante.getEndereco();
+      Endereco enderecoAtualizado = enderecoMapper.updateEntity(enderecoAtual, end);
+      acompanhante.setEndereco(enderecoAtualizado);
     }
 
     if (dto.getParentesco() != null)

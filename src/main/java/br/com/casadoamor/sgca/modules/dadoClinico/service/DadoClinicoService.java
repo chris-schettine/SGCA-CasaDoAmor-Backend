@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoInputDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EditarDadoClinicoInputDTO;
 
 public interface DadoClinicoService {
   
@@ -21,7 +22,7 @@ public interface DadoClinicoService {
    * @param dto Dados clínicos a serem atualizados
    * @return DTO com os dados clínicos atualizados
    */
-  DadoClinicoDTO atualizarDadoClinico(String id, DadoClinicoInputDTO dto);
+  DadoClinicoDTO atualizarDadoClinico(String id, EditarDadoClinicoInputDTO dto);
   
   /**
    * Busca todos os registros de dados clínicos de um paciente

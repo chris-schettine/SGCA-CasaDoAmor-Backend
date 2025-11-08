@@ -1,8 +1,8 @@
 package br.com.casadoamor.sgca.modules.paciente.dtos;
 
 import java.time.LocalDate;
-import java.util.Date;
 
+import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -27,4 +27,6 @@ public class EditarDadoPessoalInputDTO {
 
     @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
     String telefone;
+
+    EstadoCivilEnum estadoCivil;
 }
