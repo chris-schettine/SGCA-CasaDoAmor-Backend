@@ -1,0 +1,7 @@
+CREATE TABLE politica_privacidade (
+  id CHAR(36) NOT NULL PRIMARY KEY,
+  aceitou_politica_privacidade BOOLEAN NOT NULL DEFAULT TRUE,
+  caminho_documento_bucket VARCHAR(255),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

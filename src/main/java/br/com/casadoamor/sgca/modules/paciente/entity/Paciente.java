@@ -1,9 +1,11 @@
 package br.com.casadoamor.sgca.modules.paciente.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.casadoamor.sgca.modules.common.entity.BaseEntity;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
+import br.com.casadoamor.sgca.modules.common.entity.DadoSocial;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
 import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
 import jakarta.persistence.*;
@@ -30,14 +32,30 @@ public class Paciente extends BaseEntity {
   @JoinColumn(name = "endereco_id")
   private Endereco endereco;
 
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "dado_social_id")
+  private DadoSocial dadoSocial;
+
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "politica_privacidade_id")
+  private PoliticaPrivacidade politicaPrivacidade;
+
   @Column(unique = true, nullable = false)
   private String email;
 
-  private String caminhoDaImagemNoBucket; // nunca deve ser armazenado o arquivo em si, apenas o caminho no bucket
+  @Column(name = "caminho_da_imagem_no_bucket")
+  private String caminhoDaImagemNoBucket;
 
   @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ContatoEmergencia> contatosEmergencia;
+  @Builder.Default
+  private List<ContatoEmergencia> contatosEmergencia = new ArrayList<>();
 
   @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<DadoClinico> dadosClinicos;
+  @Builder.Default
+  private List<DadoClinico> dadosClinicos = new ArrayList<>();
+
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "informacao_hospitalar_id")
+  private InformacaoHospitalar informacaoHospitalar;
+
 }

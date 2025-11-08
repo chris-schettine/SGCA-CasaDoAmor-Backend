@@ -1,9 +1,9 @@
 package br.com.casadoamor.sgca.modules.paciente.dtos;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -26,7 +26,7 @@ public class DadoPessoalInputDTO {
   @NotNull(message = "A data de nascimento é obrigatória")
   @Past(message = "A data de nascimento deve ser no passado")
   @JsonFormat(pattern = "yyyy-MM-dd")
-  private Date dataNascimento;
+  private LocalDate dataNascimento;
 
   @NotBlank(message = "O CPF é obrigatório")
   @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 números")
@@ -43,4 +43,6 @@ public class DadoPessoalInputDTO {
   @NotBlank(message = "O telefone é obrigatório")
   @Pattern(regexp = "\\+?\\d{10,15}", message = "Telefone inválido")
   private String telefone;
+
+  private EstadoCivilEnum estadoCivil;
 } 

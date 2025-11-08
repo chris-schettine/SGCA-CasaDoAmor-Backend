@@ -8,25 +8,35 @@ import org.springframework.stereotype.Service;
 
 import br.com.casadoamor.sgca.infra.config.exception.CustomError;
 import br.com.casadoamor.sgca.infra.util.CpfUtil;
+import br.com.casadoamor.sgca.infra.util.RgUtil;
 import br.com.casadoamor.sgca.modules.common.dto.PaginatedResponseDTO;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
+import br.com.casadoamor.sgca.modules.common.entity.DadoSocial;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
 import br.com.casadoamor.sgca.modules.common.mapper.DadoPessoalMapper;
+import br.com.casadoamor.sgca.modules.common.mapper.DadoSocialMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.EnderecoMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.PaginatedResponseMapper;
 import br.com.casadoamor.sgca.modules.common.repository.DadoPessoalRepository;
+import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
+import br.com.casadoamor.sgca.modules.dadoClinico.mapper.DadoClinicoMapper;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.ContatoEmergencia;
 import br.com.casadoamor.sgca.modules.paciente.entity.HistoricoPaciente;
+import br.com.casadoamor.sgca.modules.paciente.entity.InformacaoHospitalar;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
+import br.com.casadoamor.sgca.modules.paciente.entity.PoliticaPrivacidade;
 import br.com.casadoamor.sgca.modules.paciente.mapper.ContatoEmergenciaMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.HistoricoPacienteMapper;
+import br.com.casadoamor.sgca.modules.paciente.mapper.InformacaoHospitalarMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.PacienteMapper;
+import br.com.casadoamor.sgca.modules.paciente.mapper.PoliticaPrivacidadeMapper;
 import br.com.casadoamor.sgca.modules.paciente.repository.HistoricoPacienteRepository;
 import br.com.casadoamor.sgca.modules.paciente.repository.PacienteRepository;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -41,37 +51,38 @@ public class PacienteServiceImp implements PacienteService {
   private final HistoricoPacienteMapper historicoPacienteMapper;
   private final HistoricoPacienteRepository historicoRepository;
   private final ContatoEmergenciaMapper contatoEmergenciaMapper;
+  private final DadoSocialMapper dadoSocialMapper;
+  private final PoliticaPrivacidadeMapper politicaPrivacidadeMapper;
+  private final DadoClinicoMapper dadoClinicoMapper;
+  private final InformacaoHospitalarMapper informacaoHospitalarMapper;
 
   @Override
+  @Transactional
   public PacienteDTO registrarPaciente(RegistrarPacienteDTO registrarPacienteDTO) {
 
-    String cpfLimpo = CpfUtil.limparCpf(registrarPacienteDTO.getDadoPessoal().getCpf());
-
-    dadoPessoalRepository.findByCpf(cpfLimpo).ifPresent(dadoPessoal -> {
-      throw new CustomError("CPF já cadastrado no sistema", HttpStatus.BAD_REQUEST);
-    });
-
-    dadoPessoalRepository.findByRg(registrarPacienteDTO.getDadoPessoal().getRg()).ifPresent(dadoPessoal -> {
-      throw new CustomError("RG já cadastrado no sistema", HttpStatus.BAD_REQUEST);
-    });
-
-    String email = registrarPacienteDTO.getEmail().toLowerCase();
-
-    pacienteRepository.findByEmail(email).ifPresent(paciente -> {
-      throw new CustomError("Email já cadastrado no sistema", HttpStatus.BAD_REQUEST);
-    });
+    validarPacienteExistente(registrarPacienteDTO);
 
     DadoPessoal dadoPessoal = dadoPessoalMapper.toEntity(registrarPacienteDTO.getDadoPessoal());
-
     Endereco endereco = enderecoMapper.toEntity(registrarPacienteDTO.getEndereco());
-
-    Paciente paciente = pacienteMapper.toEntityFromEntities(dadoPessoal, endereco, email);
-
+    Paciente paciente = pacienteMapper.toEntityFromEntities(dadoPessoal, endereco);
+    paciente.setEmail(registrarPacienteDTO.getEmail().toLowerCase());
     pacienteRepository.save(paciente);
 
+    DadoClinico dadoClinico = dadoClinicoMapper.toEntity(registrarPacienteDTO.getDadoClinico());
+    dadoClinico.setPaciente(paciente);
+    paciente.getDadosClinicos().add(dadoClinico);
+
+    PoliticaPrivacidade politicaPrivacidade = politicaPrivacidadeMapper.aceitouPolitica();
+    paciente.setPoliticaPrivacidade(politicaPrivacidade);
+
+    DadoSocial dadoSocial = dadoSocialMapper.toEntity(registrarPacienteDTO.getDadoSocial());
+    paciente.setDadoSocial(dadoSocial);
+
     List<ContatoEmergencia> contatos = contatoEmergenciaMapper.toEntityList(registrarPacienteDTO.getContatosDeEmergencia(), paciente);
-    
     paciente.setContatosEmergencia(contatos);
+    
+    InformacaoHospitalar informacaoHospitalar = informacaoHospitalarMapper.toEntity(registrarPacienteDTO.getInformacaoHospitalar());
+    paciente.setInformacaoHospitalar(informacaoHospitalar);
     
     pacienteRepository.save(paciente);
 
@@ -84,6 +95,30 @@ public class PacienteServiceImp implements PacienteService {
     historicoRepository.save(historicoPaciente);
 
     return pacienteMapper.toDTO(paciente);
+  }
+
+  private void validarPacienteExistente(RegistrarPacienteDTO registrarPacienteDTO) {
+    String cpfLimpo = CpfUtil.limparCpf(registrarPacienteDTO.getDadoPessoal().getCpf());
+
+    dadoPessoalRepository.findByCpf(cpfLimpo).ifPresent(dadoPessoal -> {
+      throw new CustomError("CPF já cadastrado no sistema", HttpStatus.BAD_REQUEST);
+    });
+
+    String rgLimpo = RgUtil.limparRg(registrarPacienteDTO.getDadoPessoal().getRg());
+
+    dadoPessoalRepository.findByRg(rgLimpo).ifPresent(dadoPessoal -> {
+      throw new CustomError("RG já cadastrado no sistema", HttpStatus.BAD_REQUEST);
+    });
+
+    String email = registrarPacienteDTO.getEmail().toLowerCase();
+
+    pacienteRepository.findByEmail(email).ifPresent(paciente -> {
+      throw new CustomError("Email já cadastrado no sistema", HttpStatus.BAD_REQUEST);
+    });
+
+    if (registrarPacienteDTO.getDadoPessoal().getDataNascimento().isAfter(java.time.LocalDate.now())) {
+      throw new CustomError("Data de nascimento não pode ser no futuro", HttpStatus.BAD_REQUEST);
+    }
   }
 
   public PacienteDTO editarPaciente(String id, EditarPacienteDTO editarPacienteDTO) {

@@ -17,7 +17,7 @@ public class EnderecoDTO {
 
   private Integer numero;
 
-    private String complemento;
+  private String complemento;
 
   private String bairro;
 

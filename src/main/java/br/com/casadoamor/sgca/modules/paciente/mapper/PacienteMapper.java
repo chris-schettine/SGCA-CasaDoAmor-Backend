@@ -14,6 +14,7 @@ import br.com.casadoamor.sgca.modules.paciente.dtos.ContatoEmergenciaDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.InformacaoHospitalarDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,12 @@ public class PacienteMapper {
   private final DadoPessoalMapper dadoPessoalMapper;
   private final ContatoEmergenciaMapper contatoEmergenciaMapper;
   private final DadoClinicoMapper dadoClinicoMapper;
+  private final InformacaoHospitalarMapper informacaoHospitalarMapper;
 
-  public Paciente toEntityFromEntities (DadoPessoal dadoPessoal, Endereco endereco, String email) {
+  public Paciente toEntityFromEntities (DadoPessoal dadoPessoal, Endereco endereco) {
     return Paciente.builder()
       .dadoPessoal(dadoPessoal)
       .endereco(endereco)
-      .email(email)
       .build();
   }
 
@@ -38,8 +39,9 @@ public class PacienteMapper {
     DadoPessoalDTO dadoPessoal = dadoPessoalMapper.mapToDTO(paciente.getDadoPessoal());
     EnderecoDTO endereco = enderecoMapper.mapToDTO(paciente.getEndereco());
     List<ContatoEmergenciaDTO> contatosDeEmergencia = contatoEmergenciaMapper.toDTOList(paciente.getContatosEmergencia());
-    List<DadoClinicoDTO> dadosClinicos = dadoClinicoMapper.toEntityList(paciente.getDadosClinicos());
-    
+    List<DadoClinicoDTO> dadosClinicos = dadoClinicoMapper.toDTOList(paciente.getDadosClinicos());
+    InformacaoHospitalarDTO informacaoHospitalar = informacaoHospitalarMapper.toDTO(paciente.getInformacaoHospitalar());
+
     return PacienteDTO.builder()
       .id(paciente.getId())
       .email(paciente.getEmail())
@@ -49,6 +51,7 @@ public class PacienteMapper {
       .imageUrl(null) // TO DO - implementar imagem do paciente
       .contatosDeEmergencia(contatosDeEmergencia)
       .dadosClinicos(dadosClinicos)
+      .informacaoHospitalar(informacaoHospitalar)
       .build();
   }
 }

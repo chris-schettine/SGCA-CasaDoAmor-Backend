@@ -1,7 +1,8 @@
 package br.com.casadoamor.sgca.modules.paciente.dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
+import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class DadoPessoalDTO {
 
 	private String nomeMae;
 
-  private Date dataNascimento;
+  private LocalDate dataNascimento;
 
   private String cpf;
 
@@ -29,4 +30,6 @@ public class DadoPessoalDTO {
 	private String profissao;
 
   private String telefone;
+
+  private EstadoCivilEnum estadoCivil;
 } 
