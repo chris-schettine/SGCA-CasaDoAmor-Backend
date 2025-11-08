@@ -76,6 +76,23 @@ public class SessaoService {
     }
 
     /**
+     * Revoga sessão pelo token JWT (usado no logout)
+     */
+    @Transactional
+    public void revogarSessaoPorToken(String tokenJwt, Long usuarioId) {
+        SessaoUsuario sessao = sessaoRepository.findByTokenJwt(tokenJwt)
+                .orElseThrow(() -> new ResourceNotFoundException("Sessão não encontrada"));
+
+        if (!sessao.getUsuario().getId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Sessão não pertence ao usuário");
+        }
+
+        sessao.revogar();
+        sessaoRepository.save(sessao);
+        log.info("Logout realizado: Sessão revogada pelo token para usuário ID: {}", usuarioId);
+    }
+
+    /**
      * Revoga todas as sessões de um usuário (exceto a atual)
      */
     @Transactional

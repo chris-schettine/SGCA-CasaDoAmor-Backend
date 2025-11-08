@@ -205,6 +205,33 @@ public class AuthController {
     }
 
     /**
+     * Endpoint para fazer logout (revoga sessão atual)
+     * POST /auth/logout
+     */
+    @PostMapping("/logout")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Fazer logout", description = "Revoga a sessão atual do usuário autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado"),
+            @ApiResponse(responseCode = "404", description = "Sessão não encontrada")
+    })
+    public ResponseEntity<?> logout(Authentication authentication,
+                                   @RequestHeader("Authorization") String token) {
+        try {
+            String cpf = authentication.getName();
+            Long usuarioId = obterUsuarioId(cpf);
+            String tokenJwt = token.replace("Bearer ", "");
+            
+            sessaoService.revogarSessaoPorToken(tokenJwt, usuarioId);
+            return ResponseEntity.ok(MessageResponseDTO.success("Logout realizado com sucesso"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
      * Endpoint para listar sessões ativas
      * GET /auth/sessions
      */
