@@ -1,6 +1,3 @@
-ALTER TABLE pacientes
-  CHANGE COLUMN caminhoDaImagemNoBucket caminho_da_imagem_no_bucket VARCHAR(512);
-
 ALTER TABLE dados_clinicos
 ADD COLUMN tipo_sanguineo ENUM(
   'A_POSITIVO', 'A_NEGATIVO',
