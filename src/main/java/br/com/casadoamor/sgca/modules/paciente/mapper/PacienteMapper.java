@@ -39,6 +39,10 @@ public class PacienteMapper {
   }
 
   public PacienteDTO toDTO (Paciente paciente) {
+    if (paciente == null) {
+      return null;
+    }
+    
     DadoPessoalDTO dadoPessoal = dadoPessoalMapper.mapToDTO(paciente.getDadoPessoal());
     EnderecoDTO endereco = enderecoMapper.mapToDTO(paciente.getEndereco());
     List<ContatoEmergenciaDTO> contatosDeEmergencia = contatoEmergenciaMapper.toDTOList(paciente.getContatosEmergencia());

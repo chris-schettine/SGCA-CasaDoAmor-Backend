@@ -23,6 +23,8 @@ import br.com.casadoamor.sgca.modules.common.mapper.DadoPessoalMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.EnderecoMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.PaginatedResponseMapper;
 import br.com.casadoamor.sgca.modules.common.repository.DadoPessoalRepository;
+import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoAcompanhanteDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.HistoricoPaciente;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 import br.com.casadoamor.sgca.modules.paciente.mapper.HistoricoPacienteMapper;
@@ -234,6 +236,27 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
     boolean hasNextPage = (offset + limit) < allAcompanhantes.size();
 
     return paginatedMapper.toDTO(nodes, allAcompanhantes.size(), hasPreviousPage, hasNextPage);
+  }
+
+  @Override
+  public PaginatedResponseDTO<HistoricoAcompanhanteDTO> historicoAcompanhantePaginado(String acompanhanteId, int limit, int offset) {
+    Acompanhante acompanhante = acompanhanteRepository.findById(acompanhanteId)
+      .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
+
+    List<HistoricoPaciente> historicos = historicoRepository.findByAcompanhanteOrderByDataRegistroDesc(acompanhante);
+
+    int start = Math.min(offset, historicos.size());
+    int end = Math.min(offset + limit, historicos.size());
+
+    List<HistoricoAcompanhanteDTO> nodes = historicos.subList(start, end)
+      .stream()
+      .map(historicoPacienteMapper::toHistoricoAcompanhanteDTO)
+      .toList();
+
+    boolean hasPreviousPage = offset > 0;
+    boolean hasNextPage = (offset + limit) < historicos.size();
+
+    return paginatedMapper.toDTO(nodes, historicos.size(), hasPreviousPage, hasNextPage);
   }
 
 }

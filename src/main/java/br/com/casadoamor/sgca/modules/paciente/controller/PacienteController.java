@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.casadoamor.sgca.modules.common.dto.PaginatedResponseDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarPacienteDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.services.PacienteService;
@@ -56,5 +57,16 @@ public class PacienteController {
     @RequestParam(required = false) String searchText
   ) {
     return pacienteService.pacientesPaginados(searchText, limit, offset);
+  }
+
+  @GetMapping("/{pacienteId}/historico")
+  @PreAuthorize("hasAuthority('PACIENTE_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @Operation(summary = "Listar o histórico de um paciente com paginação")
+  public PaginatedResponseDTO<HistoricoPacienteDTO> historicoPaciente(
+    @PathVariable String pacienteId,
+    @RequestParam(defaultValue = "10") int limit,
+    @RequestParam(defaultValue = "0") int offset
+  ) {
+    return pacienteService.historicoPacientePaginado(pacienteId, limit, offset);
   }
 }
