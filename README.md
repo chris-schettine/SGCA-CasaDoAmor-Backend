@@ -48,7 +48,11 @@ O SGCA Backend é uma API REST desenvolvida para gerenciar operações da Casa d
 - **Pacientes**: Cadastro completo com dados pessoais, clínicos e endereços
 - **Acompanhantes**: Gestão de acompanhantes dos pacientes com relacionamentos familiares
 - **Contatos de Emergência**: Registro de contatos para situações de emergência
-- **Profissionais de Saúde**: Gestão de profissionais com documentos e especialidades
+- **Profissionais de Saúde**: Gestão completa de profissionais com categorias e tipos de vínculo
+- **Tipos de Serviço**: Cadastro de serviços oferecidos pelos profissionais
+- **Consentimentos LGPD**: Gerenciamento de termos e consentimentos de privacidade
+- **Hospedagens**: Sistema de controle de estadias dos pacientes com histórico completo
+- **Quartos/Leitos**: Gerenciamento de acomodações com controle de ocupação e separação por ala
 - **Upload de Arquivos**: Sistema de gerenciamento de fotos de perfil
 - **Auditoria**: Rastreamento de sessões e tentativas de login
 
@@ -330,6 +334,62 @@ GET    /contatos-emergencia        # Listar contatos
 GET    /contatos-emergencia/{id}   # Buscar por ID
 PUT    /contatos-emergencia/{id}   # Atualizar contato
 DELETE /contatos-emergencia/{id}   # Deletar contato
+```
+
+#### Profissionais (ADMIN=total, RECEPCIONISTA+AUDITOR=leitura)
+```http
+POST   /api/profissionais                    # Criar profissional (ADMIN)
+PUT    /api/profissionais/{uuid}             # Atualizar profissional (ADMIN)
+GET    /api/profissionais/{uuid}             # Buscar por UUID
+GET    /api/profissionais                    # Listar profissionais
+GET    /api/profissionais/categoria/{cat}    # Filtrar por categoria
+PATCH  /api/profissionais/{uuid}/inativar    # Inativar profissional (ADMIN)
+DELETE /api/profissionais/{uuid}             # Deletar profissional (ADMIN)
+```
+
+#### Tipos de Serviço (ADMIN=total, RECEPCIONISTA+AUDITOR=leitura)
+```http
+GET    /api/tipos-servico                    # Listar tipos de serviço
+GET    /api/tipos-servico/{id}               # Buscar por ID
+```
+
+#### Consentimentos LGPD (ADMIN=criar, ADMIN+RECEP+AUDITOR=ler)
+```http
+POST   /api/consentimentos-lgpd              # Criar termo (ADMIN)
+GET    /api/consentimentos-lgpd              # Listar termos
+GET    /api/consentimentos-lgpd/{id}         # Buscar por ID
+```
+
+#### Quartos/Leitos (ADMIN=total, RECEPCIONISTA+AUDITOR=leitura)
+```http
+POST   /api/quartos                          # Cadastrar quarto (ADMIN)
+PUT    /api/quartos/{uuid}                   # Atualizar quarto (ADMIN)
+GET    /api/quartos/{uuid}                   # Buscar por UUID
+GET    /api/quartos                          # Listar todos
+GET    /api/quartos/ativos                   # Listar ativos
+GET    /api/quartos/disponiveis              # Quartos com vagas
+GET    /api/quartos/disponiveis/ala/{ala}    # Vagas por ala
+GET    /api/quartos/ala/{ala}                # Filtrar por ala (FEMININA/MASCULINA/MISTA)
+GET    /api/quartos/estatisticas             # Estatísticas de ocupação
+GET    /api/quartos/paginated                # Lista paginada
+PATCH  /api/quartos/{uuid}/inativar          # Inativar quarto (ADMIN)
+DELETE /api/quartos/{uuid}                   # Deletar quarto (ADMIN)
+```
+
+#### Hospedagens (ADMIN=total, RECEPCIONISTA+AUDITOR=leitura)
+```http
+POST   /api/hospedagens                      # Registrar entrada (ADMIN)
+PUT    /api/hospedagens/{uuid}/saida         # Registrar saída (ADMIN)
+PUT    /api/hospedagens/{uuid}/transferir    # Transferir quarto (ADMIN)
+GET    /api/hospedagens/{uuid}               # Buscar por UUID
+GET    /api/hospedagens/ativas               # Listar ativas
+GET    /api/hospedagens/paciente/{id}        # Histórico do paciente
+GET    /api/hospedagens/quarto/{uuid}        # Histórico do quarto
+GET    /api/hospedagens/periodo              # Filtrar por período
+GET    /api/hospedagens/previsao-vencida     # Saídas atrasadas
+GET    /api/hospedagens/paciente/{id}/ativa  # Verificar se tem hospedagem ativa
+GET    /api/hospedagens/paginated            # Lista paginada
+DELETE /api/hospedagens/{uuid}               # Deletar hospedagem (ADMIN)
 ```
 
 #### Upload de Arquivos
@@ -1032,6 +1092,68 @@ Ao reportar bugs, inclua:
 - Forneça exemplos de uso
 
 ## 📝 Changelog
+
+### [0.0.3-SNAPSHOT] - 2025-11-10
+
+#### ✨ Added
+- **Módulo Profissionais**: Sistema completo para gestão de profissionais de saúde
+  - CRUD de profissionais com categorias (MEDICO, ENFERMAGEM, ODONTOLOGIA, etc.)
+  - Tipos de vínculo (FUNCIONARIO, VOLUNTARIO)
+  - Validação de documentos profissionais (CRM, COREN, CRO, etc.)
+  - Gestão de status ativo/inativo
+- **Módulo Tipos de Serviço**: Cadastro de serviços oferecidos
+  - Listagem de tipos de serviço disponíveis
+- **Módulo Consentimentos LGPD**: Gerenciamento de termos de privacidade
+  - Cadastro de termos e consentimentos
+  - Controle de versões de termos
+- **Módulo Hospedagens**: Sistema completo de controle de estadias
+  - Registro de entrada e saída de pacientes
+  - Transferência entre quartos
+  - Histórico completo de hospedagens por paciente
+  - Status de hospedagem (ATIVA, ENCERRADA, TRANSFERENCIA)
+  - Validação de hospedagens ativas (um paciente por vez)
+  - Alertas para previsões de saída vencidas
+- **Módulo Quartos/Leitos**: Gerenciamento de acomodações
+  - CRUD de quartos com controle de capacidade
+  - Separação por ala (FEMININA, MASCULINA, MISTA)
+  - Tipos de quarto (INDIVIDUAL, COMPARTILHADO)
+  - Controle automático de ocupação (incremento/decremento)
+  - Estatísticas de ocupação (geral e por ala)
+  - Status de manutenção
+  - Validação de capacidade (impede redução abaixo da ocupação atual)
+- **Migrações de Banco**: 18 novas migrações (V29-V46)
+  - V43: Adição de tipo_vinculo em profissionais
+  - V44: Correção de enum CategoriaProfissional
+  - V45: Tabela de quartos com FKs corretas
+  - V46: Tabela de hospedagens com relacionamentos
+
+#### 🔒 Security
+- ✅ Controle de acesso baseado em roles para todos os módulos
+  - ADMINISTRADOR: Acesso total (criar, editar, deletar)
+  - RECEPCIONISTA e AUDITOR: Apenas leitura (GET endpoints)
+- ✅ Validações de entrada em todos os DTOs
+- ✅ Soft delete implementado em todas as entidades
+
+#### 🗄️ Database
+- ✅ Tabela `profissionais` com categoria e tipo_vinculo
+- ✅ Tabela `tipos_servico` para serviços oferecidos
+- ✅ Tabela `consentimentos_lgpd` para termos de privacidade
+- ✅ Tabela `quartos` com controle de ocupação e alas
+- ✅ Tabela `hospedagens` com histórico completo
+- ✅ 25+ queries customizadas no QuartoRepository
+- ✅ 20+ queries customizadas no HospedagemRepository
+- ✅ Índices otimizados para performance
+- ✅ Foreign Keys corrigidas (auth_usuarios)
+
+#### 🔧 Configuration
+- ✅ `spring.jpa.hibernate.ddl-auto` alterado de `update` para `none`
+  - Flyway agora é o gerenciador exclusivo do schema
+  - Resolve conflitos entre Hibernate DDL e Flyway
+
+#### 📚 Documentation
+- ✅ Swagger/OpenAPI completo para todos os novos endpoints
+- ✅ Documentação de negócio em JavaDoc
+- ✅ README atualizado com exemplos de uso
 
 ### [0.0.2-SNAPSHOT] - 2025-11-04
 
