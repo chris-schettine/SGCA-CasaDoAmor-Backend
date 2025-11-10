@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
 
