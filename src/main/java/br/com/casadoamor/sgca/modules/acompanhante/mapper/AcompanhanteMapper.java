@@ -18,18 +18,21 @@ public class AcompanhanteMapper {
   private final DadoPessoalMapper dadoPessoalMapper;
   private final EnderecoMapper enderecoMapper;
 
-  public AcompanhanteDTO mapToDTO(Acompanhante a) {
-    DadoPessoalDTO dadoPessoalDTO = dadoPessoalMapper.mapToDTO(a.getDadoPessoal());
-    EnderecoDTO enderecoDTO = enderecoMapper.mapToDTO(a.getEndereco());
+  public AcompanhanteDTO mapToDTO(Acompanhante acompanhante) {
+    if (acompanhante == null) {
+      return null;
+    }
+    DadoPessoalDTO dadoPessoalDTO = dadoPessoalMapper.mapToDTO(acompanhante.getDadoPessoal());
+    EnderecoDTO enderecoDTO = enderecoMapper.mapToDTO(acompanhante.getEndereco());
 
     return AcompanhanteDTO.builder()
-      .id(a.getId())
-      .podeAjudarNaCozinha(a.getPodeAjudarNaCozinha())
+      .id(acompanhante.getId())
+      .podeAjudarNaCozinha(acompanhante.getPodeAjudarNaCozinha())
       .dadoPessoal(dadoPessoalDTO)
       .endereco(enderecoDTO)
-      .parentesco(a.getParentesco())
-      .ativo(a.isAtivo())
-      .pacienteNome(a.getPaciente().getDadoPessoal().getNome())
+      .parentesco(acompanhante.getParentesco())
+      .ativo(acompanhante.isAtivo())
+      .pacienteNome(acompanhante.getPaciente().getDadoPessoal().getNome())
       .build();
   }
 

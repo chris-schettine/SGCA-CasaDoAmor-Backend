@@ -18,6 +18,10 @@ public class DadoSocialMapper {
   }
 
   public DadoSocialDTO toDTO (DadoSocial dadoSocial) {
+    if (dadoSocial == null) {
+      return null;
+    }
+    
     return DadoSocialDTO.builder()
       .rendaFamiliar(dadoSocial.getRendaFamiliar())
       .composicaoFamiliar(dadoSocial.getComposicaoFamiliar())

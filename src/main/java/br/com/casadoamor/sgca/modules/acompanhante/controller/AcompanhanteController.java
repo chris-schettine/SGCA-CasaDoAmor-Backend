@@ -17,6 +17,8 @@ import br.com.casadoamor.sgca.modules.acompanhante.dtos.EditarAcompanhanteDTO;
 import br.com.casadoamor.sgca.modules.acompanhante.dtos.RegistrarAcompanhanteDTO;
 import br.com.casadoamor.sgca.modules.acompanhante.service.AcompanhanteService;
 import br.com.casadoamor.sgca.modules.common.dto.PaginatedResponseDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoAcompanhanteDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -57,5 +59,16 @@ public class AcompanhanteController {
   ) {
     PaginatedResponseDTO<AcompanhanteDTO> page = acompanhanteService.acompanhantesPaginados(searchText, limit, offset);
     return new ResponseEntity<>(page, HttpStatus.OK);
+  }
+
+  @GetMapping("/{acompanhanteId}/historico")
+  @PreAuthorize("hasAuthority('ACOMPANHANTES_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @Operation(summary = "Listar o histórico de um acompanhante com paginação")
+  public PaginatedResponseDTO<HistoricoAcompanhanteDTO> historicoAcompanhante(
+    @PathVariable String acompanhanteId,
+    @RequestParam(defaultValue = "10") int limit,
+    @RequestParam(defaultValue = "0") int offset
+  ) {
+    return acompanhanteService.historicoAcompanhantePaginado(acompanhanteId, limit, offset);
   }
 }

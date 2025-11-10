@@ -21,6 +21,7 @@ import br.com.casadoamor.sgca.modules.common.repository.DadoPessoalRepository;
 import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
 import br.com.casadoamor.sgca.modules.dadoClinico.mapper.DadoClinicoMapper;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarPacienteDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.ContatoEmergencia;
@@ -298,4 +299,24 @@ public class PacienteServiceImp implements PacienteService {
     return paginatedMapper.toDTO(nodes, allPacientes.size(), hasPreviousPage, hasNextPage);
   }
 
+  @Override
+  public PaginatedResponseDTO<HistoricoPacienteDTO> historicoPacientePaginado(String pacienteId, int limit, int offset) {
+    Paciente paciente = pacienteRepository.findById(pacienteId)
+      .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+
+    List<HistoricoPaciente> historicos = historicoRepository.findByPacienteOrderByDataRegistroDesc(paciente);
+
+    int start = Math.min(offset, historicos.size());
+    int end = Math.min(offset + limit, historicos.size());
+
+    List<HistoricoPacienteDTO> nodes = historicos.subList(start, end)
+      .stream()
+      .map(historicoPacienteMapper::toHistoricoPacienteDTO)
+      .toList();
+
+    boolean hasPreviousPage = offset > 0;
+    boolean hasNextPage = (offset + limit) < historicos.size();
+
+    return paginatedMapper.toDTO(nodes, historicos.size(), hasPreviousPage, hasNextPage);
+  }
 }
