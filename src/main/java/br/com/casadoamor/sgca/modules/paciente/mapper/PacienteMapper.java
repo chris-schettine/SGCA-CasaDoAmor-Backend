@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import br.com.casadoamor.sgca.modules.common.dto.DadoSocialDTO;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
 import br.com.casadoamor.sgca.modules.common.mapper.DadoPessoalMapper;
+import br.com.casadoamor.sgca.modules.common.mapper.DadoSocialMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.EnderecoMapper;
 import br.com.casadoamor.sgca.modules.dadoClinico.mapper.DadoClinicoMapper;
 import br.com.casadoamor.sgca.modules.paciente.dtos.ContatoEmergenciaDTO;
@@ -27,6 +29,7 @@ public class PacienteMapper {
   private final ContatoEmergenciaMapper contatoEmergenciaMapper;
   private final DadoClinicoMapper dadoClinicoMapper;
   private final InformacaoHospitalarMapper informacaoHospitalarMapper;
+  private final DadoSocialMapper dadoSocialMapper;
 
   public Paciente toEntityFromEntities (DadoPessoal dadoPessoal, Endereco endereco) {
     return Paciente.builder()
@@ -41,6 +44,7 @@ public class PacienteMapper {
     List<ContatoEmergenciaDTO> contatosDeEmergencia = contatoEmergenciaMapper.toDTOList(paciente.getContatosEmergencia());
     List<DadoClinicoDTO> dadosClinicos = dadoClinicoMapper.toDTOList(paciente.getDadosClinicos());
     InformacaoHospitalarDTO informacaoHospitalar = informacaoHospitalarMapper.toDTO(paciente.getInformacaoHospitalar());
+    DadoSocialDTO dadoSocial = dadoSocialMapper.toDTO(paciente.getDadoSocial());
 
     return PacienteDTO.builder()
       .id(paciente.getId())
@@ -52,6 +56,7 @@ public class PacienteMapper {
       .contatosDeEmergencia(contatosDeEmergencia)
       .dadosClinicos(dadosClinicos)
       .informacaoHospitalar(informacaoHospitalar)
+      .dadoSocial(dadoSocial)
       .build();
   }
 }
