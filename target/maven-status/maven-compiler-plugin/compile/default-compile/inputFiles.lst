@@ -84,6 +84,7 @@
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/repository/TipoServicoRepository.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/service/TipoServicoService.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/controller/AuthController.java
+/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/controller/TestAuthController.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/controller/TwoFactorController.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/AuthUsuarioDadosPessoaisDTO.java
 /home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/AuthUsuarioEnderecoDTO.java
