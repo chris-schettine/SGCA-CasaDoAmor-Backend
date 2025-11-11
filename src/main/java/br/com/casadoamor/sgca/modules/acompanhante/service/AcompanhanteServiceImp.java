@@ -278,4 +278,25 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
 
     acompanhanteRepository.save(acompanhante);
   }
+
+  @Override
+  public PaginatedResponseDTO<AcompanhanteDTO> listarAcompanhantesPorPaciente(String pacienteId, int limit, int offset) {
+    Paciente paciente = pacienteRepository.findById(pacienteId)
+      .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+
+    List<Acompanhante> acompanhantes = acompanhanteRepository.findByPacienteAndDeletedAtIsNull(paciente);
+
+    int start = Math.min(offset, acompanhantes.size());
+    int end = Math.min(offset + limit, acompanhantes.size());
+
+    List<AcompanhanteDTO> nodes = acompanhantes.subList(start, end)
+      .stream()
+      .map(acompanhanteMapper::mapToDTO)
+      .toList();
+
+    boolean hasPreviousPage = offset > 0;
+    boolean hasNextPage = (offset + limit) < acompanhantes.size();
+
+    return paginatedMapper.toDTO(nodes, acompanhantes.size(), hasPreviousPage, hasNextPage);
+  }
 }
