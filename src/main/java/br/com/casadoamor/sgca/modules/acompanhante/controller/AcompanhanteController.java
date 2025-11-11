@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.modules.acompanhante.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,6 @@ import br.com.casadoamor.sgca.modules.acompanhante.dtos.RegistrarAcompanhanteDTO
 import br.com.casadoamor.sgca.modules.acompanhante.service.AcompanhanteService;
 import br.com.casadoamor.sgca.modules.common.dto.PaginatedResponseDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoAcompanhanteDTO;
-import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -70,5 +70,13 @@ public class AcompanhanteController {
     @RequestParam(defaultValue = "0") int offset
   ) {
     return acompanhanteService.historicoAcompanhantePaginado(acompanhanteId, limit, offset);
+  }
+
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Excluir (soft delete) um acompanhante")
+  @PreAuthorize("hasAuthority('ACOMPANHANTES_EXCLUIR') or hasRole('ADMINISTRADOR')")
+  public ResponseEntity<Void> deletarAcompanhante(@PathVariable String id) {
+    acompanhanteService.deletarAcompanhante(id);
+    return ResponseEntity.noContent().build();
   }
 }

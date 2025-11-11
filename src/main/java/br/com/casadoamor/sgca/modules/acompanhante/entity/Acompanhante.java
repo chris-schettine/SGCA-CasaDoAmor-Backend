@@ -1,5 +1,9 @@
 package br.com.casadoamor.sgca.modules.acompanhante.entity;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.casadoamor.sgca.modules.common.entity.BaseEntity;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
@@ -42,4 +46,21 @@ public class Acompanhante extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "paciente_id", nullable = false)
   private Paciente paciente;
+
+  @JsonIgnore
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
+  @JsonIgnore
+  @Column(name = "deleted_by")
+  private String deletedBy;
+  
+  public boolean isDeleted() {
+    return deletedAt != null;
+  }
+
+  public void markAsDeleted(String userId) {
+    this.deletedAt = LocalDateTime.now();
+    this.deletedBy = userId;
+  }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,6 +144,8 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
     Specification<Acompanhante> spec = (root, query, criteriaBuilder) -> {
       Predicate predicate = criteriaBuilder.conjunction();
 
+      predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
+      
       if (searchText != null && !searchText.isBlank()) {
         String search = "%" + searchText.toLowerCase() + "%";
         String searchPlain = searchText.toLowerCase();
@@ -259,4 +262,21 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
     return paginatedMapper.toDTO(nodes, historicos.size(), hasPreviousPage, hasNextPage);
   }
 
+  @Override
+  @Transactional
+  public void deletarAcompanhante(String id) {
+    String deletedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+
+    Acompanhante acompanhante = acompanhanteRepository.findById(id)
+      .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
+
+    if (acompanhante.isDeleted()) {
+      throw new CustomError("Acompanhante já foi removido anteriormente", HttpStatus.BAD_REQUEST);
+    }
+
+    acompanhante.setAtivo(false);
+    acompanhante.markAsDeleted(deletedBy);
+
+    acompanhanteRepository.save(acompanhante);
+  }
 }

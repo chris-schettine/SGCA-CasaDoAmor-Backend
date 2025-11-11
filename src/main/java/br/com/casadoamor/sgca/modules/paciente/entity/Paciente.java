@@ -1,5 +1,6 @@
 package br.com.casadoamor.sgca.modules.paciente.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,4 +59,18 @@ public class Paciente extends BaseEntity {
   @JoinColumn(name = "informacao_hospitalar_id")
   private InformacaoHospitalar informacaoHospitalar;
 
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
+  @Column(name = "deleted_by")
+  private String deletedBy;
+
+  public boolean isDeleted() {
+    return deletedAt != null;
+  }
+
+  public void markAsDeleted(String deletedBy) {
+    this.deletedAt = LocalDateTime.now();
+    this.deletedBy = deletedBy;
+  }
 }
