@@ -25,7 +25,6 @@ import br.com.casadoamor.sgca.modules.common.mapper.EnderecoMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.PaginatedResponseMapper;
 import br.com.casadoamor.sgca.modules.common.repository.DadoPessoalRepository;
 import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoAcompanhanteDTO;
-import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.HistoricoPaciente;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 import br.com.casadoamor.sgca.modules.paciente.mapper.HistoricoPacienteMapper;
