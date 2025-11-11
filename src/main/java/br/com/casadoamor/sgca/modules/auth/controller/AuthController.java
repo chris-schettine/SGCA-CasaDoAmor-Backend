@@ -52,19 +52,6 @@ public class AuthController {
     private final SessaoService sessaoService;
     private final AccountActivationService accountActivationService;
 
-    /**
-     * Endpoint para registrar um novo usuário - DESATIVADO
-     * Usar endpoint de admin para criar usuários
-     * POST /auth/register
-     */
-    // @PostMapping("/register")
-    // @Operation(summary = "Registrar novo usuário", description = "Cria um novo usuário no sistema e retorna um token JWT")
-    // @ApiResponses(value = {
-    //         @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso"),
-    //         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-    //         @ApiResponse(responseCode = "409", description = "Email ou CPF já cadastrado")
-    // })
-    // public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
         try {
             AuthResponseDTO response = authService.register(request);
