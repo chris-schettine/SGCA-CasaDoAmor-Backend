@@ -79,4 +79,17 @@ public class AcompanhanteController {
     acompanhanteService.deletarAcompanhante(id);
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/paciente/{pacienteId}")
+  @Operation(summary = "Listar acompanhantes de um paciente com paginação")
+  @PreAuthorize("hasAuthority('ACOMPANHANTES_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  public ResponseEntity<PaginatedResponseDTO<AcompanhanteDTO>> listarAcompanhantesPorPaciente(
+    @PathVariable String pacienteId,
+    @RequestParam(defaultValue = "10") int limit,
+    @RequestParam(defaultValue = "0") int offset
+  ) {
+    PaginatedResponseDTO<AcompanhanteDTO> page = acompanhanteService.listarAcompanhantesPorPaciente(pacienteId, limit, offset);
+    return new ResponseEntity<>(page, HttpStatus.OK);
+  }
+
 }

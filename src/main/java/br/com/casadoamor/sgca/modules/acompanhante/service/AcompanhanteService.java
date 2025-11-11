@@ -16,4 +16,6 @@ public interface AcompanhanteService {
   PaginatedResponseDTO<HistoricoAcompanhanteDTO> historicoAcompanhantePaginado(String acompanhanteId, int limit, int offset);
 
   void deletarAcompanhante(String id);
+
+  PaginatedResponseDTO<AcompanhanteDTO> listarAcompanhantesPorPaciente(String pacienteId, int limit, int offset);
 }
