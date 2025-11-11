@@ -14,4 +14,6 @@ public interface PacienteService {
   PaginatedResponseDTO<PacienteDTO> pacientesPaginados (String searchText, int limit, int offset);
 
   PaginatedResponseDTO<HistoricoPacienteDTO> historicoPacientePaginado(String pacienteId, int limit, int offset);
+
+  void deletarPaciente(String id);
 }

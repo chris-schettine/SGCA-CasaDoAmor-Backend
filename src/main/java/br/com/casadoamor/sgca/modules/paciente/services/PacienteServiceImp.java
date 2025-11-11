@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import br.com.casadoamor.sgca.infra.config.exception.CustomError;
@@ -205,6 +206,8 @@ public class PacienteServiceImp implements PacienteService {
      Specification<Paciente> spec = (root, query, criteriaBuilder) -> {
         Predicate predicate = criteriaBuilder.conjunction(); 
 
+    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
+
     if (searchText != null && !searchText.isBlank()) {
       String search = "%" + searchText.toLowerCase() + "%";
       String searchPlain = searchText.toLowerCase();
@@ -318,5 +321,22 @@ public class PacienteServiceImp implements PacienteService {
     boolean hasNextPage = (offset + limit) < historicos.size();
 
     return paginatedMapper.toDTO(nodes, historicos.size(), hasPreviousPage, hasNextPage);
+  }
+
+  @Override
+  @Transactional
+  public void deletarPaciente(String id) {
+    String deletedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+
+    Paciente paciente = pacienteRepository.findById(id)
+      .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+
+    if (paciente.isDeleted()) {
+      throw new CustomError("Paciente já foi removido anteriormente", HttpStatus.BAD_REQUEST);
+    }
+
+    paciente.markAsDeleted(deletedBy);
+
+    pacienteRepository.save(paciente);
   }
 }

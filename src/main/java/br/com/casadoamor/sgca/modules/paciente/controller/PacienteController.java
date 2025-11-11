@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.modules.paciente.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,7 @@ public class PacienteController {
 
   @PostMapping("/")
   @Operation(summary = "Registrar um novo paciente (Apenas dados brutos)")
-  @PreAuthorize("hasAuthority('PACIENTE_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTES_CRIAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   public ResponseEntity<PacienteDTO> registrarPaciente(@Valid @RequestBody RegistrarPacienteDTO registrarPacienteDTO) {
     PacienteDTO paciente = this.pacienteService.registrarPaciente(registrarPacienteDTO);
     return new ResponseEntity<>(paciente, HttpStatus.CREATED);
@@ -40,7 +41,7 @@ public class PacienteController {
 
   @PatchMapping("/{id}")
   @Operation(summary = "Editar um paciente existente")
-  @PreAuthorize("hasAuthority('PACIENTE_EDITAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTES_EDITAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   public ResponseEntity<PacienteDTO> editarPaciente(
     @PathVariable String id,
     @Valid @RequestBody EditarPacienteDTO editarPacienteDTO) {
@@ -49,7 +50,7 @@ public class PacienteController {
   }
 
   @GetMapping("/")
-  @PreAuthorize("hasAuthority('PACIENTE_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTES_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   @Operation(summary = "Listar pacientes com paginação e filtro opcional")
   public PaginatedResponseDTO<PacienteDTO> pacientesPaginados(
     @RequestParam(defaultValue = "10") int limit,
@@ -60,7 +61,7 @@ public class PacienteController {
   }
 
   @GetMapping("/{pacienteId}/historico")
-  @PreAuthorize("hasAuthority('PACIENTE_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  @PreAuthorize("hasAuthority('PACIENTES_VER') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
   @Operation(summary = "Listar o histórico de um paciente com paginação")
   public PaginatedResponseDTO<HistoricoPacienteDTO> historicoPaciente(
     @PathVariable String pacienteId,
@@ -68,5 +69,13 @@ public class PacienteController {
     @RequestParam(defaultValue = "0") int offset
   ) {
     return pacienteService.historicoPacientePaginado(pacienteId, limit, offset);
+  }
+
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Excluir (soft delete) um paciente")
+  @PreAuthorize("hasAuthority('PACIENTES_EXCLUIR') or hasRole('ADMINISTRADOR')")
+  public ResponseEntity<Void> deletarPaciente(@PathVariable String id) {
+    pacienteService.deletarPaciente(id);
+    return ResponseEntity.noContent().build();
   }
 }
