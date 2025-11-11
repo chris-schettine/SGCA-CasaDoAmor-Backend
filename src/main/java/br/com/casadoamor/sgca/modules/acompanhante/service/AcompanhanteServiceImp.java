@@ -37,266 +37,260 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AcompanhanteServiceImp implements AcompanhanteService {
 
-  private final AcompanhanteRepository acompanhanteRepository;
-  private final PacienteRepository pacienteRepository;
-  private final HistoricoPacienteRepository historicoRepository;
-  private final AcompanhanteMapper acompanhanteMapper;
-  private final HistoricoPacienteMapper historicoPacienteMapper;
-  private final DadoPessoalRepository dadoPessoalRepository;
-  private final DadoPessoalMapper dadoPessoalMapper;
-  private final EnderecoMapper enderecoMapper;
-  private final PaginatedResponseMapper paginatedMapper;
+    private final AcompanhanteRepository acompanhanteRepository;
+    private final PacienteRepository pacienteRepository;
+    private final HistoricoPacienteRepository historicoRepository;
+    private final AcompanhanteMapper acompanhanteMapper;
+    private final HistoricoPacienteMapper historicoPacienteMapper;
+    private final DadoPessoalRepository dadoPessoalRepository;
+    private final DadoPessoalMapper dadoPessoalMapper;
+    private final EnderecoMapper enderecoMapper;
+    private final PaginatedResponseMapper paginatedMapper;
 
-  @Override
-  @Transactional
-  public AcompanhanteDTO registrarAcompanhante(RegistrarAcompanhanteDTO dto) {
-    Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-      .orElseThrow(() ->  new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+    @Override
+    @Transactional
+    public AcompanhanteDTO registrarAcompanhante(RegistrarAcompanhanteDTO dto) {
+        Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
+                .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
 
-    String cpfLimpo = CpfUtil.limparCpf(dto.getDadoPessoal().getCpf());
+        String cpfLimpo = CpfUtil.limparCpf(dto.getDadoPessoal().getCpf());
 
-    dadoPessoalRepository.findByCpf(cpfLimpo).ifPresent(dadoPessoal -> {
-      throw new CustomError("CPF já cadastrado no sistema", HttpStatus.BAD_REQUEST);
-    });
+        dadoPessoalRepository.findByCpf(cpfLimpo).ifPresent(dadoPessoal -> {
+            throw new CustomError("CPF já cadastrado no sistema", HttpStatus.BAD_REQUEST);
+        });
 
-    dadoPessoalRepository.findByRg(dto.getDadoPessoal().getRg()).ifPresent(dadoPessoal -> {
-      throw new CustomError("RG já cadastrado no sistema", HttpStatus.BAD_REQUEST);
-    });
+        dadoPessoalRepository.findByRg(dto.getDadoPessoal().getRg()).ifPresent(dadoPessoal -> {
+            throw new CustomError("RG já cadastrado no sistema", HttpStatus.BAD_REQUEST);
+        });
 
-    Acompanhante acompanhante = acompanhanteMapper.toEntity(dto, paciente);
+        Acompanhante acompanhante = acompanhanteMapper.toEntity(dto, paciente);
 
-    acompanhanteRepository.save(acompanhante);
+        acompanhanteRepository.save(acompanhante);
 
-    HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
-      paciente, 
-      acompanhante,
-      "Acompanhante " + acompanhante.getDadoPessoal().getNome() + " registrado."
-    );
+        HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
+                paciente,
+                acompanhante,
+                "Acompanhante " + acompanhante.getDadoPessoal().getNome() + " registrado.");
 
-    historicoRepository.save(historicoPaciente);
+        historicoRepository.save(historicoPaciente);
 
-    return acompanhanteMapper.mapToDTO(acompanhante);
-  }
-
-  @Override
-  @Transactional
-  public AcompanhanteDTO editarAcompanhante(String id, EditarAcompanhanteDTO dto) {
-    Acompanhante acompanhante = acompanhanteRepository.findById(id)
-      .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
-
-    if (dto.getPodeAjudarNaCozinha() != null)
-      acompanhante.setPodeAjudarNaCozinha(dto.getPodeAjudarNaCozinha());
-
-    if (dto.getDadoPessoal() != null) {
-      var dados = dto.getDadoPessoal();
-      
-      // Limpa CPF se fornecido
-      String cpfLimpo = dados.getCpf() != null ? CpfUtil.limparCpf(dados.getCpf()) : null;
-
-      if (cpfLimpo != null &&
-          !cpfLimpo.equals(acompanhante.getDadoPessoal().getCpf()) &&
-          pacienteRepository.existsByCpf(cpfLimpo)) {
-          throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
-      }
-
-      String rgLimpo = dados.getRg() != null ? RgUtil.limparRg(dados.getRg()) : null;
-
-      if (rgLimpo != null &&
-          !rgLimpo.equals(acompanhante.getDadoPessoal().getRg()) &&
-          pacienteRepository.existsByRg(rgLimpo)) {
-          throw new CustomError("RG já cadastrado", HttpStatus.BAD_REQUEST);
-      }
-
-      DadoPessoal dadoPessoalAtual = acompanhante.getDadoPessoal();
-      DadoPessoal dadoPessoalAtualizado = dadoPessoalMapper.updateEntity(dadoPessoalAtual, dados);
-      acompanhante.setDadoPessoal(dadoPessoalAtualizado);
+        return acompanhanteMapper.mapToDTO(acompanhante);
     }
 
-    if (dto.getEndereco() != null) {
-      var end = dto.getEndereco();
-      Endereco enderecoAtual = acompanhante.getEndereco();
-      Endereco enderecoAtualizado = enderecoMapper.updateEntity(enderecoAtual, end);
-      acompanhante.setEndereco(enderecoAtualizado);
-    }
+    @Override
+    @Transactional
+    public AcompanhanteDTO editarAcompanhante(String id, EditarAcompanhanteDTO dto) {
+        Acompanhante acompanhante = acompanhanteRepository.findById(id)
+                .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
 
-    if (dto.getParentesco() != null)
-      acompanhante.setParentesco(dto.getParentesco());
+        if (dto.getPodeAjudarNaCozinha() != null)
+            acompanhante.setPodeAjudarNaCozinha(dto.getPodeAjudarNaCozinha());
 
-    if (dto.getAtivo() != null)
-      acompanhante.setAtivo(dto.getAtivo());
+        if (dto.getDadoPessoal() != null) {
+            var dados = dto.getDadoPessoal();
 
-    acompanhanteRepository.save(acompanhante);
+            // Limpa CPF se fornecido
+            String cpfLimpo = dados.getCpf() != null ? CpfUtil.limparCpf(dados.getCpf()) : null;
 
-    HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
-      acompanhante.getPaciente(), 
-      acompanhante,
-      "Acompanhante " + acompanhante.getDadoPessoal().getNome() + " editado."
-    );
+            if (cpfLimpo != null &&
+                    !cpfLimpo.equals(acompanhante.getDadoPessoal().getCpf()) &&
+                    pacienteRepository.existsByCpf(cpfLimpo)) {
+                throw new CustomError("CPF já cadastrado", HttpStatus.BAD_REQUEST);
+            }
 
-    historicoRepository.save(historicoPaciente);
+            String rgLimpo = dados.getRg() != null ? RgUtil.limparRg(dados.getRg()) : null;
 
-    return acompanhanteMapper.mapToDTO(acompanhante);
-  }
+            if (rgLimpo != null &&
+                    !rgLimpo.equals(acompanhante.getDadoPessoal().getRg()) &&
+                    pacienteRepository.existsByRg(rgLimpo)) {
+                throw new CustomError("RG já cadastrado", HttpStatus.BAD_REQUEST);
+            }
 
-  @Override
-  public PaginatedResponseDTO<AcompanhanteDTO> acompanhantesPaginados(String searchText, int limit, int offset) {
-    Specification<Acompanhante> spec = (root, query, criteriaBuilder) -> {
-      Predicate predicate = criteriaBuilder.conjunction();
-
-      predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
-      
-      if (searchText != null && !searchText.isBlank()) {
-        String search = "%" + searchText.toLowerCase() + "%";
-        String searchPlain = searchText.toLowerCase();
-        String searchNorm = searchText.toLowerCase().replaceAll("\\s|\\.|-", "");
-
-        var dadoJoin = root.join("dadoPessoal");
-
-        // Normaliza CPF e RG no banco para comparação
-        var cpfNormalizedDb = criteriaBuilder.lower(
-          criteriaBuilder.function("REPLACE", String.class,
-            criteriaBuilder.function("REPLACE", String.class,
-              criteriaBuilder.function("REPLACE", String.class,
-                dadoJoin.get("cpf"),
-                criteriaBuilder.literal("."),
-                criteriaBuilder.literal("")
-              ),
-              criteriaBuilder.literal("-"),
-              criteriaBuilder.literal("")
-            ),
-            criteriaBuilder.literal(" "),
-            criteriaBuilder.literal("")
-          )
-        );
-
-        var rgNormalizedDb = criteriaBuilder.lower(
-          criteriaBuilder.function("REPLACE", String.class,
-            criteriaBuilder.function("REPLACE", String.class,
-              criteriaBuilder.function("REPLACE", String.class,
-                dadoJoin.get("rg"),
-                criteriaBuilder.literal("."),
-                criteriaBuilder.literal("")
-              ),
-              criteriaBuilder.literal("-"),
-              criteriaBuilder.literal("")
-            ),
-            criteriaBuilder.literal(" "),
-            criteriaBuilder.literal("")
-          )
-        );
-
-        // Predicados de nome
-        Predicate nameContains = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
-        Predicate nameStarts = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain + "%");
-        Predicate exactName = criteriaBuilder.equal(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain);
-
-        // Predicados de CPF
-        Predicate cpfContains = criteriaBuilder.like(cpfNormalizedDb, "%" + searchNorm + "%");
-        Predicate cpfStarts = criteriaBuilder.like(cpfNormalizedDb, searchNorm + "%");
-        Predicate exactCpf = criteriaBuilder.equal(cpfNormalizedDb, searchNorm);
-
-        // Predicados de RG
-        Predicate rgContains = criteriaBuilder.like(rgNormalizedDb, "%" + searchNorm + "%");
-        Predicate rgStarts = criteriaBuilder.like(rgNormalizedDb, searchNorm + "%");
-        Predicate exactRg = criteriaBuilder.equal(rgNormalizedDb, searchNorm);
-
-        // Combinação geral
-        Predicate anyContains = criteriaBuilder.or(nameContains, cpfContains, rgContains);
-        predicate = criteriaBuilder.and(predicate, anyContains);
-
-        // Ordenação por relevância
-        var caseExpr = criteriaBuilder.selectCase()
-          .when(criteriaBuilder.or(exactName, exactCpf, exactRg), 0)
-          .when(criteriaBuilder.or(nameStarts, cpfStarts, rgStarts), 1)
-          .when(criteriaBuilder.or(nameContains, cpfContains, rgContains), 2)
-          .otherwise(3);
-
-        if (query != null) {
-          query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
+            DadoPessoal dadoPessoalAtual = acompanhante.getDadoPessoal();
+            DadoPessoal dadoPessoalAtualizado = dadoPessoalMapper.updateEntity(dadoPessoalAtual, dados);
+            acompanhante.setDadoPessoal(dadoPessoalAtualizado);
         }
-      } else {
-        if (query != null) {
-          query.orderBy(criteriaBuilder.asc(root.get("id")));
+
+        if (dto.getEndereco() != null) {
+            var end = dto.getEndereco();
+            Endereco enderecoAtual = acompanhante.getEndereco();
+            Endereco enderecoAtualizado = enderecoMapper.updateEntity(enderecoAtual, end);
+            acompanhante.setEndereco(enderecoAtualizado);
         }
-      }
 
-      return predicate;
-    };
+        if (dto.getParentesco() != null)
+            acompanhante.setParentesco(dto.getParentesco());
 
-    // Buscar todos com a specification
-    List<Acompanhante> allAcompanhantes = acompanhanteRepository.findAll(spec);
+        if (dto.getAtivo() != null)
+            acompanhante.setAtivo(dto.getAtivo());
 
-    int start = Math.min(offset, allAcompanhantes.size());
-    int end = Math.min(offset + limit, allAcompanhantes.size());
+        acompanhanteRepository.save(acompanhante);
 
-    List<AcompanhanteDTO> nodes = allAcompanhantes.subList(start, end)
-      .stream()
-      .map(acompanhanteMapper::mapToDTO)
-      .toList();
+        HistoricoPaciente historicoPaciente = historicoPacienteMapper.toEntity(
+                acompanhante.getPaciente(),
+                acompanhante,
+                "Acompanhante " + acompanhante.getDadoPessoal().getNome() + " editado.");
 
-    boolean hasPreviousPage = offset > 0;
-    boolean hasNextPage = (offset + limit) < allAcompanhantes.size();
+        historicoRepository.save(historicoPaciente);
 
-    return paginatedMapper.toDTO(nodes, allAcompanhantes.size(), hasPreviousPage, hasNextPage);
-  }
-
-  @Override
-  public PaginatedResponseDTO<HistoricoAcompanhanteDTO> historicoAcompanhantePaginado(String acompanhanteId, int limit, int offset) {
-    Acompanhante acompanhante = acompanhanteRepository.findById(acompanhanteId)
-      .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
-
-    List<HistoricoPaciente> historicos = historicoRepository.findByAcompanhanteOrderByDataRegistroDesc(acompanhante);
-
-    int start = Math.min(offset, historicos.size());
-    int end = Math.min(offset + limit, historicos.size());
-
-    List<HistoricoAcompanhanteDTO> nodes = historicos.subList(start, end)
-      .stream()
-      .map(historicoPacienteMapper::toHistoricoAcompanhanteDTO)
-      .toList();
-
-    boolean hasPreviousPage = offset > 0;
-    boolean hasNextPage = (offset + limit) < historicos.size();
-
-    return paginatedMapper.toDTO(nodes, historicos.size(), hasPreviousPage, hasNextPage);
-  }
-
-  @Override
-  @Transactional
-  public void deletarAcompanhante(String id) {
-    String deletedBy = SecurityContextHolder.getContext().getAuthentication().getName();
-
-    Acompanhante acompanhante = acompanhanteRepository.findById(id)
-      .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
-
-    if (acompanhante.isDeleted()) {
-      throw new CustomError("Acompanhante já foi removido anteriormente", HttpStatus.BAD_REQUEST);
+        return acompanhanteMapper.mapToDTO(acompanhante);
     }
 
-    acompanhante.setAtivo(false);
-    acompanhante.markAsDeleted(deletedBy);
+    @Override
+    public PaginatedResponseDTO<AcompanhanteDTO> acompanhantesPaginados(String searchText, int limit, int offset) {
+        Specification<Acompanhante> spec = (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
 
-    acompanhanteRepository.save(acompanhante);
-  }
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
 
-  @Override
-  public PaginatedResponseDTO<AcompanhanteDTO> listarAcompanhantesPorPaciente(String pacienteId, int limit, int offset) {
-    Paciente paciente = pacienteRepository.findById(pacienteId)
-      .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+            if (searchText != null && !searchText.isBlank()) {
+                String search = "%" + searchText.toLowerCase() + "%";
+                String searchPlain = searchText.toLowerCase();
+                String searchNorm = searchText.toLowerCase().replaceAll("\\s|\\.|-", "");
 
-    List<Acompanhante> acompanhantes = acompanhanteRepository.findByPacienteAndDeletedAtIsNull(paciente);
+                var dadoJoin = root.join("dadoPessoal");
 
-    int start = Math.min(offset, acompanhantes.size());
-    int end = Math.min(offset + limit, acompanhantes.size());
+                // Normaliza CPF e RG no banco para comparação
+                var cpfNormalizedDb = criteriaBuilder.lower(
+                        criteriaBuilder.function("REPLACE", String.class,
+                                criteriaBuilder.function("REPLACE", String.class,
+                                        criteriaBuilder.function("REPLACE", String.class,
+                                                dadoJoin.get("cpf"),
+                                                criteriaBuilder.literal("."),
+                                                criteriaBuilder.literal("")),
+                                        criteriaBuilder.literal("-"),
+                                        criteriaBuilder.literal("")),
+                                criteriaBuilder.literal(" "),
+                                criteriaBuilder.literal("")));
 
-    List<AcompanhanteDTO> nodes = acompanhantes.subList(start, end)
-      .stream()
-      .map(acompanhanteMapper::mapToDTO)
-      .toList();
+                var rgNormalizedDb = criteriaBuilder.lower(
+                        criteriaBuilder.function("REPLACE", String.class,
+                                criteriaBuilder.function("REPLACE", String.class,
+                                        criteriaBuilder.function("REPLACE", String.class,
+                                                dadoJoin.get("rg"),
+                                                criteriaBuilder.literal("."),
+                                                criteriaBuilder.literal("")),
+                                        criteriaBuilder.literal("-"),
+                                        criteriaBuilder.literal("")),
+                                criteriaBuilder.literal(" "),
+                                criteriaBuilder.literal("")));
 
-    boolean hasPreviousPage = offset > 0;
-    boolean hasNextPage = (offset + limit) < acompanhantes.size();
+                // Predicados de nome
+                Predicate nameContains = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
+                Predicate nameStarts = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")),
+                        searchPlain + "%");
+                Predicate exactName = criteriaBuilder.equal(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain);
 
-    return paginatedMapper.toDTO(nodes, acompanhantes.size(), hasPreviousPage, hasNextPage);
-  }
+                // Predicados de CPF
+                Predicate cpfContains = criteriaBuilder.like(cpfNormalizedDb, "%" + searchNorm + "%");
+                Predicate cpfStarts = criteriaBuilder.like(cpfNormalizedDb, searchNorm + "%");
+                Predicate exactCpf = criteriaBuilder.equal(cpfNormalizedDb, searchNorm);
+
+                // Predicados de RG
+                Predicate rgContains = criteriaBuilder.like(rgNormalizedDb, "%" + searchNorm + "%");
+                Predicate rgStarts = criteriaBuilder.like(rgNormalizedDb, searchNorm + "%");
+                Predicate exactRg = criteriaBuilder.equal(rgNormalizedDb, searchNorm);
+
+                // Combinação geral
+                Predicate anyContains = criteriaBuilder.or(nameContains, cpfContains, rgContains);
+                predicate = criteriaBuilder.and(predicate, anyContains);
+
+                // Ordenação por relevância
+                var caseExpr = criteriaBuilder.selectCase()
+                        .when(criteriaBuilder.or(exactName, exactCpf, exactRg), 0)
+                        .when(criteriaBuilder.or(nameStarts, cpfStarts, rgStarts), 1)
+                        .when(criteriaBuilder.or(nameContains, cpfContains, rgContains), 2)
+                        .otherwise(3);
+
+                if (query != null) {
+                    query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
+                }
+            } else {
+                if (query != null) {
+                    query.orderBy(criteriaBuilder.asc(root.get("id")));
+                }
+            }
+
+            return predicate;
+        };
+
+        // Buscar todos com a specification
+        List<Acompanhante> allAcompanhantes = acompanhanteRepository.findAll(spec);
+
+        int start = Math.min(offset, allAcompanhantes.size());
+        int end = Math.min(offset + limit, allAcompanhantes.size());
+
+        List<AcompanhanteDTO> nodes = allAcompanhantes.subList(start, end)
+                .stream()
+                .map(acompanhanteMapper::mapToDTO)
+                .toList();
+
+        boolean hasPreviousPage = offset > 0;
+        boolean hasNextPage = (offset + limit) < allAcompanhantes.size();
+
+        return paginatedMapper.toDTO(nodes, allAcompanhantes.size(), hasPreviousPage, hasNextPage);
+    }
+
+    @Override
+    public PaginatedResponseDTO<HistoricoAcompanhanteDTO> historicoAcompanhantePaginado(String acompanhanteId,
+            int limit, int offset) {
+        Acompanhante acompanhante = acompanhanteRepository.findById(acompanhanteId)
+                .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
+
+        List<HistoricoPaciente> historicos = historicoRepository
+                .findByAcompanhanteOrderByDataRegistroDesc(acompanhante);
+
+        int start = Math.min(offset, historicos.size());
+        int end = Math.min(offset + limit, historicos.size());
+
+        List<HistoricoAcompanhanteDTO> nodes = historicos.subList(start, end)
+                .stream()
+                .map(historicoPacienteMapper::toHistoricoAcompanhanteDTO)
+                .toList();
+
+        boolean hasPreviousPage = offset > 0;
+        boolean hasNextPage = (offset + limit) < historicos.size();
+
+        return paginatedMapper.toDTO(nodes, historicos.size(), hasPreviousPage, hasNextPage);
+    }
+
+    @Override
+    @Transactional
+    public void deletarAcompanhante(String id) {
+        String deletedBy = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Acompanhante acompanhante = acompanhanteRepository.findById(id)
+                .orElseThrow(() -> new CustomError("Acompanhante não encontrado", HttpStatus.NOT_FOUND));
+
+        if (acompanhante.isDeleted()) {
+            throw new CustomError("Acompanhante já foi removido anteriormente", HttpStatus.BAD_REQUEST);
+        }
+
+        acompanhante.setAtivo(false);
+        acompanhante.markAsDeleted(deletedBy);
+
+        acompanhanteRepository.save(acompanhante);
+    }
+
+    @Override
+    public PaginatedResponseDTO<AcompanhanteDTO> listarAcompanhantesPorPaciente(String pacienteId, int limit,
+            int offset) {
+        Paciente paciente = pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+
+        List<Acompanhante> acompanhantes = acompanhanteRepository.findByPacienteAndDeletedAtIsNull(paciente);
+
+        int start = Math.min(offset, acompanhantes.size());
+        int end = Math.min(offset + limit, acompanhantes.size());
+
+        List<AcompanhanteDTO> nodes = acompanhantes.subList(start, end)
+                .stream()
+                .map(acompanhanteMapper::mapToDTO)
+                .toList();
+
+        boolean hasPreviousPage = offset > 0;
+        boolean hasNextPage = (offset + limit) < acompanhantes.size();
+
+        return paginatedMapper.toDTO(nodes, acompanhantes.size(), hasPreviousPage, hasNextPage);
+    }
 }
