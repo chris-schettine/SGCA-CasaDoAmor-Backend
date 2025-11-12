@@ -16,26 +16,26 @@ import lombok.Data;
 @MappedSuperclass
 @Data
 public abstract class BaseEntity {
-  @Id
-  @UuidGenerator
-  @Column(name = "id", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
-  private String id;
+	@Id
+	@UuidGenerator
+	@Column(name = "id", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
+	private String id;
 
-  @CreationTimestamp
-  @JsonIgnore
-  @Column(name = "created_at", updatable = false, nullable = false)
-  private LocalDateTime createdAt;
+	@CreationTimestamp
+	@JsonIgnore
+	@Column(name = "created_at", updatable = false, nullable = false)
+	private LocalDateTime createdAt;
 
-  @UpdateTimestamp
-  @JsonIgnore
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+	@UpdateTimestamp
+	@JsonIgnore
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
 }
