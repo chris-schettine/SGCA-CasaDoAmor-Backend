@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.infra.config;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Profile({"dev", "test"}) // Apenas em ambientes de desenvolvimento e teste
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true", matchIfMissing = true)
 public class DataSeederConfig {
 
     private final AuthUsuarioRepository usuarioRepository;

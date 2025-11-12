@@ -1,244 +1,246 @@
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/SgcaBackendApplication.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/annotation/RateLimited.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/aspect/RateLimitAspect.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/CorsConfig.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/DataSeederConfig.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/EmailConfig.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/RequestLoggingConfig.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/SecurityConfig.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/SwaggerConfig.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/exception/CustomError.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/exception/CustomExceptionHandler.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/exception/GlobalExceptionHandler.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/exception/RateLimitExceededException.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/config/exception/ValidationExceptionHandler.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/exception/ResourceNotFoundException.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/security/JwtAuthenticationFilter.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/security/JwtUtil.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/security/UserDetailsServiceImpl.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/util/CpfUtil.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/util/PasswordHashGenerator.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/util/PasswordValidator.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/util/RgUtil.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/infra/util/TelefoneUtil.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/controller/AcompanhanteController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/dtos/AcompanhanteDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/dtos/EditarAcompanhanteDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/dtos/RegistrarAcompanhanteDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/entity/Acompanhante.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/mapper/AcompanhanteMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/repository/AcompanhanteRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/service/AcompanhanteService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/acompanhante/service/AcompanhanteServiceImp.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/controller/AdminController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/controller/AuditController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/auditoria/AuditoriaPerfilDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/auditoria/AuditoriaUsuarioDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/auditoria/TentativaLoginDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/perfil/AtribuirPermissoesDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/perfil/CreatePerfilDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/perfil/PerfilDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/permissao/CreatePermissaoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/permissao/PermissaoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/user/AtribuirRolesDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/user/CreateUserDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/user/UpdateUserDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/dtos/user/UserResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/entity/Perfil.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/entity/Permissao.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/repository/PerfilRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/repository/PermissaoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/service/AuditoriaAdminService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/service/AuditoriaService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/service/PerfilService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/service/PermissaoService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/service/SessaoService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/admin/service/UserManagementService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/controller/TipoServicoController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/AgendamentoRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/AgendamentoResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/AtividadeGrupoRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/AtividadeGrupoResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/CancelarAgendamentoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/InscricaoAtividadeRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/InscricaoAtividadeResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/PresencaAtividadeRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/PresencaAtividadeResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/RemarcarAgendamentoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/dto/TipoServicoResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/Agendamento.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/AtividadeGrupo.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/InscricaoAtividade.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/PresencaAtividade.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/TipoServico.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/enums/CategoriaServico.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/enums/Modalidade.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/enums/NivelParticipacao.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/enums/StatusAgendamento.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/enums/StatusAtividade.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/entity/enums/StatusInscricao.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/repository/AgendamentoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/repository/AtividadeGrupoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/repository/InscricaoAtividadeRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/repository/PresencaAtividadeRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/repository/TipoServicoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/agendamento/service/TipoServicoService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/controller/AuthController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/controller/TestAuthController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/controller/TwoFactorController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/AuthUsuarioDadosPessoaisDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/AuthUsuarioEnderecoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/RegistroProfissionalDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/RegistroProfissionalResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/SessaoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/ActivateAccountRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/ChangePasswordRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/FirstLoginPasswordChangeDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/ForgotPasswordRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/LoginRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/RegisterRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/ResetPasswordRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/request/VerifyEmailRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/response/AuthResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/twofactor/Enable2FADTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/twofactor/Setup2FADTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/dtos/twofactor/Verify2FADTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/Autenticacao2FA.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/Autenticacao2FARateLimit.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/AuthUsuario.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/AuthUsuarioDadosPessoais.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/AuthUsuarioEndereco.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/AuthUsuarioRegistroProfissional.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/ConsentimentoLGPDUsuario.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/HistoricoSenha.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/SessaoUsuario.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/TentativaLogin.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/entity/TokenRecuperacao.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/Autenticacao2FARateLimitRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/Autenticacao2FARepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/AuthUsuarioDadosPessoaisRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/AuthUsuarioEnderecoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/AuthUsuarioRegistroProfissionalRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/AuthUsuarioRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/ConsentimentoLGPDUsuarioRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/HistoricoSenhaRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/SessaoUsuarioRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/TentativaLoginRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/repository/TokenRecuperacaoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/service/AccountActivationService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/service/AuthService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/service/HistoricoSenhaService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/service/PermissionService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/service/RecuperacaoSenhaService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/auth/service/TwoFactorService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/controller/FileController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/dto/ApiResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/dto/DadoSocialDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/dto/DadoSocialInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/dto/ErroResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/dto/MessageResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/dto/PaginatedResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/entity/BaseEntity.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/entity/DadoPessoal.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/entity/DadoSocial.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/entity/Endereco.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/CondicaoChegada.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/EstadoCivilEnum.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/EstadoEnum.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/Parentesco.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoDocumentoProfissionalSaudeEnum.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoSanguineoEnum.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoSondaCirurgica.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoSondaNasal.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoSondaVesical.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoToken.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoTratamento.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/enums/TipoUsuarioEnum.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/mapper/DadoPessoalMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/mapper/DadoSocialMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/mapper/EnderecoMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/mapper/PaginatedResponseMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/repository/DadoPessoalRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/repository/EnderecoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/service/EmailService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/service/EmailServiceImp.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/service/FileStorageService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/service/LocalFileStorageService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/common/service/UserPhotoService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/dadoClinico/controller/DadoClinicoController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/dadoClinico/entity/DadoClinico.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/dadoClinico/mapper/DadoClinicoMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/dadoClinico/repository/DadoClinicoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/dadoClinico/service/DadoClinicoService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/dadoClinico/service/DadoClinicoServiceImp.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/controller/ConsentimentoLGPDController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/controller/ProfissionalController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/dto/ConsentimentoLGPDRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/dto/ConsentimentoLGPDResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/dto/ProfissionalRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/dto/ProfissionalResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/dto/ProfissionalResumoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/entity/ConsentimentoLGPDProfissional.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/entity/Profissional.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/entity/ProfissionalSaude.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/entity/Usuario.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/entity/enums/CategoriaProfissional.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/entity/enums/TipoVinculo.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/repository/ConsentimentoLGPDProfissionalRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/repository/ProfissionalRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/repository/ProfissionalSaudeRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/repository/UsuarioRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/service/ConsentimentoLGPDService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/funcionario/service/ProfissionalService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/controller/HospedagemController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/controller/QuartoController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/EstatisticasOcupacaoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/HospedagemRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/HospedagemResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/HospedagemSaidaDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/QuartoRequestDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/QuartoResponseDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/dto/QuartoResumoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/entity/Hospedagem.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/entity/Quarto.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/entity/enums/AlaQuarto.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/entity/enums/StatusHospedagem.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/entity/enums/TipoQuarto.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/repository/HospedagemRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/repository/QuartoRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/service/HospedagemService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/hospedagem/service/QuartoService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/controller/PacienteController.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/ContatoEmergenciaDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/ContatoEmergenciaInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/DadoClinicoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/DadoClinicoInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/DadoPessoalDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/DadoPessoalInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EditarDadoClinicoInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EditarDadoPessoalInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EditarDadoSocialInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EditarEnderecoInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EditarInformacaoHospitalarInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EditarPacienteDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EnderecoDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/EnderecoInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/InformacaoHospitalarDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/InformacaoHospitalarInputDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/PacienteDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/dtos/RegistrarPacienteDTO.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/entity/ContatoEmergencia.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/entity/HistoricoPaciente.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/entity/InformacaoHospitalar.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/entity/Paciente.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/entity/PoliticaPrivacidade.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/entity/RecebeuAlta.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/mapper/ContatoEmergenciaMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/mapper/HistoricoPacienteMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/mapper/InformacaoHospitalarMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/mapper/PacienteMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/mapper/PoliticaPrivacidadeMapper.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/repository/HistoricoPacienteRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/repository/PacienteRepository.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/services/PacienteService.java
-/home/alpenglow/Documents/GitHub/SGCA-CasaDoAmor-Backend/src/main/java/br/com/casadoamor/sgca/modules/paciente/services/PacienteServiceImp.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\annotation\RateLimited.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\aspect\RateLimitAspect.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\CorsConfig.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\DataSeederConfig.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\EmailConfig.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\exception\CustomError.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\exception\CustomExceptionHandler.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\exception\GlobalExceptionHandler.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\exception\RateLimitExceededException.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\exception\ValidationExceptionHandler.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\RequestLoggingConfig.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\SecurityConfig.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\config\SwaggerConfig.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\exception\ResourceNotFoundException.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\security\JwtAuthenticationFilter.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\security\JwtUtil.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\security\UserDetailsServiceImpl.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\util\CpfUtil.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\util\PasswordHashGenerator.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\util\PasswordValidator.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\util\RgUtil.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\infra\util\TelefoneUtil.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\controller\AcompanhanteController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\dtos\AcompanhanteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\dtos\EditarAcompanhanteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\dtos\RegistrarAcompanhanteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\entity\Acompanhante.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\mapper\AcompanhanteMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\repository\AcompanhanteRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\service\AcompanhanteService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\acompanhante\service\AcompanhanteServiceImp.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\controller\AdminController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\controller\AuditController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\auditoria\AuditoriaPerfilDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\auditoria\AuditoriaUsuarioDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\auditoria\TentativaLoginDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\perfil\AtribuirPermissoesDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\perfil\CreatePerfilDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\perfil\PerfilDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\permissao\CreatePermissaoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\permissao\PermissaoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\user\AtribuirRolesDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\user\CreateUserDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\user\UpdateUserDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\dtos\user\UserResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\entity\Perfil.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\entity\Permissao.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\repository\PerfilRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\repository\PermissaoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\service\AuditoriaAdminService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\service\AuditoriaService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\service\PerfilService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\service\PermissaoService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\service\SessaoService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\admin\service\UserManagementService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\controller\TipoServicoController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\AgendamentoRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\AgendamentoResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\AtividadeGrupoRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\AtividadeGrupoResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\CancelarAgendamentoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\InscricaoAtividadeRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\InscricaoAtividadeResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\PresencaAtividadeRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\PresencaAtividadeResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\RemarcarAgendamentoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\dto\TipoServicoResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\Agendamento.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\AtividadeGrupo.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\enums\CategoriaServico.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\enums\Modalidade.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\enums\NivelParticipacao.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\enums\StatusAgendamento.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\enums\StatusAtividade.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\enums\StatusInscricao.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\InscricaoAtividade.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\PresencaAtividade.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\entity\TipoServico.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\repository\AgendamentoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\repository\AtividadeGrupoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\repository\InscricaoAtividadeRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\repository\PresencaAtividadeRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\repository\TipoServicoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\agendamento\service\TipoServicoService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\controller\AuthController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\controller\TestAuthController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\controller\TwoFactorController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\AuthUsuarioDadosPessoaisDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\AuthUsuarioEnderecoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\RegistroProfissionalDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\RegistroProfissionalResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\ActivateAccountRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\ChangePasswordRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\FirstLoginPasswordChangeDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\ForgotPasswordRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\LoginRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\RegisterRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\ResetPasswordRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\request\VerifyEmailRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\response\AuthResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\SessaoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\twofactor\Enable2FADTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\twofactor\Setup2FADTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\dtos\twofactor\Verify2FADTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\Autenticacao2FA.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\Autenticacao2FARateLimit.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\AuthUsuario.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\AuthUsuarioDadosPessoais.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\AuthUsuarioEndereco.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\AuthUsuarioRegistroProfissional.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\ConsentimentoLGPDUsuario.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\HistoricoSenha.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\SessaoUsuario.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\TentativaLogin.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\entity\TokenRecuperacao.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\Autenticacao2FARateLimitRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\Autenticacao2FARepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\AuthUsuarioDadosPessoaisRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\AuthUsuarioEnderecoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\AuthUsuarioRegistroProfissionalRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\AuthUsuarioRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\ConsentimentoLGPDUsuarioRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\HistoricoSenhaRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\SessaoUsuarioRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\TentativaLoginRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\repository\TokenRecuperacaoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\service\AccountActivationService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\service\AuthService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\service\HistoricoSenhaService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\service\PermissionService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\service\RecuperacaoSenhaService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\auth\service\TwoFactorService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\controller\FileController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\dto\ApiResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\dto\DadoSocialDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\dto\DadoSocialInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\dto\ErroResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\dto\MessageResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\dto\PaginatedResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\entity\BaseEntity.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\entity\DadoPessoal.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\entity\DadoSocial.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\entity\Endereco.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\CondicaoChegada.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\EstadoCivilEnum.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\EstadoEnum.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\Parentesco.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoDocumentoProfissionalSaudeEnum.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoSanguineoEnum.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoSondaCirurgica.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoSondaNasal.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoSondaVesical.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoToken.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoTratamento.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\enums\TipoUsuarioEnum.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\mapper\DadoPessoalMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\mapper\DadoSocialMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\mapper\EnderecoMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\mapper\PaginatedResponseMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\repository\DadoPessoalRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\repository\EnderecoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\service\EmailService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\service\EmailServiceImp.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\service\FileStorageService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\service\LocalFileStorageService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\common\service\UserPhotoService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\dadoClinico\controller\DadoClinicoController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\dadoClinico\entity\DadoClinico.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\dadoClinico\mapper\DadoClinicoMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\dadoClinico\repository\DadoClinicoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\dadoClinico\service\DadoClinicoService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\dadoClinico\service\DadoClinicoServiceImp.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\controller\ConsentimentoLGPDController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\controller\ProfissionalController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\dto\ConsentimentoLGPDRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\dto\ConsentimentoLGPDResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\dto\ProfissionalRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\dto\ProfissionalResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\dto\ProfissionalResumoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\entity\ConsentimentoLGPDProfissional.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\entity\enums\CategoriaProfissional.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\entity\enums\TipoVinculo.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\entity\Profissional.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\entity\ProfissionalSaude.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\entity\Usuario.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\repository\ConsentimentoLGPDProfissionalRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\repository\ProfissionalRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\repository\ProfissionalSaudeRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\repository\UsuarioRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\service\ConsentimentoLGPDService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\funcionario\service\ProfissionalService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\controller\HospedagemController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\controller\QuartoController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\EstatisticasOcupacaoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\HospedagemRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\HospedagemResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\HospedagemSaidaDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\QuartoRequestDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\QuartoResponseDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\dto\QuartoResumoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\entity\enums\AlaQuarto.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\entity\enums\StatusHospedagem.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\entity\enums\TipoQuarto.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\entity\Hospedagem.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\entity\Quarto.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\repository\HospedagemRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\repository\QuartoRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\service\HospedagemService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\hospedagem\service\QuartoService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\controller\PacienteController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\ContatoEmergenciaDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\ContatoEmergenciaInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\DadoClinicoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\DadoClinicoInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\DadoPessoalDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\DadoPessoalInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EditarDadoClinicoInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EditarDadoPessoalInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EditarDadoSocialInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EditarEnderecoInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EditarInformacaoHospitalarInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EditarPacienteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EnderecoDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\EnderecoInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\HistoricoAcompanhanteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\HistoricoPacienteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\InformacaoHospitalarDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\InformacaoHospitalarInputDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\PacienteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\RegistrarPacienteDTO.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\entity\ContatoEmergencia.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\entity\HistoricoPaciente.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\entity\InformacaoHospitalar.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\entity\Paciente.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\entity\PoliticaPrivacidade.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\entity\RecebeuAlta.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\mapper\ContatoEmergenciaMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\mapper\HistoricoPacienteMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\mapper\InformacaoHospitalarMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\mapper\PacienteMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\mapper\PoliticaPrivacidadeMapper.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\repository\HistoricoPacienteRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\repository\PacienteRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\services\PacienteService.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\services\PacienteServiceImp.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\SgcaBackendApplication.java
