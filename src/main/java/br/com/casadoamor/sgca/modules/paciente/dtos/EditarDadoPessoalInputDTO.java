@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.modules.paciente.dtos;
 import java.time.LocalDate;
 
 import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
+import br.com.casadoamor.sgca.modules.common.enums.SexoEnum;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -29,4 +30,6 @@ public class EditarDadoPessoalInputDTO {
     String telefone;
 
     EstadoCivilEnum estadoCivil;
+
+    SexoEnum sexo;
 }

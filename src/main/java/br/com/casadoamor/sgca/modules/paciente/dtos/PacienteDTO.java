@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.modules.paciente.dtos;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import br.com.casadoamor.sgca.modules.common.dto.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.common.dto.DadoSocialDTO;
 import lombok.Builder;
 import lombok.Data;

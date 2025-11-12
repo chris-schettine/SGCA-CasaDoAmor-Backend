@@ -1,8 +1,9 @@
-package br.com.casadoamor.sgca.modules.paciente.dtos;
+package br.com.casadoamor.sgca.modules.common.dto;
 
 import java.time.LocalDate;
 
 import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
+import br.com.casadoamor.sgca.modules.common.enums.SexoEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,4 +33,6 @@ public class DadoPessoalDTO {
   private String telefone;
 
   private EstadoCivilEnum estadoCivil;
+
+  private SexoEnum sexo;
 } 
