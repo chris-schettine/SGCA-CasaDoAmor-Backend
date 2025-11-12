@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import br.com.casadoamor.sgca.infra.util.CpfUtil;
 import br.com.casadoamor.sgca.infra.util.RgUtil;
+import br.com.casadoamor.sgca.modules.common.dto.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
-import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalInputDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarDadoPessoalInputDTO;
 
@@ -26,6 +26,7 @@ public class DadoPessoalMapper {
       .profissao(dadoPessoalInputDTO.getProfissao())
       .telefone(telefoneLimpo)
       .estadoCivil(dadoPessoalInputDTO.getEstadoCivil())
+      .sexo(dadoPessoalInputDTO.getSexo())
       .build();
   }
 
@@ -41,6 +42,7 @@ public class DadoPessoalMapper {
       .profissao(dadoPessoal.getProfissao())
       .telefone(dadoPessoal.getTelefone())
       .estadoCivil(dadoPessoal.getEstadoCivil())
+      .sexo(dadoPessoal.getSexo())
       .build();
   }
 
@@ -75,6 +77,9 @@ public class DadoPessoalMapper {
     }
     if (dto.getEstadoCivil() != null) {
       dadoPessoal.setEstadoCivil(dto.getEstadoCivil());
+    }
+    if (dto.getSexo() != null) {
+      dadoPessoal.setSexo(dto.getSexo());
     }
     
     return dadoPessoal;

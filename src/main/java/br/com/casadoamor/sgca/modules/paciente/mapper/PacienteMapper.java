@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import br.com.casadoamor.sgca.modules.common.dto.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.common.dto.DadoSocialDTO;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
@@ -14,7 +15,6 @@ import br.com.casadoamor.sgca.modules.common.mapper.EnderecoMapper;
 import br.com.casadoamor.sgca.modules.dadoClinico.mapper.DadoClinicoMapper;
 import br.com.casadoamor.sgca.modules.paciente.dtos.ContatoEmergenciaDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.DadoClinicoDTO;
-import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.InformacaoHospitalarDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;

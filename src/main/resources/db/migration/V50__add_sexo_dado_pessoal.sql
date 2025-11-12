@@ -1,0 +1,2 @@
+ALTER TABLE dados_pessoais
+  ADD COLUMN sexo ENUM('MASCULINO', 'FEMININO', 'OUTRO') NOT NULL;

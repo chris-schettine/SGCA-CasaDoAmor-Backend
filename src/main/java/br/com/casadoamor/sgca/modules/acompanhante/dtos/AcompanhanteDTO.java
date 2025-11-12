@@ -1,8 +1,8 @@
 package br.com.casadoamor.sgca.modules.acompanhante.dtos;
 
 
+import br.com.casadoamor.sgca.modules.common.dto.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.common.enums.Parentesco;
-import br.com.casadoamor.sgca.modules.paciente.dtos.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
 import lombok.Builder;
 import lombok.Data;

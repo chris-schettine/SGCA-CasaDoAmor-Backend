@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
+import br.com.casadoamor.sgca.modules.common.enums.SexoEnum;
 
 @Getter
 @Setter
@@ -39,4 +40,7 @@ public class DadoPessoal extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_civil", length = 20)
     private EstadoCivilEnum estadoCivil;
+
+    @Enumerated(EnumType.STRING)
+    private SexoEnum sexo;
 }

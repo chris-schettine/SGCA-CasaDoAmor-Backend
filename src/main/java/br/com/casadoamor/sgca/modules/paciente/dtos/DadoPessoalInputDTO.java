@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.casadoamor.sgca.modules.common.enums.EstadoCivilEnum;
+import br.com.casadoamor.sgca.modules.common.enums.SexoEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -45,4 +46,7 @@ public class DadoPessoalInputDTO {
   private String telefone;
 
   private EstadoCivilEnum estadoCivil;
+
+  @NotNull(message = "O sexo é obrigatório")
+  private SexoEnum sexo;
 } 
