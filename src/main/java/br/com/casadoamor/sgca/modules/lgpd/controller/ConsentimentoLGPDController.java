@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * Controller unificado para gerenciar consentimentos LGPD de todas as entidades
  */
 @RestController
-@RequestMapping({"/api", ""})
+@RequestMapping({"/api"})
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "LGPD - Consentimentos", description = "Gerenciamento de consentimentos LGPD")
