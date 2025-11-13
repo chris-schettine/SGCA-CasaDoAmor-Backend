@@ -158,17 +158,43 @@ public class ConsentimentoLGPDController {
     ) {
         log.info("Registrando consentimento LGPD para profissional UUID: {}", uuid);
 
-        Profissional profissional = profissionalRepository.findByUuid(uuid)
-                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+                // Permite registrar consentimento mesmo que o profissional ainda não exista.
+                // Caso não exista, usamos um entidadeId temporário (valor negativo derivado do uuid)
+                // e acrescentamos o uuid original no metadata para possibilitar reconciliação posterior.
+                Profissional profissional = profissionalRepository.findByUuid(uuid).orElse(null);
 
-        AuthUsuario registradoPor = getUsuarioAutenticado(authentication);
+                Long entidadeId;
+                if (profissional != null) {
+                        entidadeId = profissional.getId();
+                } else {
+                        log.warn("Profissional com UUID {} não encontrado. Registrando consentimento temporário.", uuid);
+                        // Gera um id negativo determinístico a partir do hash do uuid para evitar colisões simples
+                        entidadeId = -Math.abs((long) uuid.hashCode());
 
-        ConsentimentoLGPDResponseDTO response = consentimentoService.registrarConsentimento(
-                TipoEntidadeLGPD.PROFISSIONAL,
-                profissional.getId(),
-                request,
-                registradoPor
-        );
+                        // Anexa o UUID original ao metadata para permitir vinculação futura
+                        if (request.getMetadata() == null || request.getMetadata().isBlank()) {
+                                request.setMetadata("{\"pendingProfessionalUuid\":\"" + uuid + "\"}");
+                        } else {
+                                String md = request.getMetadata().trim();
+                                if (md.startsWith("{") && md.endsWith("}")) {
+                                        // Insere o campo antes da chave final. Isso é uma fusão simples e assume JSON objeto.
+                                        String merged = md.substring(0, md.length() - 1) + ",\"pendingProfessionalUuid\":\"" + uuid + "\"}";
+                                        request.setMetadata(merged);
+                                } else {
+                                        // Não é um objeto JSON: coloca em um wrapper simples
+                                        request.setMetadata("{\"pendingProfessionalUuid\":\"" + uuid + "\",\"raw\":\"" + md.replaceAll("\\\"", "\\\\\"") + "\"}");
+                                }
+                        }
+                }
+
+                AuthUsuario registradoPor = getUsuarioAutenticado(authentication);
+
+                ConsentimentoLGPDResponseDTO response = consentimentoService.registrarConsentimento(
+                                TipoEntidadeLGPD.PROFISSIONAL,
+                                entidadeId,
+                                request,
+                                registradoPor
+                );
 
         return ResponseEntity.ok(response);
     }
