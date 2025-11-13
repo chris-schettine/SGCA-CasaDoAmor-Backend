@@ -57,11 +57,22 @@ public class ConsentimentoLGPDService {
 
     @Transactional(readOnly = true)
     public List<ConsentimentoLGPDResponseDTO> listarConsentimentos(String profissionalUuid) {
+        log.info("Buscando consentimentos para profissional UUID: {}", profissionalUuid);
+        
         Profissional profissional = profissionalRepository.findByUuid(profissionalUuid)
-                .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
+                .orElseThrow(() -> {
+                    log.error("Profissional não encontrado com UUID: {}", profissionalUuid);
+                    return new IllegalArgumentException("Profissional não encontrado com UUID: " + profissionalUuid);
+                });
 
-        return consentimentoRepository.findByProfissionalOrderByDataConsentimentoDesc(profissional)
-                .stream()
+        log.info("Profissional encontrado: ID={}, Nome={}", profissional.getId(), profissional.getNome());
+        
+        List<ConsentimentoLGPDProfissional> consentimentos = 
+                consentimentoRepository.findByProfissionalOrderByDataConsentimentoDesc(profissional);
+        
+        log.info("Encontrados {} consentimentos para profissional {}", consentimentos.size(), profissionalUuid);
+
+        return consentimentos.stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }

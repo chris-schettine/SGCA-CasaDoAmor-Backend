@@ -34,8 +34,8 @@ public class ConsentimentoLGPDProfissional {
     @Column(name = "versao_termo", nullable = false, length = 50)
     private String versaoTermo; // Ex: "v1.0", "v2.0"
 
-    @Column(name = "escopo", nullable = false, columnDefinition = "TEXT")
-    private String escopo; // Descreve o que o consentimento cobre
+    @Column(name = "escopo", length = 255)
+    private String escopo; // Descreve o que o consentimento cobre (nullable conforme migration)
 
     @Column(name = "concorda", nullable = false)
     private Boolean concorda;
