@@ -45,6 +45,7 @@ public class QuartoService {
                 .capacidadeOcupada(0) // Sempre inicia vazio
                 .ativo(dto.getAtivo() != null ? dto.getAtivo() : true)
                 .emManutencao(dto.getEmManutencao() != null ? dto.getEmManutencao() : false)
+                .permiteSexoOposto(dto.getPermiteSexoOposto() != null ? dto.getPermiteSexoOposto() : false)
                 .observacoes(dto.getObservacoes())
                 .createdBy(usuarioLogado)
                 .build();
@@ -83,6 +84,7 @@ public class QuartoService {
         quarto.setCapacidadeTotal(dto.getCapacidadeTotal());
         quarto.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : quarto.getAtivo());
         quarto.setEmManutencao(dto.getEmManutencao() != null ? dto.getEmManutencao() : quarto.getEmManutencao());
+        quarto.setPermiteSexoOposto(dto.getPermiteSexoOposto() != null ? dto.getPermiteSexoOposto() : quarto.getPermiteSexoOposto());
         quarto.setObservacoes(dto.getObservacoes());
         quarto.setUpdatedBy(usuarioLogado);
 
@@ -219,6 +221,7 @@ public class QuartoService {
                 .vagasDisponiveis(quarto.getVagasDisponiveis())
                 .ativo(quarto.getAtivo())
                 .emManutencao(quarto.getEmManutencao())
+                .permiteSexoOposto(quarto.getPermiteSexoOposto())
                 .observacoes(quarto.getObservacoes())
                 .createdAt(quarto.getCreatedAt())
                 .createdByNome(quarto.getCreatedBy() != null ? quarto.getCreatedBy().getNome() : null)
@@ -240,6 +243,7 @@ public class QuartoService {
                 .vagasDisponiveis(quarto.getVagasDisponiveis())
                 .ativo(quarto.getAtivo())
                 .emManutencao(quarto.getEmManutencao())
+                .permiteSexoOposto(quarto.getPermiteSexoOposto())
                 .build();
     }
 }

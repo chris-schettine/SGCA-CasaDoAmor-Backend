@@ -27,4 +27,5 @@ public class QuartoResumoDTO {
     private Integer vagasDisponiveis;
     private Boolean ativo;
     private Boolean emManutencao;
+    private Boolean permiteSexoOposto;
 }

@@ -6,7 +6,8 @@ package br.com.casadoamor.sgca.modules.hospedagem.entity.enums;
 public enum AlaQuarto {
     FEMININA("Feminina"),
     MASCULINA("Masculina"),
-    MISTA("Mista");
+    MISTA("Mista"),
+    ISOLAMENTO("Isolamento");
 
     private final String descricao;
 

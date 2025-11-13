@@ -71,6 +71,16 @@ public class Quarto {
     @Builder.Default
     private Boolean emManutencao = false;
 
+    /**
+     * Permite pacientes de sexo oposto ao da ala (para acompanhantes e pacientes debilitados)
+     * Quartos de 7 camas: permite acompanhante de sexo oposto
+     * Quartos de 4 camas: permite sexos opostos (pacientes debilitados)
+     * Isolamento: sem restrição de gênero
+     */
+    @Column(name = "permite_sexo_oposto", nullable = false)
+    @Builder.Default
+    private Boolean permiteSexoOposto = false;
+
     @Column(name = "observacoes", columnDefinition = "TEXT")
     private String observacoes;
 

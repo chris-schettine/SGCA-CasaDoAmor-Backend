@@ -239,17 +239,51 @@ public class HospedagemService {
 
     // Métodos auxiliares
     private void validarCompatibilidadeGeneroAla(Paciente paciente, Quarto quarto) {
-        // Se o quarto for MISTO, aceita qualquer gênero
-        if (quarto.getAla() == AlaQuarto.MISTA) {
+        // Regra 1: Quartos de ISOLAMENTO ou MISTOS aceitam qualquer gênero
+        if (quarto.getAla() == AlaQuarto.ISOLAMENTO || quarto.getAla() == AlaQuarto.MISTA) {
+            log.debug("Quarto {} permite qualquer gênero (ala: {})", quarto.getNome(), quarto.getAla());
             return;
         }
 
-        // TODO: Implementar validação de gênero quando campo estiver disponível em DadoPessoal
-        // Por enquanto, apenas log warning para alas específicas
-        if (quarto.getAla() != AlaQuarto.MISTA) {
-            log.warn("Atenção: Paciente {} alocado em quarto da ala {} - Validar compatibilidade de gênero manualmente",
-                    paciente.getId(), quarto.getAla());
+        // Regra 2: Quartos com flag permiteSexoOposto = true aceitam qualquer gênero
+        // (Quartos de 4 camas para pacientes debilitados ou 7 camas para acompanhantes)
+        if (Boolean.TRUE.equals(quarto.getPermiteSexoOposto())) {
+            log.debug("Quarto {} permite sexo oposto (capacidade: {} leitos)", 
+                    quarto.getNome(), quarto.getCapacidadeTotal());
+            return;
         }
+
+        // Regra 3: Validar compatibilidade de gênero para alas específicas (FEMININA/MASCULINA)
+        if (paciente.getDadoPessoal() == null || paciente.getDadoPessoal().getSexo() == null) {
+            log.warn("ATENÇÃO: Paciente {} não possui gênero cadastrado. Alocação em quarto da ala {} requer validação manual",
+                    paciente.getId(), quarto.getAla());
+            throw new IllegalStateException(
+                    "Paciente sem gênero cadastrado. Não é possível validar compatibilidade com a ala " + quarto.getAla().getDescricao());
+        }
+
+        String sexoPaciente = paciente.getDadoPessoal().getSexo().name();
+        
+        // Validar se o gênero é compatível com a ala
+        boolean compativel = false;
+        if (quarto.getAla() == AlaQuarto.FEMININA && "FEMININO".equals(sexoPaciente)) {
+            compativel = true;
+        } else if (quarto.getAla() == AlaQuarto.MASCULINA && "MASCULINO".equals(sexoPaciente)) {
+            compativel = true;
+        }
+
+        if (!compativel) {
+            String mensagem = String.format(
+                    "Incompatibilidade de gênero: Paciente %s (sexo: %s) não pode ser alocado em quarto da ala %s. " +
+                    "Considere usar quartos de 4 camas (debilitados), 7 camas (acompanhantes) ou ala de Isolamento.",
+                    paciente.getDadoPessoal().getNome(), 
+                    sexoPaciente, 
+                    quarto.getAla().getDescricao());
+            log.error(mensagem);
+            throw new IllegalStateException(mensagem);
+        }
+
+        log.info("Validação de gênero OK: Paciente {} (sexo: {}) compatível com ala {}", 
+                paciente.getDadoPessoal().getNome(), sexoPaciente, quarto.getAla().getDescricao());
     }
 
     public Hospedagem buscarPorUuid(String uuid) {

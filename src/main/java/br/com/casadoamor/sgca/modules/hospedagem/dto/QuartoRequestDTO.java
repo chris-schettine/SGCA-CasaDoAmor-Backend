@@ -42,6 +42,16 @@ public class QuartoRequestDTO {
 
     private Boolean emManutencao;
 
+    /**
+     * Permite pacientes de sexo oposto ao da ala.
+     * Recomendado TRUE para:
+     * - Quartos de 4 camas (pacientes debilitados)
+     * - Quartos de 7 camas (acompanhantes de sexo oposto)
+     * Alas ISOLAMENTO e MISTA já permitem por padrão.
+     */
+    @Builder.Default
+    private Boolean permiteSexoOposto = false;
+
     @Size(max = 1000, message = "Observações devem ter no máximo 1000 caracteres")
     private String observacoes;
 }
