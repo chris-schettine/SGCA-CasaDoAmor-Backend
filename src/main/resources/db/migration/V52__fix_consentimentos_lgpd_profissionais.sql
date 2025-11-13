@@ -9,9 +9,21 @@
 ALTER TABLE consentimentos_lgpd_profissionais
 MODIFY COLUMN escopo VARCHAR(255) NULL COMMENT 'Escopo do consentimento: prontuario, fotos, dados_pessoais, etc';
 
--- Garantir que created_at tenha valor padrão
-ALTER TABLE consentimentos_lgpd_profissionais
-MODIFY COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+-- Adicionar created_at na tabela de profissionais se não existir
+SET @col_exists_ca = 0;
+SELECT COUNT(*) INTO @col_exists_ca 
+FROM information_schema.COLUMNS 
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_NAME = 'consentimentos_lgpd_profissionais'
+  AND COLUMN_NAME = 'created_at';
+
+SET @sql_ca = IF(@col_exists_ca = 0,
+    'ALTER TABLE consentimentos_lgpd_profissionais ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT \"Data de criação do registro\"',
+    'SELECT \"Column created_at already exists in profissionais table\" AS info');
+
+PREPARE stmt_ca FROM @sql_ca;
+EXECUTE stmt_ca;
+DEALLOCATE PREPARE stmt_ca;
 
 -- Adicionar created_by se não existir (auditoria)
 -- Verifica primeiro se a coluna não existe
