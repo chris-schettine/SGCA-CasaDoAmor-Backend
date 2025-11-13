@@ -28,6 +28,11 @@ public interface ConsentimentoLGPDUsuarioRepository extends JpaRepository<Consen
     List<ConsentimentoLGPDUsuario> findByUsuarioOrderByDataConsentimentoDesc(AuthUsuario usuario);
 
     /**
+     * Busca o primeiro (mais recente) consentimento de um usuário
+     */
+    Optional<ConsentimentoLGPDUsuario> findFirstByUsuarioOrderByDataConsentimentoDesc(AuthUsuario usuario);
+
+    /**
      * Busca o último consentimento de um usuário
      */
     @Query("SELECT c FROM ConsentimentoLGPDUsuario c WHERE c.usuario = :usuario ORDER BY c.dataConsentimento DESC LIMIT 1")

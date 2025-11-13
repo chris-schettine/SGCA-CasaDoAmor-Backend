@@ -22,6 +22,8 @@ public class ConsentimentoLGPDResponseDTO {
     private Boolean concorda;
     private LocalDateTime dataConsentimento;
     private String ipOrigem;
+    private String userAgent;
     private String registradoPorNome;
     private String metadata;
+    private LocalDateTime createdAt;
 }
