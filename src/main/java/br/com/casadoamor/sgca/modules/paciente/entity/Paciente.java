@@ -8,6 +8,7 @@ import br.com.casadoamor.sgca.modules.common.entity.BaseEntity;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.common.entity.DadoSocial;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
+import br.com.casadoamor.sgca.modules.common.enums.PacienteStatus;
 import br.com.casadoamor.sgca.modules.dadoClinico.entity.DadoClinico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -59,11 +60,20 @@ public class Paciente extends BaseEntity {
   @JoinColumn(name = "informacao_hospitalar_id")
   private InformacaoHospitalar informacaoHospitalar;
 
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "obituario_id")
+  private Obituario obituario;
+
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
 
   @Column(name = "deleted_by")
   private String deletedBy;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  @Builder.Default
+  private PacienteStatus status = PacienteStatus.ATIVO;
 
   public boolean isDeleted() {
     return deletedAt != null;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.casadoamor.sgca.modules.common.dto.DadoPessoalDTO;
 import br.com.casadoamor.sgca.modules.common.dto.DadoSocialDTO;
+import br.com.casadoamor.sgca.modules.common.enums.PacienteStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class PacienteDTO {
     EnderecoDTO endereco;
     String email;
     String imageUrl;
+    PacienteStatus status;
     LocalDateTime createdAt;
     List<ContatoEmergenciaDTO> contatosDeEmergencia;
     List<DadoClinicoDTO> dadosClinicos;

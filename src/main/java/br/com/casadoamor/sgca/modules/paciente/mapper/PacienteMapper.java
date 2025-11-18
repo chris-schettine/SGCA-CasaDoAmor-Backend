@@ -61,6 +61,14 @@ public class PacienteMapper {
       .dadosClinicos(dadosClinicos)
       .informacaoHospitalar(informacaoHospitalar)
       .dadoSocial(dadoSocial)
+      .status(paciente.getStatus())
       .build();
+  }
+
+  public List<PacienteDTO> toListDTO(List<Paciente> pacientes ) {
+    if (pacientes == null) return null;
+    return pacientes.stream()
+      .map(this::toDTO)
+      .toList();
   }
 }

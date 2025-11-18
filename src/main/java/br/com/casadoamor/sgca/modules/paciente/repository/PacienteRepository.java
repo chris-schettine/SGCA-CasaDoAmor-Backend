@@ -29,4 +29,16 @@ public interface PacienteRepository extends JpaRepository<Paciente, String>, Jpa
   Optional<Paciente> findByEmail(String email);
 
   Boolean existsByEmail(String email);
+
+  @Query("""
+       SELECT p FROM Paciente p
+       JOIN p.dadoPessoal d
+       WHERE 
+          LOWER(REPLACE(REPLACE(REPLACE(d.cpf,'.',''),'-',''),' ','')) LIKE %:clean%
+          OR LOWER(REPLACE(REPLACE(REPLACE(d.rg,'.',''),'-',''),' ','')) LIKE %:clean%
+          OR LOWER(d.nome) LIKE %:termo%
+          AND p.deletedAt IS NULL
+       """)
+  List<Paciente> buscarInteligente(@Param("termo") String termo, @Param("clean") String clean);
+
 }

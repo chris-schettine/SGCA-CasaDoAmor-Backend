@@ -1,5 +1,6 @@
 package br.com.casadoamor.sgca.modules.paciente.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -14,6 +15,8 @@ import br.com.casadoamor.sgca.modules.common.dto.PaginatedResponseDTO;
 import br.com.casadoamor.sgca.modules.common.entity.DadoPessoal;
 import br.com.casadoamor.sgca.modules.common.entity.DadoSocial;
 import br.com.casadoamor.sgca.modules.common.entity.Endereco;
+import br.com.casadoamor.sgca.modules.common.enums.PacienteStatus;
+import br.com.casadoamor.sgca.modules.common.enums.SexoEnum;
 import br.com.casadoamor.sgca.modules.common.mapper.DadoPessoalMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.DadoSocialMapper;
 import br.com.casadoamor.sgca.modules.common.mapper.EnderecoMapper;
@@ -24,6 +27,7 @@ import br.com.casadoamor.sgca.modules.dadoClinico.mapper.DadoClinicoMapper;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarObitoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.ContatoEmergencia;
 import br.com.casadoamor.sgca.modules.paciente.entity.HistoricoPaciente;
@@ -33,10 +37,13 @@ import br.com.casadoamor.sgca.modules.paciente.entity.PoliticaPrivacidade;
 import br.com.casadoamor.sgca.modules.paciente.mapper.ContatoEmergenciaMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.HistoricoPacienteMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.InformacaoHospitalarMapper;
+import br.com.casadoamor.sgca.modules.paciente.mapper.ObituarioMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.PacienteMapper;
 import br.com.casadoamor.sgca.modules.paciente.mapper.PoliticaPrivacidadeMapper;
 import br.com.casadoamor.sgca.modules.paciente.repository.HistoricoPacienteRepository;
 import br.com.casadoamor.sgca.modules.paciente.repository.PacienteRepository;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +64,7 @@ public class PacienteServiceImp implements PacienteService {
   private final PoliticaPrivacidadeMapper politicaPrivacidadeMapper;
   private final DadoClinicoMapper dadoClinicoMapper;
   private final InformacaoHospitalarMapper informacaoHospitalarMapper;
+  private final ObituarioMapper obituarioMapper;
 
   @Override
   @Transactional
@@ -202,12 +210,20 @@ public class PacienteServiceImp implements PacienteService {
     return pacienteMapper.toDTO(pacienteExistente);
   }
 
-  public  PaginatedResponseDTO<PacienteDTO> pacientesPaginados (String searchText, int limit, int offset) {
+  public  PaginatedResponseDTO<PacienteDTO> pacientesPaginados (
+    String searchText, int limit, int offset,
+    PacienteStatus status, String diagnostico, String hospitalReferencia,
+    String dataCadastroInicio, String dataCadastroFim,
+    Integer idadeMin, Integer idadeMax, SexoEnum genero,
+    String cidade, String necessidadeEspecial
+  ) {
      Specification<Paciente> spec = (root, query, criteriaBuilder) -> {
         Predicate predicate = criteriaBuilder.conjunction(); 
 
-    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
-
+    if (status == null || status != PacienteStatus.INATIVO) {
+      predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
+    }
+    
     if (searchText != null && !searchText.isBlank()) {
       String search = "%" + searchText.toLowerCase() + "%";
       String searchPlain = searchText.toLowerCase();
@@ -283,7 +299,113 @@ public class PacienteServiceImp implements PacienteService {
         query.orderBy(criteriaBuilder.asc(root.get("id")));
       }
     }
-        return predicate;
+    
+    // STATUS (ativo, inativo, falecido)
+    if (status != null) {
+      switch (status) {
+          case PacienteStatus.ATIVO:
+              predicate = criteriaBuilder.and(
+                  predicate,
+                  criteriaBuilder.equal(root.get("status"), PacienteStatus.ATIVO)
+              );
+              break;
+
+          case PacienteStatus.INATIVO:
+              predicate = criteriaBuilder.and(
+                  predicate,
+                  criteriaBuilder.equal(root.get("status"), PacienteStatus.INATIVO)
+              );
+              break;
+
+          case PacienteStatus.FALECIDO:
+              predicate = criteriaBuilder.and(
+                  predicate,
+                  criteriaBuilder.equal(root.get("status"), PacienteStatus.FALECIDO)
+              );
+              break;
+      }
+    }
+
+      // DIAGNÓSTICO
+      if (diagnostico != null && !diagnostico.isBlank()) {
+          Join<Paciente, DadoClinico> dadosClinicosJoin = root.join("dadosClinicos");
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.like(criteriaBuilder.lower(dadosClinicosJoin.get("diagnostico")),
+                      "%" + diagnostico.toLowerCase() + "%")
+          );
+      }
+
+      // HOSPITAL DE REFERÊNCIA
+      if (hospitalReferencia != null && !hospitalReferencia.isBlank()) {
+          Join<Paciente, InformacaoHospitalar> hospitalJoin = root.join("informacaoHospitalar");
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.like(criteriaBuilder.lower(hospitalJoin.get("nomeHospitalReferencia")),
+                      "%" + hospitalReferencia.toLowerCase() + "%")
+          );
+      }
+
+      // DATA CADASTRO
+      if (dataCadastroInicio != null) {
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"),
+                  LocalDate.parse(dataCadastroInicio).atStartOfDay())
+          );
+      }
+
+      if (dataCadastroFim != null) {
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"),
+                  LocalDate.parse(dataCadastroFim).atTime(23, 59, 59))
+          );
+      }
+
+      // FAIXA ETÁRIA
+      if (idadeMin != null || idadeMax != null) {
+          Join<Paciente, DadoPessoal> joinDado = root.join("dadoPessoal");
+
+          Expression<Integer> idade =
+              criteriaBuilder.function("TIMESTAMPDIFF", Integer.class,
+                  criteriaBuilder.literal("YEAR"),
+                  joinDado.get("dataNascimento"),
+                  criteriaBuilder.currentDate()
+              );
+
+          if (idadeMin != null) {
+              predicate = criteriaBuilder.and(predicate, criteriaBuilder.greaterThanOrEqualTo(idade, idadeMin));
+          }
+          if (idadeMax != null) {
+              predicate = criteriaBuilder.and(predicate, criteriaBuilder.lessThanOrEqualTo(idade, idadeMax));
+          }
+      }
+
+      // GÊNERO
+      if (genero != null) {
+          Join<Paciente, DadoPessoal> joinDado = root.join("dadoPessoal");
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.equal(joinDado.get("sexo"), genero)
+          );
+      }
+
+      // CIDADE
+      if (cidade != null && !cidade.isBlank()) {
+          Join<Paciente, Endereco> joinEndereco = root.join("endereco");
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.like(criteriaBuilder.lower(joinEndereco.get("cidade")),
+                      "%" + cidade.toLowerCase() + "%")
+          );
+      }
+
+      // NECESSIDADE ESPECIAL
+      if (necessidadeEspecial != null && !necessidadeEspecial.isBlank()) {
+          Join<Paciente, DadoSocial> joinSocial = root.join("dadoSocial");
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.like(criteriaBuilder.lower(joinSocial.get("necessidadesEspeciais")),
+                      "%" + necessidadeEspecial.toLowerCase() + "%")
+          );
+      }
+
+      return predicate;
+    
     };
 
     List<Paciente> allPacientes = pacienteRepository.findAll(spec);
@@ -335,8 +457,40 @@ public class PacienteServiceImp implements PacienteService {
       throw new CustomError("Paciente já foi removido anteriormente", HttpStatus.BAD_REQUEST);
     }
 
+    paciente.setStatus(PacienteStatus.INATIVO);
+
     paciente.markAsDeleted(deletedBy);
 
     pacienteRepository.save(paciente);
   }
+
+  @Override
+  @Transactional
+  public PacienteDTO registrarObito(String id, RegistrarObitoDTO dto) {
+    Paciente paciente = pacienteRepository.findById(id)
+        .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
+
+    if (paciente.getStatus() == PacienteStatus.FALECIDO) {
+        throw new CustomError("Óbito já registrado para este paciente.", HttpStatus.BAD_REQUEST);
+    }
+
+    // Atualiza status para falecido
+    paciente.setStatus(PacienteStatus.FALECIDO);
+
+    // Cria obituário
+    var obituario = obituarioMapper.toEntity(dto);
+    paciente.setObituario(obituario);
+
+    pacienteRepository.save(paciente);
+
+    HistoricoPaciente historico = historicoPacienteMapper.toEntity(
+        paciente,
+        null,
+        "Óbito registrado para o paciente."
+    );
+    historicoRepository.save(historico);
+
+    return pacienteMapper.toDTO(paciente);
+  }
+
 }
