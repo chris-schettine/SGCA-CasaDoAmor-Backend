@@ -86,9 +86,10 @@ public class AcompanhanteController {
   public ResponseEntity<PaginatedResponseDTO<AcompanhanteDTO>> listarAcompanhantesPorPaciente(
     @PathVariable String pacienteId,
     @RequestParam(defaultValue = "10") int limit,
-    @RequestParam(defaultValue = "0") int offset
+    @RequestParam(defaultValue = "0") int offset,
+    @RequestParam(required = false) String searchText
   ) {
-    PaginatedResponseDTO<AcompanhanteDTO> page = acompanhanteService.listarAcompanhantesPorPaciente(pacienteId, limit, offset);
+    PaginatedResponseDTO<AcompanhanteDTO> page = acompanhanteService.listarAcompanhantesPorPaciente(pacienteId, searchText, limit, offset);
     return new ResponseEntity<>(page, HttpStatus.OK);
   }
 

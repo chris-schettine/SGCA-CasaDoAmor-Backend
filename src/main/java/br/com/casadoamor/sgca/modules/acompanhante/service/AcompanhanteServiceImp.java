@@ -273,13 +273,101 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
     }
 
     @Override
-    public PaginatedResponseDTO<AcompanhanteDTO> listarAcompanhantesPorPaciente(String pacienteId, int limit,
-            int offset) {
+    public PaginatedResponseDTO<AcompanhanteDTO> listarAcompanhantesPorPaciente(
+            String searchText,
+            String pacienteId,
+            int limit,
+            int offset
+    ) {
         Paciente paciente = pacienteRepository.findById(pacienteId)
                 .orElseThrow(() -> new CustomError("Paciente não encontrado", HttpStatus.NOT_FOUND));
 
-        List<Acompanhante> acompanhantes = acompanhanteRepository.findByPacienteAndDeletedAtIsNull(paciente);
+        Specification<Acompanhante> spec = (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
 
+            // Apenas acompanhantes do paciente
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("paciente"), paciente));
+
+            // Apenas não deletados
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("deletedAt")));
+
+            if (searchText != null && !searchText.isBlank()) {
+                String search = "%" + searchText.toLowerCase() + "%";
+                String searchPlain = searchText.toLowerCase();
+                String searchNorm = searchText.toLowerCase().replaceAll("\\s|\\.|-", "");
+
+                var dadoJoin = root.join("dadoPessoal");
+
+                // Normalização CPF banco
+                var cpfNormalizedDb = criteriaBuilder.lower(
+                        criteriaBuilder.function("REPLACE", String.class,
+                                criteriaBuilder.function("REPLACE", String.class,
+                                        criteriaBuilder.function("REPLACE", String.class,
+                                                dadoJoin.get("cpf"),
+                                                criteriaBuilder.literal("."),
+                                                criteriaBuilder.literal("")),
+                                        criteriaBuilder.literal("-"),
+                                        criteriaBuilder.literal("")),
+                                criteriaBuilder.literal(" "),
+                                criteriaBuilder.literal(""))
+                );
+
+                // Normalização RG banco
+                var rgNormalizedDb = criteriaBuilder.lower(
+                        criteriaBuilder.function("REPLACE", String.class,
+                                criteriaBuilder.function("REPLACE", String.class,
+                                        criteriaBuilder.function("REPLACE", String.class,
+                                                dadoJoin.get("rg"),
+                                                criteriaBuilder.literal("."),
+                                                criteriaBuilder.literal("")),
+                                        criteriaBuilder.literal("-"),
+                                        criteriaBuilder.literal("")),
+                                criteriaBuilder.literal(" "),
+                                criteriaBuilder.literal(""))
+                );
+
+                // Predicados nome
+                Predicate nameContains = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), search);
+                Predicate nameStarts = criteriaBuilder.like(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain + "%");
+                Predicate exactName = criteriaBuilder.equal(criteriaBuilder.lower(dadoJoin.get("nome")), searchPlain);
+
+                // Predicados CPF
+                Predicate cpfContains = criteriaBuilder.like(cpfNormalizedDb, "%" + searchNorm + "%");
+                Predicate cpfStarts = criteriaBuilder.like(cpfNormalizedDb, searchNorm + "%");
+                Predicate exactCpf = criteriaBuilder.equal(cpfNormalizedDb, searchNorm);
+
+                // Predicados RG
+                Predicate rgContains = criteriaBuilder.like(rgNormalizedDb, "%" + searchNorm + "%");
+                Predicate rgStarts = criteriaBuilder.like(rgNormalizedDb, searchNorm + "%");
+                Predicate exactRg = criteriaBuilder.equal(rgNormalizedDb, searchNorm);
+
+                // Combinação geral (nome + cpf + rg)
+                Predicate anyContains = criteriaBuilder.or(nameContains, cpfContains, rgContains);
+                predicate = criteriaBuilder.and(predicate, anyContains);
+
+                // Ordenação por relevância
+                var caseExpr = criteriaBuilder.selectCase()
+                        .when(criteriaBuilder.or(exactName, exactCpf, exactRg), 0)
+                        .when(criteriaBuilder.or(nameStarts, cpfStarts, rgStarts), 1)
+                        .when(criteriaBuilder.or(nameContains, cpfContains, rgContains), 2)
+                        .otherwise(3);
+
+                if (query != null) {
+                    query.orderBy(criteriaBuilder.asc(caseExpr), criteriaBuilder.asc(root.get("id")));
+                }
+            } else {
+                if (query != null) {
+                    query.orderBy(criteriaBuilder.asc(root.get("id")));
+                }
+            }
+
+            return predicate;
+        };
+
+        // Busca com specification
+        List<Acompanhante> acompanhantes = acompanhanteRepository.findAll(spec);
+
+        // Paginação manual
         int start = Math.min(offset, acompanhantes.size());
         int end = Math.min(offset + limit, acompanhantes.size());
 
@@ -293,4 +381,5 @@ public class AcompanhanteServiceImp implements AcompanhanteService {
 
         return paginatedMapper.toDTO(nodes, acompanhantes.size(), hasPreviousPage, hasNextPage);
     }
+
 }

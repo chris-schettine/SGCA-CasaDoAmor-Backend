@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.casadoamor.sgca.modules.common.dto.PaginatedResponseDTO;
+import br.com.casadoamor.sgca.modules.common.enums.PacienteStatus;
+import br.com.casadoamor.sgca.modules.common.enums.SexoEnum;
 import br.com.casadoamor.sgca.modules.paciente.dtos.EditarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.HistoricoPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
+import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarObitoDTO;
 import br.com.casadoamor.sgca.modules.paciente.dtos.RegistrarPacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.services.PacienteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,9 +58,26 @@ public class PacienteController {
   public PaginatedResponseDTO<PacienteDTO> pacientesPaginados(
     @RequestParam(defaultValue = "10") int limit,
     @RequestParam(defaultValue = "0") int offset,
-    @RequestParam(required = false) String searchText
+    @RequestParam(required = false) String searchText,
+
+    @RequestParam(required = false) PacienteStatus status,
+    @RequestParam(required = false) String diagnostico,
+    @RequestParam(required = false) String hospitalReferencia,
+    @RequestParam(required = false) String dataCadastroInicio,
+    @RequestParam(required = false) String dataCadastroFim,
+    @RequestParam(required = false) Integer idadeMin,
+    @RequestParam(required = false) Integer idadeMax,
+    @RequestParam(required = false) SexoEnum genero,
+    @RequestParam(required = false) String cidade,
+    @RequestParam(required = false) String necessidadeEspecial
   ) {
-    return pacienteService.pacientesPaginados(searchText, limit, offset);
+    return pacienteService.pacientesPaginados(
+      searchText, limit, offset,
+      status, diagnostico, hospitalReferencia,
+      dataCadastroInicio, dataCadastroFim,
+      idadeMin, idadeMax, genero,
+      cidade, necessidadeEspecial
+    );
   }
 
   @GetMapping("/{pacienteId}/historico")
@@ -77,5 +97,16 @@ public class PacienteController {
   public ResponseEntity<Void> deletarPaciente(@PathVariable String id) {
     pacienteService.deletarPaciente(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{id}/obito")
+  @Operation(summary = "Registrar óbito de um paciente")
+  @PreAuthorize("hasAuthority('PACIENTES_EDITAR') or hasRole('RECEPCIONISTA') or hasRole('ADMINISTRADOR')")
+  public ResponseEntity<PacienteDTO> registrarObito(
+      @PathVariable String id,
+      @Valid @RequestBody RegistrarObitoDTO dto
+  ) {
+      PacienteDTO paciente = pacienteService.registrarObito(id, dto);
+      return new ResponseEntity<>(paciente, HttpStatus.OK);
   }
 }

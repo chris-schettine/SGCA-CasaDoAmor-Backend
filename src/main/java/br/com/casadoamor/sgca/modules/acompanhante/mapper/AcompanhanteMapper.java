@@ -1,5 +1,7 @@
 package br.com.casadoamor.sgca.modules.acompanhante.mapper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import br.com.casadoamor.sgca.modules.acompanhante.dtos.AcompanhanteDTO;
@@ -44,5 +46,12 @@ public class AcompanhanteMapper {
       .parentesco(dto.getParentesco())
       .paciente(paciente)
       .build();
+  }
+
+  public List<AcompanhanteDTO> toListDTO (List<Acompanhante> acompanhantes) {
+    if (acompanhantes == null) return null;
+    return acompanhantes.stream()
+      .map(this::mapToDTO)
+      .toList();
   }
 }
