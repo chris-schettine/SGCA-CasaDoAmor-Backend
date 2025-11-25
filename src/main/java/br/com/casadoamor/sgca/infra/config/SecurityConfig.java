@@ -118,7 +118,9 @@ public class SecurityConfig {
             "http://144.22.182.60:*",
             "https://casadoamor.duckdns.org",
             "https://casadoamorconquista.com.br",
+            "https://www.casadoamorconquista.com.br",
             "https://api.casadoamorconquista.com.br",
+            "https://www.api.casadoamorconquista.com.br",
             "https://sgca-casa-do-amor-git-3202e4-christian-rochas-projects-b9fd90ab.vercel.app",
             "https://sgca-casa-do-amor-frontend.vercel.app"
         ));
