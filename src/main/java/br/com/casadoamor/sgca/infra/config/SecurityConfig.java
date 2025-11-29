@@ -95,7 +95,6 @@ public class SecurityConfig {
                                 "/api/files/**", // Servir arquivos estáticos (fotos)
                                 "/debug-auth/**" // DEBUG ONLY - endpoints de teste de autenticação
                         ).permitAll()
-
                         // All other endpoints require authentication
                         .anyRequest().authenticated())
 

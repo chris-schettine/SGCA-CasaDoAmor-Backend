@@ -10,6 +10,10 @@ import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoInputDTO;
 @Component
 public class EnderecoMapper {
   public Endereco toEntity (EnderecoInputDTO enderecoInput) {
+    if (enderecoInput == null) {
+      return null;
+    }
+    
     return Endereco.builder()
       .cep(enderecoInput.getCep())
       .logradouro(enderecoInput.getLogradouro())

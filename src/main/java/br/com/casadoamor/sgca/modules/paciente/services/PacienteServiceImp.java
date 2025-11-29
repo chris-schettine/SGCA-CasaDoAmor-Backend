@@ -87,6 +87,7 @@ public class PacienteServiceImp implements PacienteService {
 
     DadoSocial dadoSocial = dadoSocialMapper.toEntity(registrarPacienteDTO.getDadoSocial());
     paciente.setDadoSocial(dadoSocial);
+    dadoSocial.setPaciente(paciente);
 
     List<ContatoEmergencia> contatos = contatoEmergenciaMapper.toEntityList(registrarPacienteDTO.getContatosDeEmergencia(), paciente);
     paciente.setContatosEmergencia(contatos);
@@ -179,12 +180,15 @@ public class PacienteServiceImp implements PacienteService {
 
     if (editarPacienteDTO.getDadoSocial() != null) {
       var dadoSocialDTO = editarPacienteDTO.getDadoSocial();
-      DadoSocial dadoSocial = pacienteExistente.getDadoSocial();
 
-      if (dadoSocialDTO.getRendaFamiliar() != null) dadoSocial.setRendaFamiliar(dadoSocialDTO.getRendaFamiliar());
-      if (dadoSocialDTO.getComposicaoFamiliar() != null) dadoSocial.setComposicaoFamiliar(dadoSocialDTO.getComposicaoFamiliar());
-      if (dadoSocialDTO.getSituacaoMoradia() != null) dadoSocial.setSituacaoMoradia(dadoSocialDTO.getSituacaoMoradia());
-      if (dadoSocialDTO.getNecessidadesEspeciais() != null) dadoSocial.setNecessidadesEspeciais(dadoSocialDTO.getNecessidadesEspeciais());
+      DadoSocial dadoSocialAtual = pacienteExistente.getDadoSocial();
+  
+      DadoSocial novoDadoSocial = dadoSocialMapper
+          .toEntityFromEditarDadoPessoalInputDTO(dadoSocialAtual, dadoSocialDTO);
+  
+      novoDadoSocial.setPaciente(pacienteExistente);
+  
+      pacienteExistente.setDadoSocial(novoDadoSocial);
     }
 
     if (editarPacienteDTO.getInformacaoHospitalar() != null) {

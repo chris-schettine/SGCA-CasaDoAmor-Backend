@@ -2,8 +2,11 @@ package br.com.casadoamor.sgca.modules.common.entity;
 
 import java.math.BigDecimal;
 
+import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +34,9 @@ public class DadoSocial extends BaseEntity {
 
   @Column(name = "necessidades_especiais")
   private String necessidadesEspeciais;
+
+  @OneToOne
+  @JoinColumn(name = "paciente_id")
+  private Paciente paciente;
+
 }
