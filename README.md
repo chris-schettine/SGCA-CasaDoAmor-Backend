@@ -8,6 +8,15 @@ Sistema de gerenciamento backend para a Casa do Amor, desenvolvido em Spring Boo
 ![Docker](https://img.shields.io/badge/Docker-Supported-blue)
 ![Security](https://img.shields.io/badge/Security-JWT%20%2B%202FA-red)
 
+<!-- CONTRIBUTORS_STATS_START -->
+### Contribuidores (commits)
+
+_Geração automática: este bloco é atualizado por Actions com a contagem de commits por contribuidor._
+
+> Executando atualização automática do gráfico de commits...
+
+<!-- CONTRIBUTORS_STATS_END -->
+
 ## 📋 Índice
 
 - [🔒 Aviso de Segurança](#-aviso-de-segurança)
@@ -50,10 +59,12 @@ O SGCA Backend é uma API REST desenvolvida para gerenciar operações da Casa d
 - **Contatos de Emergência**: Registro de contatos para situações de emergência
 - **Profissionais de Saúde**: Gestão completa de profissionais com categorias e tipos de vínculo
 - **Tipos de Serviço**: Cadastro de serviços oferecidos pelos profissionais
-- **Consentimentos LGPD**: Gerenciamento de termos e consentimentos de privacidade
+- **Agendamentos**: Sistema completo de gestão de consultas e procedimentos para pacientes e acompanhantes
+- **Dashboard Estatístico**: 40+ métricas em tempo real sobre agendamentos e performance da unidade
+- **Consentimentos LGPD**: Sistema unificado de gerenciamento de termos e consentimentos para todas as entidades (usuários, profissionais, pacientes, visitantes, fornecedores)
 - **Hospedagens**: Sistema de controle de estadias dos pacientes com histórico completo
 - **Quartos/Leitos**: Gerenciamento de acomodações com controle de ocupação e separação por ala
-- **Upload de Arquivos**: Sistema de gerenciamento de fotos de perfil
+- **Upload de Arquivos**: Sistema de gerenciamento de fotos de perfil para usuários e profissionais
 - **Auditoria**: Rastreamento de sessões e tentativas de login
 
 ### Funcionalidades Principais
@@ -62,6 +73,10 @@ O SGCA Backend é uma API REST desenvolvida para gerenciar operações da Casa d
 - ✅ **2FA (Two-Factor Authentication)** via email
 - ✅ **Recuperação de senha** com tokens seguros
 - ✅ **Gerenciamento de sessões** ativas
+- ✅ **Sistema de Agendamentos** completo (pacientes e acompanhantes)
+- ✅ **Dashboard com 40+ métricas** em tempo real
+- ✅ **Estatísticas de Performance** (taxa de comparecimento, cancelamentos, etc.)
+- ✅ **Top 10 Rankings** (profissionais e serviços mais solicitados)
 - ✅ **Rate limiting** para proteção contra ataques
 - ✅ **Upload de arquivos** com validação de tipo e tamanho
 - ✅ **Migração de banco de dados** com Flyway
@@ -340,9 +355,11 @@ DELETE /contatos-emergencia/{id}   # Deletar contato
 ```http
 POST   /api/profissionais                    # Criar profissional (ADMIN)
 PUT    /api/profissionais/{uuid}             # Atualizar profissional (ADMIN)
-GET    /api/profissionais/{uuid}             # Buscar por UUID
-GET    /api/profissionais                    # Listar profissionais
+GET    /api/profissionais/{uuid}             # Buscar por UUID (inclui foto)
+GET    /api/profissionais                    # Listar profissionais (inclui foto)
 GET    /api/profissionais/categoria/{cat}    # Filtrar por categoria
+GET    /api/profissionais/tipos-vinculo      # Listar tipos de vínculo (dropdown)
+GET    /api/profissionais/categorias         # Listar categorias profissionais (dropdown)
 PATCH  /api/profissionais/{uuid}/inativar    # Inativar profissional (ADMIN)
 DELETE /api/profissionais/{uuid}             # Deletar profissional (ADMIN)
 ```
@@ -353,11 +370,24 @@ GET    /api/tipos-servico                    # Listar tipos de serviço
 GET    /api/tipos-servico/{id}               # Buscar por ID
 ```
 
-#### Consentimentos LGPD (ADMIN=criar, ADMIN+RECEP+AUDITOR=ler)
+#### Consentimentos LGPD (Sistema Unificado - autenticação requerida)
 ```http
-POST   /api/consentimentos-lgpd              # Criar termo (ADMIN)
-GET    /api/consentimentos-lgpd              # Listar termos
-GET    /api/consentimentos-lgpd/{id}         # Buscar por ID
+# Endpoints para Usuários
+POST   /api/usuarios/{cpf}/consentimentos-lgpd        # Registrar consentimento
+GET    /api/usuarios/{cpf}/consentimentos-lgpd        # Listar histórico
+GET    /api/usuarios/{cpf}/consentimentos-lgpd/valido # Verificar se tem consentimento válido
+GET    /api/usuarios/{cpf}/consentimentos-lgpd/atual  # Obter consentimento atual
+
+# Endpoints para Profissionais
+POST   /api/profissionais/{uuid}/consentimentos       # Registrar consentimento
+GET    /api/profissionais/{uuid}/consentimentos       # Listar histórico
+GET    /api/profissionais/{uuid}/consentimentos/valido # Verificar se tem consentimento válido
+GET    /api/profissionais/{uuid}/consentimentos/atual  # Obter consentimento atual
+
+# Endpoints Administrativos (ADMIN ou AUDITOR)
+GET    /api/consentimentos-lgpd/tipo/{tipo}          # Listar por tipo de entidade
+GET    /api/consentimentos-lgpd/versao/{versao}      # Listar por versão do termo
+GET    /api/consentimentos-lgpd/estatisticas         # Estatísticas de consentimentos
 ```
 
 #### Quartos/Leitos (ADMIN=total, RECEPCIONISTA+AUDITOR=leitura)
@@ -390,6 +420,68 @@ GET    /api/hospedagens/previsao-vencida     # Saídas atrasadas
 GET    /api/hospedagens/paciente/{id}/ativa  # Verificar se tem hospedagem ativa
 GET    /api/hospedagens/paginated            # Lista paginada
 DELETE /api/hospedagens/{uuid}               # Deletar hospedagem (ADMIN)
+```
+
+#### Agendamentos de Pacientes (Requer autenticação)
+```http
+# Listar e Criar
+GET    /api/agendamentos/pacientes                      # Listar todos (paginação)
+POST   /api/agendamentos/pacientes                      # Criar agendamento
+
+# Buscar e Filtrar
+GET    /api/agendamentos/pacientes/{uuid}               # Buscar por UUID
+GET    /api/agendamentos/pacientes/paciente/{id}        # Por paciente
+GET    /api/agendamentos/pacientes/profissional/{id}    # Por profissional (com período)
+
+# Elegibilidade e Disponibilidade
+GET    /api/agendamentos/pacientes/pacientes-elegiveis  # Pacientes com hospedagem ativa
+GET    /api/agendamentos/pacientes/profissionais-elegiveis # Profissionais disponíveis
+
+# Gestão
+POST   /api/agendamentos/pacientes/verificar-conflito   # Verificar conflito de horário
+PUT    /api/agendamentos/pacientes/{uuid}/confirmar     # Confirmar agendamento
+DELETE /api/agendamentos/pacientes/{uuid}               # Cancelar agendamento
+```
+
+#### Agendamentos de Acompanhantes (Requer autenticação)
+```http
+# Listar e Criar
+GET    /api/agendamentos/acompanhantes                         # Listar todos (paginação)
+POST   /api/agendamentos/acompanhantes                         # Criar agendamento
+
+# Buscar e Filtrar
+GET    /api/agendamentos/acompanhantes/{uuid}                  # Buscar por UUID
+GET    /api/agendamentos/acompanhantes/acompanhante/{id}       # Por acompanhante
+GET    /api/agendamentos/acompanhantes/profissional/{id}       # Por profissional (com período)
+
+# Elegibilidade e Disponibilidade
+GET    /api/agendamentos/acompanhantes/acompanhantes-elegiveis # Acompanhantes elegíveis
+GET    /api/agendamentos/acompanhantes/profissionais-elegiveis # Profissionais disponíveis
+
+# Gestão
+POST   /api/agendamentos/acompanhantes/verificar-conflito      # Verificar conflito de horário
+PUT    /api/agendamentos/acompanhantes/{uuid}/confirmar        # Confirmar agendamento
+DELETE /api/agendamentos/acompanhantes/{uuid}                  # Cancelar agendamento
+```
+
+#### Estatísticas de Agendamentos (Dashboard)
+```http
+# Métricas Gerais
+GET    /api/agendamentos/estatisticas/resumo                   # Resumo geral (total, pendentes, concluídos)
+GET    /api/agendamentos/estatisticas/hoje                     # Agendamentos do dia
+GET    /api/agendamentos/estatisticas/semana                   # Agendamentos da semana
+
+# Performance
+GET    /api/agendamentos/estatisticas/taxa-comparecimento      # Taxa de comparecimento
+GET    /api/agendamentos/estatisticas/taxa-cancelamento        # Taxa de cancelamento
+GET    /api/agendamentos/estatisticas/tempo-medio-espera       # Tempo médio de espera
+
+# Rankings Top 10
+GET    /api/agendamentos/estatisticas/profissionais-mais-agendados  # Top 10 profissionais
+GET    /api/agendamentos/estatisticas/servicos-mais-solicitados     # Top 10 serviços
+
+# Filtros por Período
+GET    /api/agendamentos/estatisticas/periodo?inicio={data}&fim={data}  # Estatísticas por período
 ```
 
 #### Upload de Arquivos
@@ -465,7 +557,163 @@ curl -X POST http://localhost:8080/acompanhantes/ \
   }'
 ```
 
-## 📁 Estrutura do Projeto
+### Exemplo de Requisição: Criar Agendamento
+
+```bash
+# 1. Listar pacientes elegíveis (com hospedagem ativa)
+curl -X GET http://localhost:8080/api/agendamentos/pacientes/pacientes-elegiveis \
+  -H "Authorization: Bearer {seu_token}"
+
+# 2. Listar profissionais disponíveis
+curl -X GET http://localhost:8080/api/agendamentos/pacientes/profissionais-elegiveis \
+  -H "Authorization: Bearer {seu_token}"
+
+# 3. Criar agendamento
+curl -X POST http://localhost:8080/api/agendamentos/pacientes \
+  -H "Authorization: Bearer {seu_token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pacienteId": "9e7b315a-89d4-4f29-b28d-78492e5ad4d3",
+    "profissionalId": 2,
+    "tipoServicoId": 1,
+    "dataHoraInicio": "2025-12-10T09:00:00",
+    "dataHoraFim": "2025-12-10T10:00:00",
+    "duracaoMinutos": 60,
+    "observacoes": "Consulta de rotina",
+    "hospedagemId": "uuid-da-hospedagem-ativa"
+  }'
+
+# 4. Listar agendamentos (com paginação)
+curl -X GET "http://localhost:8080/api/agendamentos/pacientes?page=0&size=20" \
+  -H "Authorization: Bearer {seu_token}"
+```
+
+
+## � Sistema LGPD Unificado
+
+### Visão Geral
+
+O sistema implementa um **design polimórfico** para gerenciamento de consentimentos LGPD, permitindo que múltiplas entidades (usuários, profissionais, pacientes, visitantes, fornecedores) compartilhem a mesma infraestrutura de consentimentos.
+
+### Arquitetura
+
+#### Tabela Unificada
+- **Uma única tabela** `consentimentos_lgpd` com discriminador `tipo_entidade`
+- Suporta 5 tipos de entidade via enum: `USUARIO`, `PROFISSIONAL`, `PACIENTE`, `VISITANTE`, `FORNECEDOR`
+- Relacionamento genérico: `tipo_entidade` + `entidade_id` identifica univocamente a entidade
+
+#### Captura Automática de Contexto
+- **IP do cliente**: Captura com suporte a proxies (X-Forwarded-For, Proxy-Client-IP, etc.)
+- **User-Agent**: Navegador/dispositivo utilizado
+- **Metadata JSON**: Informações adicionais em formato flexível
+- **Auditoria**: Rastreamento de quem criou e quem registrou o consentimento
+
+### Como Usar
+
+#### Registrar Consentimento para Usuário
+```bash
+POST /api/usuarios/{cpf}/consentimentos-lgpd
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "versaoTermo": "1.0",
+  "escopo": "dados_pessoais,dados_clinicos",
+  "concorda": true,
+  "metadata": "{\"origem\": \"portal_web\"}"
+}
+```
+
+#### Registrar Consentimento para Profissional
+```bash
+POST /api/profissionais/{uuid}/consentimentos
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "versaoTermo": "1.0",
+  "escopo": "uso_imagem,divulgacao",
+  "concorda": true
+}
+```
+
+#### Verificar Consentimento Válido
+```bash
+GET /api/usuarios/{cpf}/consentimentos-lgpd/valido
+Authorization: Bearer {token}
+
+# Resposta:
+{
+  "valido": true
+}
+```
+
+#### Obter Consentimento Atual
+```bash
+GET /api/profissionais/{uuid}/consentimentos/atual
+Authorization: Bearer {token}
+
+# Resposta:
+{
+  "id": 1,
+  "uuid": "abc123...",
+  "tipoEntidade": "PROFISSIONAL",
+  "versaoTermo": "1.0",
+  "concorda": true,
+  "dataConsentimento": "2025-11-16T10:30:00",
+  "ipOrigem": "192.168.1.100",
+  ...
+}
+```
+
+### Queries Disponíveis
+
+O `ConsentimentoLGPDRepository` fornece 12+ queries customizadas:
+
+- `findByTipoEntidadeAndEntidadeId()` - Buscar por tipo e ID
+- `hasConsentimentoValido()` - Verificar se tem consentimento válido
+- `findConsentimentosDesatualizados()` - Consentimentos com versão antiga
+- `findByVersaoTermo()` - Buscar por versão específica
+- `countByTipoEntidade()` - Contar por tipo de entidade
+- E mais...
+
+### Adicionando Novo Tipo de Entidade
+
+Para adicionar suporte a uma nova entidade (ex: `FORNECEDOR`):
+
+1. **Adicionar no enum** `TipoEntidadeLGPD.java`:
+```java
+public enum TipoEntidadeLGPD {
+    USUARIO, PROFISSIONAL, PACIENTE, VISITANTE, FORNECEDOR  // Adicione aqui
+}
+```
+
+2. **Criar endpoints no controller**:
+```java
+@PostMapping("/api/fornecedores/{id}/consentimentos")
+public ResponseEntity<?> registrarConsentimentoFornecedor(
+    @PathVariable Long id,
+    @RequestBody ConsentimentoLGPDRequestDTO dto
+) {
+    consentimentoService.registrarConsentimento(
+        TipoEntidadeLGPD.FORNECEDOR, id, dto, getUsuarioAutenticado()
+    );
+    return ResponseEntity.ok().build();
+}
+```
+
+3. **Usar os mesmos serviços e repositories** - sem necessidade de criar novos!
+
+### Migração de Dados
+
+A migração V53 consolidou dados de tabelas antigas:
+```sql
+-- Migrou dados de consentimentos_lgpd_profissionais (tipo='PROFISSIONAL')
+-- Migrou dados de consentimentos_lgpd_usuarios (tipo='USUARIO')
+-- Preservou tabelas antigas com prefixo _old_ para auditoria
+```
+
+## �📁 Estrutura do Projeto
 
 ```
 src/main/java/br/com/casadoamor/sgca/
@@ -715,7 +963,7 @@ src/main/resources/db/migration/
 ├── V02__create_tables.sql              # Tabelas adicionais
 ├── V03__create_autenticacao_2fa.sql    # Suporte a 2FA
 ├── V04__add_senha_temporaria.sql       # Senhas temporárias
-├── V05__add_foto_columns.sql           # Colunas para fotos
+├── V05__add_foto_columns.sql           # Colunas para fotos (auth_usuarios)
 ├── V06__seed_initial_data.sql          # Dados iniciais
 ├── V07__seed_dados_pessoais.sql        # Dados pessoais seed
 ├── V08__seed_enderecos_pacientes.sql   # Endereços de pacientes
@@ -738,7 +986,12 @@ src/main/resources/db/migration/
 ├── V25__create_historico_paciente.sql  # Histórico do paciente
 ├── V26__create_roles_acompanhantes.sql # Roles para acompanhantes
 ├── V27__alter_paciente_table.sql       # Alteração tabela pacientes
-└── V28__create_contato_emergencia.sql  # Contatos de emergência
+├── V28__create_contato_emergencia.sql  # Contatos de emergência
+├── ...                                 # Migrações V29-V52
+├── V53__unify_consentimentos_lgpd.sql  # Unificação LGPD (tabela polimórfica)
+├── V54__add_foto_columns_profissionais.sql # Campos foto em profissionais
+├── V55__create_tipos_vinculo.sql       # Tabela tipos_vinculo
+└── V56__alter_profissionais_tipo_vinculo.sql # Refatoração profissionais (FK tipos_vinculo)
 ```
 
 ### Principais Tabelas
@@ -773,6 +1026,64 @@ CREATE TABLE dados_pessoais (
   telefone VARCHAR(255),
   foto_url VARCHAR(500),
   ...
+);
+```
+
+#### profissionais
+Informações de profissionais de saúde (funcionários e voluntários)
+```sql
+CREATE TABLE profissionais (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  uuid VARCHAR(36) UNIQUE NOT NULL,
+  nome VARCHAR(255) NOT NULL,
+  cpf VARCHAR(11) UNIQUE NOT NULL,           -- CPF não criptografado
+  cpf_criptografado VARBINARY(512),          -- CPF criptografado
+  categoria VARCHAR(50) NOT NULL,            -- MEDICO, ENFERMAGEM, etc.
+  tipo_vinculo_id BIGINT,                    -- FK para tipos_vinculo
+  tipo_vinculo_backup VARCHAR(255),          -- Backup do tipo_vinculo enum antigo
+  foto_url VARCHAR(500),                     -- URL completa da foto
+  foto_path VARCHAR(255),                    -- Caminho relativo no storage
+  foto_atualizada_em TIMESTAMP,              -- Data/hora última atualização da foto
+  ativo BOOLEAN DEFAULT TRUE,
+  ...,
+  CONSTRAINT fk_profissionais_tipo_vinculo FOREIGN KEY (tipo_vinculo_id) REFERENCES tipos_vinculo(id)
+);
+```
+
+#### tipos_vinculo
+Tipos de vínculo profissional (tabela de domínio)
+```sql
+CREATE TABLE tipos_vinculo (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  codigo VARCHAR(10) UNIQUE NOT NULL,        -- PADRAO, CLT, PJ, AUT, VOL
+  nome VARCHAR(100) NOT NULL,                -- Padrão, CLT, Pessoa Jurídica, etc.
+  ativo BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
+);
+-- Registros: (1,PADRAO,Padrão), (2,CLT,CLT), (3,PJ,Pessoa Jurídica), (4,AUT,Autônomo), (5,VOL,Voluntário)
+```
+
+#### consentimentos_lgpd
+Sistema unificado de consentimentos LGPD (todas as entidades)
+```sql
+CREATE TABLE consentimentos_lgpd (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  uuid VARCHAR(36) UNIQUE NOT NULL,
+  tipo_entidade VARCHAR(50) NOT NULL,  -- USUARIO, PROFISSIONAL, PACIENTE, etc.
+  entidade_id BIGINT NOT NULL,         -- ID da entidade na tabela correspondente
+  versao_termo VARCHAR(50) NOT NULL,
+  escopo VARCHAR(5000),
+  concorda BOOLEAN NOT NULL,
+  data_consentimento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  ip_origem VARCHAR(45),               -- IPv4 ou IPv6
+  user_agent VARCHAR(500),
+  metadata JSON,                        -- Dados adicionais em JSON
+  registrado_por_id BIGINT,            -- Quem registrou o consentimento
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_by_id BIGINT,
+  INDEX idx_tipo_entidade_id (tipo_entidade, entidade_id),
+  INDEX idx_versao (versao_termo)
 );
 ```
 
@@ -1093,6 +1404,59 @@ Ao reportar bugs, inclua:
 
 ## 📝 Changelog
 
+### [0.0.4-SNAPSHOT] - 2025-11-16
+
+#### ✨ Added
+- **Sistema LGPD Unificado**: Refatoração completa do módulo de consentimentos
+  - Tabela unificada `consentimentos_lgpd` com discriminador `tipo_entidade`
+  - Suporte para múltiplos tipos: USUARIO, PROFISSIONAL, PACIENTE, VISITANTE, FORNECEDOR
+  - API genérica para registrar/consultar consentimentos de qualquer entidade
+  - Captura automática de IP e User-Agent (com suporte a proxies)
+  - Endpoints específicos para usuários e profissionais
+  - Endpoints administrativos para estatísticas e consultas por tipo/versão
+  - Migração V53: Consolidação de dados de tabelas antigas
+- **Campos de Foto em Profissionais**: Paridade com auth_usuarios
+  - Adicionados `foto_url`, `foto_path`, `foto_atualizada_em` na tabela profissionais
+  - DTOs atualizados: ProfissionalResponseDTO e ProfissionalResumoDTO
+  - Índice otimizado: `idx_profissionais_foto` em foto_path
+  - Migração V54: ALTER TABLE com novos campos
+- **Tabela Tipos de Vínculo**: Sistema de tipos de vínculo empregatício
+  - Tabela `tipos_vinculo` com 5 tipos: PADRAO, CLT, PJ, AUT, VOL
+  - Endpoint dropdown: GET /api/profissionais/tipos-vinculo
+  - Migração V55: Criação e população da tabela
+- **Refatoração Profissionais**: Integração com tipos_vinculo
+  - Campo `tipo_vinculo_id` como FK para tipos_vinculo (substitui enum)
+  - Campo `cpf` VARCHAR(11) adicionado (além do cpf_criptografado)
+  - Campo `tipo_vinculo_backup` para preservar dados antigos
+  - DTOs atualizados: tipoVinculoId no request, tipoVinculo objeto no response
+  - Migração V56: Refatoração da estrutura de profissionais
+
+#### 🗄️ Database
+- ✅ Migração V53: Unificação de consentimentos LGPD
+  - Criação da tabela `consentimentos_lgpd` com tipo_entidade
+  - Migração de dados de `consentimentos_lgpd_profissionais` e `consentimentos_lgpd_usuarios`
+  - Preservação de tabelas antigas com prefixo `_old_`
+- ✅ Migração V54: Adição de campos foto em profissionais
+  - foto_url VARCHAR(500) - URL completa para acessar a foto
+  - foto_path VARCHAR(255) - Caminho relativo no storage
+  - foto_atualizada_em TIMESTAMP - Data/hora da última atualização
+  - Índice idx_profissionais_foto para performance
+
+#### 🔧 Refactoring
+- ✅ Sistema LGPD: De múltiplas tabelas para design polimórfico
+  - ConsentimentoLGPD: Entity unificada com enum TipoEntidadeLGPD
+  - ConsentimentoLGPDService: Métodos genéricos aceitando tipo + entidadeId
+  - ConsentimentoLGPDController: Endpoints para usuarios, profissionais e admin
+  - 12+ queries customizadas no repository para consultas específicas
+- ✅ Correção de autenticação em ConsentimentoLGPDController
+  - Helper method `getUsuarioAutenticado()` para evitar cast errors
+  - Ajuste de @PreAuthorize: `authentication.principal.cpf` → `authentication.principal.username`
+
+#### 📚 Documentation
+- ✅ README atualizado com informações sobre LGPD unificado
+- ✅ Documentação de campos de foto em profissionais
+- ✅ Exemplos de uso dos novos endpoints LGPD
+
 ### [0.0.3-SNAPSHOT] - 2025-11-10
 
 #### ✨ Added
@@ -1103,9 +1467,6 @@ Ao reportar bugs, inclua:
   - Gestão de status ativo/inativo
 - **Módulo Tipos de Serviço**: Cadastro de serviços oferecidos
   - Listagem de tipos de serviço disponíveis
-- **Módulo Consentimentos LGPD**: Gerenciamento de termos de privacidade
-  - Cadastro de termos e consentimentos
-  - Controle de versões de termos
 - **Módulo Hospedagens**: Sistema completo de controle de estadias
   - Registro de entrada e saída de pacientes
   - Transferência entre quartos
@@ -1280,15 +1641,18 @@ curl http://localhost:8090/actuator/health
 ## 📊 Status do Projeto
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
-![Versão](https://img.shields.io/badge/Vers%C3%A3o-0.0.2--SNAPSHOT-blue)
+![Versão](https://img.shields.io/badge/Vers%C3%A3o-0.0.4--SNAPSHOT-blue)
 ![Cobertura](https://img.shields.io/badge/Cobertura%20de%20Testes-~70%25-green)
 ![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-blue)
 
 ### Próximos Passos
+- [x] Sistema LGPD unificado com design polimórfico ✅
+- [x] Campos de foto em profissionais ✅
+- [ ] Implementar upload de fotos para profissionais
+- [ ] Remover TestAuthController (risco de segurança)
 - [ ] Implementar refresh tokens
 - [ ] Adicionar testes de integração E2E
 - [ ] Configurar CI/CD com GitHub Actions
-- [ ] Implementar módulo de profissionais de saúde
 - [ ] Adicionar dashboard administrativo
 - [ ] Sistema de notificações
 - [ ] Exportação de relatórios em PDF/Excel
