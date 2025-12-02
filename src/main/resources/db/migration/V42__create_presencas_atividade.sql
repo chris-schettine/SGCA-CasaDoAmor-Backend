@@ -6,7 +6,7 @@ CREATE TABLE presencas_atividade (
     
     -- Relacionamentos
     atividade_id BIGINT NOT NULL COMMENT 'FK para atividades_grupo',
-    paciente_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'FK para pacientes',
+    paciente_id CHAR(36) NOT NULL COMMENT 'FK para pacientes',
     
     -- Presença e Participação
     presente BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Se compareceu',
@@ -55,7 +55,7 @@ CREATE TABLE inscricoes_atividade (
     
     -- Relacionamentos
     atividade_id BIGINT NOT NULL COMMENT 'FK para atividades_grupo',
-    paciente_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'FK para pacientes',
+    paciente_id CHAR(36) NOT NULL COMMENT 'FK para pacientes',
     
     -- Status da Inscrição
     status ENUM(

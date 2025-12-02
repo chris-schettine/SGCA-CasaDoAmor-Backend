@@ -8,9 +8,9 @@ CREATE TABLE agendamentos (
     
     -- Relacionamentos
     tipo_servico_id BIGINT NOT NULL COMMENT 'FK para tipos_servico',
-    paciente_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'FK para pacientes',
+    paciente_id CHAR(36) NOT NULL COMMENT 'FK para pacientes',
     profissional_id BIGINT NULL COMMENT 'FK para profissionais (pode ser null se não atribuído)',
-    acompanhante_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'FK para acompanhantes (opcional)',
+    acompanhante_id CHAR(36) NULL COMMENT 'FK para acompanhantes (opcional)',
     
     -- Data e Hora do Agendamento
     data_inicio DATETIME NOT NULL COMMENT 'Data e hora de início',
