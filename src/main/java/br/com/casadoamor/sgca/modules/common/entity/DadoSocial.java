@@ -35,8 +35,7 @@ public class DadoSocial extends BaseEntity {
   @Column(name = "necessidades_especiais")
   private String necessidadesEspeciais;
 
-  @OneToOne
-  @JoinColumn(name = "paciente_id")
+  @OneToOne(mappedBy = "dadoSocial")
   private Paciente paciente;
 
 }

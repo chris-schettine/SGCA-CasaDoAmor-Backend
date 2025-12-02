@@ -104,6 +104,30 @@ public class SwaggerConfig {
 	}
 
 	@Bean
+	public GroupedOpenApi agendamentosApi() {
+		return GroupedOpenApi.builder()
+				.group("agendamentos")
+				.pathsToMatch("/api/agendamentos/**")
+				.build();
+	}
+
+	@Bean
+	public GroupedOpenApi pacientesApi() {
+		return GroupedOpenApi.builder()
+				.group("pacientes")
+				.pathsToMatch("/api/pacientes/**")
+				.build();
+	}
+
+	@Bean
+	public GroupedOpenApi acompanhantesApi() {
+		return GroupedOpenApi.builder()
+				.group("acompanhantes")
+				.pathsToMatch("/api/acompanhantes/**")
+				.build();
+	}
+
+	@Bean
 	public OperationCustomizer parametrizarPaginacaoCustomizada() {
 		return (operation, handlerMethod) -> {
 			for (MethodParameter parameter : handlerMethod.getMethodParameters()) {

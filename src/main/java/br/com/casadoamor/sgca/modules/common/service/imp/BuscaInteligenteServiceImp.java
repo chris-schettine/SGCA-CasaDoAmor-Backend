@@ -4,13 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import br.com.casadoamor.sgca.infra.util.CpfUtil;
 import br.com.casadoamor.sgca.modules.acompanhante.dtos.AcompanhanteDTO;
 import br.com.casadoamor.sgca.modules.acompanhante.entity.Acompanhante;
 import br.com.casadoamor.sgca.modules.acompanhante.mapper.AcompanhanteMapper;
 import br.com.casadoamor.sgca.modules.acompanhante.repository.AcompanhanteRepository;
 import br.com.casadoamor.sgca.modules.common.dto.BuscaInteligenteResponseDTO;
-import br.com.casadoamor.sgca.modules.common.dto.BuscaInteligenteResponseDTO.*;
 import br.com.casadoamor.sgca.modules.common.service.BuscaInteligenteService;
 import br.com.casadoamor.sgca.modules.paciente.dtos.PacienteDTO;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;

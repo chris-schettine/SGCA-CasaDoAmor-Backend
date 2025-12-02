@@ -41,4 +41,15 @@ public interface PacienteRepository extends JpaRepository<Paciente, String>, Jpa
        """)
   List<Paciente> buscarInteligente(@Param("termo") String termo, @Param("clean") String clean);
 
+  // === ESTATÍSTICAS ===
+  
+  @Query("SELECT COUNT(p) FROM Paciente p")
+  Long contarTotalPacientes();
+  
+  @Query("SELECT COUNT(p) FROM Paciente p WHERE p.deletedAt IS NULL")
+  Long contarPacientesAtivos();
+  
+  @Query("SELECT COUNT(p) FROM Paciente p WHERE p.createdAt >= :dataInicio AND p.createdAt <= :dataFim")
+  Long contarPacientesPorPeriodo(@Param("dataInicio") java.time.LocalDateTime dataInicio, 
+                                  @Param("dataFim") java.time.LocalDateTime dataFim);
 }
