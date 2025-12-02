@@ -484,6 +484,27 @@ GET    /api/agendamentos/estatisticas/servicos-mais-solicitados     # Top 10 ser
 GET    /api/agendamentos/estatisticas/periodo?inicio={data}&fim={data}  # Estatísticas por período
 ```
 
+#### Estatísticas de Pacientes e Acompanhantes (Dashboard)
+```http
+# Dashboard Completo (Requer roles: ADMINISTRADOR, MEDICO, ENFERMEIRO, DENTISTA, FISIOTERAPEUTA, NUTRICIONISTA, RECEPCIONISTA, AUDITOR)
+GET    /api/pacientes/estatisticas/dashboard                   # Estatísticas completas para dashboard
+```
+
+> **Documentação Completa**: Consulte [PACIENTES_ACOMPANHANTES_DASHBOARD_GUIDE.md](PACIENTES_ACOMPANHANTES_DASHBOARD_GUIDE.md) para exemplos React/Angular e estrutura de dados detalhada.
+
+**Dados Retornados (40+ métricas):**
+- **Totais e Status**: Total de pacientes/acompanhantes, ativos/inativos, registros por período (hoje, semana, mês, ano)
+- **Status de Pacientes**: Em tratamento, curados, em observação, falecidos
+- **Relacionamentos**: Média de acompanhantes por paciente, pacientes sem/com um/múltiplos acompanhantes
+- **Parentesco**: Distribuição de acompanhantes por tipo de parentesco (filho, cônjuge, pai, mãe, irmão, outro)
+- **Dados Clínicos**: Pacientes com/sem dados clínicos, com sonda, com curativo, distribuição por tipo de sonda
+- **Informação Hospitalar**: Pacientes com/sem informação hospitalar
+- **Ajuda na Cozinha**: Acompanhantes que podem/não podem ajudar na cozinha (com percentual)
+- **Contatos de Emergência**: Pacientes com/sem contato, média de contatos por paciente
+- **Distribuição Geográfica**: Pacientes e acompanhantes por estado e cidade (top 10 cidades)
+- **Taxas**: Taxa de pacientes ativos, acompanhantes ativos, pacientes com acompanhante, pacientes com dados clínicos
+- **Tendências**: Registros mensais dos últimos 12 meses (pacientes e acompanhantes)
+
 #### Upload de Arquivos
 ```http
 POST   /api/files/upload           # Upload de foto (multipart/form-data)
@@ -528,6 +549,43 @@ curl -X POST http://localhost:8080/auth/login \
 curl -X GET http://localhost:8080/pacientes \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
+
+### Exemplo de Requisição: Dashboard de Pacientes e Acompanhantes
+
+```bash
+# Obter estatísticas completas do dashboard
+curl -X GET http://localhost:8090/api/pacientes/estatisticas/dashboard \
+  -H "Authorization: Bearer {seu_token}"
+
+# Resposta (simplificada):
+{
+  "totalPacientes": 150,
+  "pacientesAtivos": 142,
+  "pacientesInativos": 8,
+  "totalAcompanhantes": 245,
+  "acompanhantesAtivos": 230,
+  "mediaAcompanhantesPorPaciente": 1.72,
+  "pacientesRegistradosHoje": 2,
+  "acompanhantesRegistradosHoje": 3,
+  "pacientesEmTratamento": 85,
+  "pacientesCurados": 30,
+  "acompanhantesPorParentesco": {
+    "FILHO": 85,
+    "CONJUGE": 72,
+    "PAI": 35,
+    "MAE": 28
+  },
+  "taxaPacientesAtivos": 94.67,
+  "taxaAcompanhantesAtivos": 93.88,
+  "percentualAjudamCozinha": 63.04,
+  "registrosPacientesPorMes": [
+    {"ano": 2024, "mes": 1, "mesNome": "janeiro", "totalRegistros": 12},
+    {"ano": 2024, "mes": 2, "mesNome": "fevereiro", "totalRegistros": 15}
+  ]
+}
+```
+
+> **📘 Guia de Implementação Frontend**: Veja [PACIENTES_ACOMPANHANTES_DASHBOARD_GUIDE.md](PACIENTES_ACOMPANHANTES_DASHBOARD_GUIDE.md) para exemplos completos em React e Angular com gráficos, componentes e state management.
 
 ### Exemplo de Requisição: Criar Acompanhante
 
@@ -1648,16 +1706,17 @@ curl http://localhost:8090/actuator/health
 ### Próximos Passos
 - [x] Sistema LGPD unificado com design polimórfico ✅
 - [x] Campos de foto em profissionais ✅
+- [x] Sistema de agendamentos completo (pacientes e acompanhantes) ✅
+- [x] Dashboard de estatísticas de agendamentos (40+ métricas) ✅
+- [x] Dashboard de estatísticas de pacientes e acompanhantes ✅
 - [ ] Implementar upload de fotos para profissionais
 - [ ] Remover TestAuthController (risco de segurança)
 - [ ] Implementar refresh tokens
 - [ ] Adicionar testes de integração E2E
 - [ ] Configurar CI/CD com GitHub Actions
-- [ ] Adicionar dashboard administrativo
 - [ ] Sistema de notificações
 - [ ] Exportação de relatórios em PDF/Excel
 - [ ] Histórico médico completo
-- [ ] Agendamento de consultas
 - [ ] Deploy em ambiente de produção
 - [ ] Documentação de arquitetura detalhada
 
