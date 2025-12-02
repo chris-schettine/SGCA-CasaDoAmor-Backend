@@ -145,4 +145,25 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
      * Conta agendamentos de um profissional
      */
     long countByProfissional(Profissional profissional);
+
+    // === ESTATÍSTICAS PARA DASHBOARD ===
+    
+    /**
+     * Conta agendamentos do dia
+     */
+    @Query("SELECT COUNT(a) FROM Agendamento a WHERE DATE(a.dataInicio) = CURRENT_DATE")
+    Long contarAgendamentosHoje();
+    
+    /**
+     * Conta agendamentos da semana
+     */
+    @Query("SELECT COUNT(a) FROM Agendamento a WHERE YEARWEEK(a.dataInicio, 1) = YEARWEEK(CURRENT_DATE, 1)")
+    Long contarAgendamentosSemana();
+    
+    /**
+     * Conta agendamentos pendentes (AGENDADO, mas sem confirmação)
+     */
+    @Query("SELECT COUNT(a) FROM Agendamento a WHERE a.status = 'AGENDADO' " +
+           "AND a.confirmacaoPaciente = false AND a.dataInicio > CURRENT_TIMESTAMP")
+    Long contarAgendamentosPendentes();
 }

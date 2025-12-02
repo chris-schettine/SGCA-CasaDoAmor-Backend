@@ -44,4 +44,13 @@ public class TipoServicoController {
         List<TipoServicoResponseDTO> response = tipoServicoService.listarAtivos();
         return ResponseEntity.ok(response);
     }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'RECEPCIONISTA')")
+    @Operation(summary = "Listar serviços por profissional", description = "Retorna tipos de serviço compatíveis com o tipo de profissional selecionado")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    @GetMapping("/por-profissional/{profissionalId}")
+    public ResponseEntity<List<TipoServicoResponseDTO>> listarPorProfissional(@PathVariable Long profissionalId) {
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(profissionalId);
+        return ResponseEntity.ok(response);
+    }
 }
