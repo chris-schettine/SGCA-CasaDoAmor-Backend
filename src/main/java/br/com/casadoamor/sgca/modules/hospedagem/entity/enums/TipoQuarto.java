@@ -5,7 +5,9 @@ package br.com.casadoamor.sgca.modules.hospedagem.entity.enums;
  */
 public enum TipoQuarto {
     INDIVIDUAL("Individual"),
-    COMPARTILHADO("Compartilhado");
+    COMPARTILHADO("Compartilhado"),
+    // Suporte para quartos de isolamento
+    ISOLAMENTO("Isolamento");
 
     private final String descricao;
 

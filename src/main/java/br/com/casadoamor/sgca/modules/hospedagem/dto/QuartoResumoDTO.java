@@ -1,7 +1,5 @@
 package br.com.casadoamor.sgca.modules.hospedagem.dto;
 
-import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.AlaQuarto;
-import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.TipoQuarto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +17,8 @@ public class QuartoResumoDTO {
     private String uuid;
     private String nome;
     private String codigo;
-    private TipoQuarto tipo;
-    private AlaQuarto ala;
+    private TipoQuartoDTO tipo;
+    private AlaQuartoDTO ala;
     private String andar;
     private Integer capacidadeTotal;
     private Integer capacidadeOcupada;

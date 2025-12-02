@@ -24,6 +24,7 @@ public class HospedagemResponseDTO {
     // Paciente
     private String pacienteId;
     private String pacienteNome;
+    private String pacienteCpf;
     
     // Quarto
     private String quartoUuid;

@@ -9,6 +9,7 @@ import br.com.casadoamor.sgca.modules.hospedagem.entity.Quarto;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.AlaQuarto;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.StatusHospedagem;
 import br.com.casadoamor.sgca.modules.hospedagem.repository.HospedagemRepository;
+import br.com.casadoamor.sgca.modules.hospedagem.repository.HospedagemSpecification;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
 import br.com.casadoamor.sgca.modules.paciente.repository.PacienteRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -147,7 +149,8 @@ public class HospedagemService {
         novoQuarto.incrementarOcupacao();
 
         hospedagem.setQuarto(novoQuarto);
-        hospedagem.setStatus(StatusHospedagem.TRANSFERENCIA);
+        // Manter status ATIVA após transferência (paciente continua hospedado)
+        // hospedagem.setStatus(StatusHospedagem.TRANSFERENCIA); // Removido - viola constraint
         
         // Adicionar motivo da transferência às observações gerais
         if (motivoTransferencia != null && !motivoTransferencia.isBlank()) {
@@ -199,6 +202,27 @@ public class HospedagemService {
     @Transactional(readOnly = true)
     public Page<HospedagemResponseDTO> listarComPaginacao(Pageable pageable) {
         return hospedagemRepository.findAll(pageable)
+                .map(this::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<HospedagemResponseDTO> listarComPaginacaoEFiltros(
+            String nomePaciente,
+            String nomeQuarto,
+            AlaQuarto ala,
+            StatusHospedagem status,
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            Pageable pageable
+    ) {
+        log.info("Listando hospedagens com filtros - nomePaciente: {}, nomeQuarto: {}, ala: {}, status: {}, dataInicio: {}, dataFim: {}",
+                nomePaciente, nomeQuarto, ala, status, dataInicio, dataFim);
+        
+        Specification<Hospedagem> spec = HospedagemSpecification.withFilters(
+                nomePaciente, nomeQuarto, ala, status, dataInicio, dataFim
+        );
+        
+        return hospedagemRepository.findAll(spec, pageable)
                 .map(this::toResponseDTO);
     }
 
@@ -297,6 +321,8 @@ public class HospedagemService {
                 .pacienteId(hospedagem.getPaciente().getId())
                 .pacienteNome(hospedagem.getPaciente().getDadoPessoal() != null ?
                         hospedagem.getPaciente().getDadoPessoal().getNome() : "N/A")
+                .pacienteCpf(hospedagem.getPaciente().getDadoPessoal() != null ?
+                        hospedagem.getPaciente().getDadoPessoal().getCpf() : null)
                 .quartoUuid(hospedagem.getQuarto() != null ? hospedagem.getQuarto().getUuid() : null)
                 .quartoNome(hospedagem.getQuarto() != null ? hospedagem.getQuarto().getNome() : null)
                 .quartoCodigo(hospedagem.getQuarto() != null ? hospedagem.getQuarto().getCodigo() : null)

@@ -3,6 +3,8 @@ package br.com.casadoamor.sgca.modules.hospedagem.repository;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.Quarto;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.AlaQuarto;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.TipoQuarto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -73,4 +75,83 @@ public interface QuartoRepository extends JpaRepository<Quarto, Long> {
     // Andar
     List<Quarto> findByAndar(String andar);
     List<Quarto> findByAtivoTrueAndAndar(String andar);
+
+    // Busca com paginação e múltiplos filtros
+    @Query("SELECT q FROM Quarto q WHERE " +
+           "(:nome IS NULL OR LOWER(q.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
+           "(:ala IS NULL OR q.ala = :ala) AND " +
+           "(:tipo IS NULL OR q.tipo = :tipo) AND " +
+           "(:ativo IS NULL OR q.ativo = :ativo)")
+    Page<Quarto> searchQuartos(
+            @Param("nome") String nome,
+            @Param("ala") AlaQuarto ala,
+            @Param("tipo") TipoQuarto tipo,
+            @Param("ativo") Boolean ativo,
+            Pageable pageable);
+
+    // === ESTATÍSTICAS AVANÇADAS ===
+    
+    // Contagem de quartos por status
+    @Query("SELECT COUNT(q) FROM Quarto q")
+    Long contarTotalQuartos();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ativo = true")
+    Long contarQuartosAtivos();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ativo = false")
+    Long contarQuartosInativos();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.emManutencao = true")
+    Long contarQuartosEmManutencao();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ativo = true AND q.emManutencao = false AND q.capacidadeOcupada < q.capacidadeTotal")
+    Long contarQuartosDisponiveisAdmissao();
+    
+    // Contagem por tipo
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.tipo = :tipo")
+    Long contarQuartosPorTipo(@Param("tipo") TipoQuarto tipo);
+    
+    // Contagem por situação de ocupação
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ativo = true AND q.capacidadeOcupada = q.capacidadeTotal")
+    Long contarQuartosLotados();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ativo = true AND q.capacidadeOcupada = 0")
+    Long contarQuartosVazios();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ativo = true AND q.capacidadeOcupada > 0 AND q.capacidadeOcupada < q.capacidadeTotal")
+    Long contarQuartosParcialmenteOcupados();
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.permiteSexoOposto = true")
+    Long contarQuartosPermitemSexoOposto();
+    
+    // === ESTATÍSTICAS POR ALA ===
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala")
+    Long contarTotalQuartosPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.ativo = true")
+    Long contarQuartosAtivosPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.ativo = false")
+    Long contarQuartosInativosPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.emManutencao = true")
+    Long contarQuartosEmManutencaoPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.ativo = true AND q.emManutencao = false AND q.capacidadeOcupada < q.capacidadeTotal")
+    Long contarQuartosDisponiveisAdmissaoPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.ativo = true AND q.capacidadeOcupada = q.capacidadeTotal")
+    Long contarQuartosLotadosPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.ativo = true AND q.capacidadeOcupada = 0")
+    Long contarQuartosVaziosPorAla(@Param("ala") AlaQuarto ala);
+    
+    @Query("SELECT COUNT(q) FROM Quarto q WHERE q.ala = :ala AND q.ativo = true AND q.capacidadeOcupada > 0 AND q.capacidadeOcupada < q.capacidadeTotal")
+    Long contarQuartosParcialmenteOcupadosPorAla(@Param("ala") AlaQuarto ala);
+
+    // Quartos com maior ocupação (para dashboard)
+    @Query("SELECT q FROM Quarto q WHERE q.ativo = true AND q.capacidadeOcupada > 0 " +
+           "ORDER BY (q.capacidadeOcupada * 1.0 / q.capacidadeTotal) DESC")
+    List<Quarto> findQuartosComMaiorOcupacao(Pageable pageable);
 }

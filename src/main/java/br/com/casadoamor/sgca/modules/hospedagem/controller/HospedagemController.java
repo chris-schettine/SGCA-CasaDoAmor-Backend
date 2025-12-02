@@ -2,6 +2,9 @@ package br.com.casadoamor.sgca.modules.hospedagem.controller;
 
 import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
 import br.com.casadoamor.sgca.modules.hospedagem.dto.*;
+import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.AlaQuarto;
+import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.StatusHospedagem;
+import br.com.casadoamor.sgca.modules.hospedagem.service.HospedagemDashboardService;
 import br.com.casadoamor.sgca.modules.hospedagem.service.HospedagemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +36,17 @@ import java.util.List;
 public class HospedagemController {
 
     private final HospedagemService hospedagemService;
+    private final HospedagemDashboardService dashboardService;
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
+    @Operation(summary = "Obter estatísticas do dashboard", 
+               description = "Retorna estatísticas completas de hospedagens, quartos, pacientes e agendamentos para o dashboard")
+    @ApiResponse(responseCode = "200", description = "Estatísticas retornadas com sucesso")
+    @GetMapping("/stats")
+    public ResponseEntity<HospedagemDashboardStatsDTO> obterEstatisticas() {
+        HospedagemDashboardStatsDTO stats = dashboardService.obterEstatisticas();
+        return ResponseEntity.ok(stats);
+    }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Registrar entrada de paciente", description = "Registra a entrada de um paciente em um quarto")
@@ -148,13 +162,21 @@ public class HospedagemController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
-    @Operation(summary = "Listar com paginação", description = "Retorna lista paginada de hospedagens")
+    @Operation(summary = "Listar com paginação e filtros", 
+               description = "Retorna lista paginada de hospedagens com filtros opcionais combinados")
     @ApiResponse(responseCode = "200", description = "Página retornada com sucesso")
-    @GetMapping("/paginated")
+    @GetMapping
     public ResponseEntity<Page<HospedagemResponseDTO>> listarComPaginacao(
+            @RequestParam(required = false) String nomePaciente,
+            @RequestParam(required = false) String nomeQuarto,
+            @RequestParam(required = false) AlaQuarto ala,
+            @RequestParam(required = false) StatusHospedagem status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
             @PageableDefault(size = 20, sort = "dataEntrada", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        Page<HospedagemResponseDTO> response = hospedagemService.listarComPaginacao(pageable);
+        Page<HospedagemResponseDTO> response = hospedagemService.listarComPaginacaoEFiltros(
+            nomePaciente, nomeQuarto, ala, status, dataInicio, dataFim, pageable);
         return ResponseEntity.ok(response);
     }
 

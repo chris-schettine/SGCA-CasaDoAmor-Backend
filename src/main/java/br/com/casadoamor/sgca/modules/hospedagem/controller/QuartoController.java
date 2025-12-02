@@ -3,6 +3,7 @@ package br.com.casadoamor.sgca.modules.hospedagem.controller;
 import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
 import br.com.casadoamor.sgca.modules.hospedagem.dto.*;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.AlaQuarto;
+import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.TipoQuarto;
 import br.com.casadoamor.sgca.modules.hospedagem.service.QuartoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -79,11 +80,18 @@ public class QuartoController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
-    @Operation(summary = "Listar todos os quartos", description = "Retorna lista de todos os quartos cadastrados")
-    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    @Operation(summary = "Listar quartos com paginação e filtros", 
+               description = "Retorna lista paginada de quartos com filtros opcionais por nome, ala, tipo e status")
+    @ApiResponse(responseCode = "200", description = "Página retornada com sucesso")
     @GetMapping
-    public ResponseEntity<List<QuartoResumoDTO>> listarTodos() {
-        List<QuartoResumoDTO> response = quartoService.listarTodos();
+    public ResponseEntity<Page<QuartoResumoDTO>> listar(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) AlaQuarto ala,
+            @RequestParam(required = false) TipoQuarto tipo,
+            @RequestParam(required = false) Boolean ativo,
+            @PageableDefault(size = 20, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+        
+        Page<QuartoResumoDTO> response = quartoService.listarComPaginacao(nome, ala, tipo, ativo, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -123,16 +131,7 @@ public class QuartoController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
-    @Operation(summary = "Listar com paginação", description = "Retorna lista paginada de quartos")
-    @ApiResponse(responseCode = "200", description = "Página retornada com sucesso")
-    @GetMapping("/paginated")
-    public ResponseEntity<Page<QuartoResumoDTO>> listarComPaginacao(
-            @PageableDefault(size = 20, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
-        
-        Page<QuartoResumoDTO> response = quartoService.listarComPaginacao(pageable);
-        return ResponseEntity.ok(response);
-    }
+
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
     @Operation(summary = "Obter estatísticas de ocupação", description = "Retorna estatísticas gerais e por ala da ocupação dos quartos")
@@ -160,6 +159,52 @@ public class QuartoController {
     }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Ativar quarto", description = "Reativa um quarto inativo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Quarto ativado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Quarto não encontrado")
+    })
+    @PatchMapping("/{uuid}/ativar")
+    public ResponseEntity<Void> ativar(
+            @PathVariable String uuid,
+            @AuthenticationPrincipal AuthUsuario usuarioLogado) {
+        
+        quartoService.ativar(uuid, usuarioLogado);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Colocar quarto em manutenção", description = "Marca um quarto como em manutenção (não permite se houver leitos ocupados)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Quarto colocado em manutenção com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Quarto não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Quarto possui leitos ocupados")
+    })
+    @PatchMapping("/{uuid}/manutencao/ativar")
+    public ResponseEntity<Void> ativarManutencao(
+            @PathVariable String uuid,
+            @AuthenticationPrincipal AuthUsuario usuarioLogado) {
+        
+        quartoService.ativarManutencao(uuid, usuarioLogado);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Remover quarto de manutenção", description = "Remove o status de manutenção de um quarto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Quarto removido de manutenção com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Quarto não encontrado")
+    })
+    @PatchMapping("/{uuid}/manutencao/desativar")
+    public ResponseEntity<Void> desativarManutencao(
+            @PathVariable String uuid,
+            @AuthenticationPrincipal AuthUsuario usuarioLogado) {
+        
+        quartoService.desativarManutencao(uuid, usuarioLogado);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Deletar quarto", description = "Remove logicamente um quarto (soft delete)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Quarto deletado com sucesso"),
@@ -170,5 +215,27 @@ public class QuartoController {
     public ResponseEntity<Void> deletar(@PathVariable String uuid) {
         quartoService.deletar(uuid);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
+    @Operation(summary = "Listar alas disponíveis", description = "Retorna lista de alas (enum) para dropdown")
+    @ApiResponse(responseCode = "200", description = "Lista de alas retornada com sucesso")
+    @GetMapping("/alas")
+    public ResponseEntity<List<AlaQuartoDTO>> listarAlas() {
+        List<AlaQuartoDTO> alas = java.util.Arrays.stream(AlaQuarto.values())
+                .map(ala -> new AlaQuartoDTO(ala.name(), ala.getDescricao()))
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(alas);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
+    @Operation(summary = "Listar tipos de quarto", description = "Retorna lista de tipos (enum) para dropdown")
+    @ApiResponse(responseCode = "200", description = "Lista de tipos retornada com sucesso")
+    @GetMapping("/tipos")
+    public ResponseEntity<List<TipoQuartoDTO>> listarTipos() {
+        List<TipoQuartoDTO> tipos = java.util.Arrays.stream(br.com.casadoamor.sgca.modules.hospedagem.entity.enums.TipoQuarto.values())
+                .map(tipo -> new TipoQuartoDTO(tipo.name(), tipo.getDescricao()))
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(tipos);
     }
 }

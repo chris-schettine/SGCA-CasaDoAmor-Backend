@@ -4,7 +4,9 @@ import br.com.casadoamor.sgca.modules.hospedagem.entity.Hospedagem;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.Quarto;
 import br.com.casadoamor.sgca.modules.hospedagem.entity.enums.StatusHospedagem;
 import br.com.casadoamor.sgca.modules.paciente.entity.Paciente;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,7 +19,7 @@ import java.util.Optional;
  * Repository para gerenciamento de hospedagens
  */
 @Repository
-public interface HospedagemRepository extends JpaRepository<Hospedagem, Long> {
+public interface HospedagemRepository extends JpaRepository<Hospedagem, Long>, JpaSpecificationExecutor<Hospedagem> {
 
     // Busca por UUID
     Optional<Hospedagem> findByUuid(String uuid);
@@ -100,4 +102,44 @@ public interface HospedagemRepository extends JpaRepository<Hospedagem, Long> {
     @Query("SELECT h FROM Hospedagem h WHERE h.status = 'ATIVA' AND h.dataSaidaPrevista < CURRENT_DATE " +
            "ORDER BY h.dataSaidaPrevista")
     List<Hospedagem> findHospedagensComPrevisaoVencida();
+
+    // === QUERIES PARA ESTATÍSTICAS ===
+
+    // Contar hospedagens por período
+    @Query("SELECT COUNT(h) FROM Hospedagem h WHERE h.dataEntrada BETWEEN :inicio AND :fim")
+    Long countByPeriodoEntrada(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+
+    @Query("SELECT COUNT(h) FROM Hospedagem h WHERE h.dataSaida BETWEEN :inicio AND :fim " +
+           "AND h.status = 'ENCERRADA'")
+    Long countByPeriodoSaida(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+
+    // Média de dias de permanência
+    @Query("SELECT AVG(DATEDIFF(h.dataSaida, h.dataEntrada)) FROM Hospedagem h " +
+           "WHERE h.dataSaida IS NOT NULL AND h.status = 'ENCERRADA'")
+    Double calcularMediaDiasPermanencia();
+
+    // Previsões de saída
+    @Query("SELECT COUNT(h) FROM Hospedagem h WHERE h.status = 'ATIVA' " +
+           "AND h.dataSaidaPrevista = :data")
+    Long countPrevisaoSaidaPara(@Param("data") LocalDate data);
+
+    @Query("SELECT COUNT(h) FROM Hospedagem h WHERE h.status = 'ATIVA' " +
+           "AND h.dataSaidaPrevista BETWEEN :inicio AND :fim")
+    Long countPrevisaoSaidaEntre(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+
+    // Últimas entradas
+    @Query("SELECT h FROM Hospedagem h ORDER BY h.dataEntrada DESC, h.createdAt DESC")
+    List<Hospedagem> findUltimasEntradas(Pageable pageable);
+
+    // Últimas saídas
+    @Query("SELECT h FROM Hospedagem h WHERE h.dataSaida IS NOT NULL " +
+           "ORDER BY h.dataSaida DESC, h.updatedAt DESC")
+    List<Hospedagem> findUltimasSaidas(Pageable pageable);
+
+    // Hospedagens por mês (últimos 12 meses)
+    @Query("SELECT YEAR(h.dataEntrada) as ano, MONTH(h.dataEntrada) as mes, COUNT(h) as total " +
+           "FROM Hospedagem h WHERE h.dataEntrada >= :dataInicio " +
+           "GROUP BY YEAR(h.dataEntrada), MONTH(h.dataEntrada) " +
+           "ORDER BY YEAR(h.dataEntrada) DESC, MONTH(h.dataEntrada) DESC")
+    List<Object[]> findHospedagensPorMes(@Param("dataInicio") LocalDate dataInicio);
 }
