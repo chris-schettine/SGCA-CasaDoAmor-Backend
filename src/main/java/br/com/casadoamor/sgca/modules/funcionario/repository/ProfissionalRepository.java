@@ -4,6 +4,7 @@ import br.com.casadoamor.sgca.modules.funcionario.entity.Profissional;
 import br.com.casadoamor.sgca.modules.funcionario.entity.enums.CategoriaProfissional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,8 +21,9 @@ import java.util.Optional;
 public interface ProfissionalRepository extends JpaRepository<Profissional, Long> {
 
     /**
-     * Busca profissional por UUID
+     * Busca profissional por UUID com todas as relações carregadas
      */
+    @EntityGraph(attributePaths = {"tipoVinculo", "endereco", "createdBy", "updatedBy"})
     Optional<Profissional> findByUuid(String uuid);
 
     /**
@@ -67,6 +69,7 @@ public interface ProfissionalRepository extends JpaRepository<Profissional, Long
     /**
      * Lista profissionais ativos
      */
+    @EntityGraph(attributePaths = {"tipoVinculo", "endereco", "createdBy", "updatedBy"})
     List<Profissional> findByAtivoTrue();
 
     /**
@@ -77,12 +80,14 @@ public interface ProfissionalRepository extends JpaRepository<Profissional, Long
     /**
      * Busca profissionais por nome (LIKE)
      */
+    @EntityGraph(attributePaths = {"tipoVinculo", "endereco", "createdBy", "updatedBy"})
     @Query("SELECT p FROM Profissional p WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))")
     List<Profissional> searchByNome(@Param("nome") String nome);
 
     /**
      * Busca profissionais ativos por nome (LIKE)
      */
+    @EntityGraph(attributePaths = {"tipoVinculo", "endereco", "createdBy", "updatedBy"})
     @Query("SELECT p FROM Profissional p WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%')) AND p.ativo = true")
     List<Profissional> searchByNomeAndAtivoTrue(@Param("nome") String nome);
 
@@ -134,4 +139,31 @@ public interface ProfissionalRepository extends JpaRepository<Profissional, Long
      */
     @Query("SELECT p FROM Profissional p WHERE p.areaAtuacao = :areaAtuacao AND p.ativo = true")
     List<Profissional> findProfissionaisDisponiveisPorArea(@Param("areaAtuacao") String areaAtuacao);
+
+    /**
+     * Busca profissionais por nome, CPF, registro ou categoria (pesquisa global)
+     */
+    @EntityGraph(attributePaths = {"tipoVinculo", "endereco", "createdBy", "updatedBy"})
+    @Query("SELECT p FROM Profissional p WHERE " +
+           "LOWER(p.nome) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(p.cpf) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(p.numeroRegistro) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(CAST(p.categoria AS string)) LIKE LOWER(CONCAT('%', :termo, '%'))")
+    List<Profissional> searchByMultipleFields(@Param("termo") String termo);
+
+    /**
+     * Busca profissionais ativos por nome, CPF, registro ou categoria
+     */
+    @EntityGraph(attributePaths = {"tipoVinculo", "endereco", "createdBy", "updatedBy"})
+    @Query("SELECT p FROM Profissional p WHERE p.ativo = true AND (" +
+           "LOWER(p.nome) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(p.cpf) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(p.numeroRegistro) LIKE LOWER(CONCAT('%', :termo, '%')) OR " +
+           "LOWER(CAST(p.categoria AS string)) LIKE LOWER(CONCAT('%', :termo, '%')))")
+    List<Profissional> searchActiveByMultipleFields(@Param("termo") String termo);
+    
+    /**
+     * Conta profissionais por status ativo/inativo
+     */
+    Long countByAtivo(Boolean ativo);
 }

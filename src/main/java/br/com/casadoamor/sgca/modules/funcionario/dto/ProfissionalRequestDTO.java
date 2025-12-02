@@ -1,6 +1,8 @@
 package br.com.casadoamor.sgca.modules.funcionario.dto;
 
 import br.com.casadoamor.sgca.modules.funcionario.entity.enums.CategoriaProfissional;
+import br.com.casadoamor.sgca.modules.paciente.dtos.EnderecoDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +35,7 @@ public class ProfissionalRequestDTO {
     @Size(max = 255)
     private String email;
 
-    private br.com.casadoamor.sgca.modules.funcionario.entity.enums.TipoVinculo tipoVinculo; // Padrão: FUNCIONARIO
+    private Long tipoVinculoId; // ID do tipo de vínculo na tabela tipos_vinculo
 
     @NotNull(message = "Categoria é obrigatória")
     private CategoriaProfissional categoria;
@@ -75,7 +77,10 @@ public class ProfissionalRequestDTO {
 
     private String disponibilidade; // JSON string
 
-    private String enderecoId; // UUID do endereço
+    private String enderecoId; // UUID do endereço (use este OU endereco, não ambos)
+
+    @Valid
+    private EnderecoDTO endereco; // Dados do endereço para criar inline (alternativa ao enderecoId)
 
     private Boolean ativo;
 

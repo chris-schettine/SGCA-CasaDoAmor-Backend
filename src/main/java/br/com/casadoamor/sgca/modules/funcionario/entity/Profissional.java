@@ -39,6 +39,9 @@ public class Profissional {
     @Column(name = "nome", nullable = false)
     private String nome;
 
+    @Column(name = "cpf", length = 11)
+    private String cpf;
+
     @Column(name = "cpf_criptografado", columnDefinition = "VARBINARY(512)")
     private byte[] cpfCriptografado;
 
@@ -49,10 +52,12 @@ public class Profissional {
     private String email;
 
     // Tipo de vínculo
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_vinculo", nullable = false)
-    @Builder.Default
-    private br.com.casadoamor.sgca.modules.funcionario.entity.enums.TipoVinculo tipoVinculo = br.com.casadoamor.sgca.modules.funcionario.entity.enums.TipoVinculo.FUNCIONARIO;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tipo_vinculo_id", referencedColumnName = "id")
+    private TipoVinculoEntity tipoVinculo;
+
+    @Column(name = "tipo_vinculo_backup")
+    private String tipoVinculoBackup;
 
     // Categoria
     @Enumerated(EnumType.STRING)
@@ -101,6 +106,16 @@ public class Profissional {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Endereco endereco;
+
+    // Foto de Perfil
+    @Column(name = "foto_url", length = 500)
+    private String fotoUrl;
+
+    @Column(name = "foto_path", length = 255)
+    private String fotoPath;
+
+    @Column(name = "foto_atualizada_em")
+    private LocalDateTime fotoAtualizadaEm;
 
     // Status
     @Builder.Default

@@ -1,10 +1,14 @@
 package br.com.casadoamor.sgca.modules.funcionario.controller;
 
 import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.funcionario.dto.CategoriaProfissionalDTO;
 import br.com.casadoamor.sgca.modules.funcionario.dto.ProfissionalRequestDTO;
 import br.com.casadoamor.sgca.modules.funcionario.dto.ProfissionalResponseDTO;
 import br.com.casadoamor.sgca.modules.funcionario.dto.ProfissionalResumoDTO;
+import br.com.casadoamor.sgca.modules.funcionario.dto.TipoVinculoDTO;
+import br.com.casadoamor.sgca.modules.funcionario.entity.TipoVinculoEntity;
 import br.com.casadoamor.sgca.modules.funcionario.entity.enums.CategoriaProfissional;
+import br.com.casadoamor.sgca.modules.funcionario.repository.TipoVinculoRepository;
 import br.com.casadoamor.sgca.modules.funcionario.service.ProfissionalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +38,7 @@ import java.util.List;
 public class ProfissionalController {
 
     private final ProfissionalService profissionalService;
+    private final TipoVinculoRepository tipoVinculoRepository;
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Cadastrar novo profissional", description = "Cadastra um novo funcionário ou voluntário no sistema")
@@ -81,11 +86,25 @@ public class ProfissionalController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
-    @Operation(summary = "Listar todos os profissionais", description = "Retorna lista resumida de todos os profissionais")
+    @Operation(summary = "Listar todos os profissionais", description = "Retorna lista resumida de todos os profissionais. Aceita parâmetros opcionais para busca.")
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     @GetMapping
-    public ResponseEntity<List<ProfissionalResumoDTO>> listarTodos() {
-        List<ProfissionalResumoDTO> response = profissionalService.listarTodos();
+    public ResponseEntity<List<ProfissionalResumoDTO>> listarTodos(
+            @RequestParam(required = false) String termo,
+            @RequestParam(required = false, defaultValue = "false") Boolean apenasAtivos) {
+        
+        // Se termo foi fornecido, faz busca; caso contrário, lista todos
+        List<ProfissionalResumoDTO> response;
+        if (termo != null && !termo.trim().isEmpty()) {
+            response = apenasAtivos 
+                ? profissionalService.buscarAtivosPorMultiplosCampos(termo)
+                : profissionalService.buscarPorMultiplosCampos(termo);
+        } else {
+            response = apenasAtivos 
+                ? profissionalService.listarAtivos()
+                : profissionalService.listarTodos();
+        }
+        
         return ResponseEntity.ok(response);
     }
 
@@ -121,6 +140,20 @@ public class ProfissionalController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
+    @Operation(summary = "Pesquisar profissionais", description = "Busca profissionais por nome, CPF, registro profissional ou categoria")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    @GetMapping("/pesquisar")
+    public ResponseEntity<List<ProfissionalResumoDTO>> pesquisar(
+            @RequestParam String termo,
+            @RequestParam(required = false, defaultValue = "false") Boolean apenasAtivos) {
+        
+        List<ProfissionalResumoDTO> response = apenasAtivos 
+            ? profissionalService.buscarAtivosPorMultiplosCampos(termo)
+            : profissionalService.buscarPorMultiplosCampos(termo);
+        return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
     @Operation(summary = "Listar profissionais com paginação", description = "Retorna lista paginada de profissionais")
     @ApiResponse(responseCode = "200", description = "Página retornada com sucesso")
     @GetMapping("/paginated")
@@ -132,17 +165,18 @@ public class ProfissionalController {
     }
 
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    @Operation(summary = "Inativar profissional", description = "Marca um profissional como inativo sem deletá-lo")
+    @Operation(summary = "Alternar status do profissional", description = "Alterna entre ativo e inativo")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Profissional inativado com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Status alterado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
     })
+    @PostMapping("/{uuid}/inativar")
     @PatchMapping("/{uuid}/inativar")
-    public ResponseEntity<Void> inativar(
+    public ResponseEntity<Void> toggleStatus(
             @PathVariable String uuid,
             @AuthenticationPrincipal AuthUsuario usuarioLogado) {
         
-        profissionalService.inativar(uuid, usuarioLogado);
+        profissionalService.toggleStatus(uuid, usuarioLogado);
         return ResponseEntity.noContent().build();
     }
 
@@ -156,5 +190,50 @@ public class ProfissionalController {
     public ResponseEntity<Void> deletar(@PathVariable String uuid) {
         profissionalService.deletar(uuid);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
+    @Operation(summary = "Listar tipos de vínculo", description = "Retorna os tipos de vínculo disponíveis para dropdown (da tabela do banco)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    })
+    @GetMapping("/tipos-vinculo")
+    public ResponseEntity<List<TipoVinculoDTO>> listarTiposVinculo() {
+        List<TipoVinculoEntity> tiposEntity = tipoVinculoRepository.findByAtivoTrueOrderByNomeAsc();
+        
+        List<TipoVinculoDTO> tipos = tiposEntity.stream()
+                .map(tipo -> TipoVinculoDTO.builder()
+                        .id(tipo.getId())
+                        .codigo(tipo.getCodigo())
+                        .nome(tipo.getNome())
+                        .ativo(tipo.getAtivo())
+                        .build())
+                .toList();
+        
+        return ResponseEntity.ok(tipos);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'RECEPCIONISTA', 'AUDITOR')")
+    @Operation(summary = "Listar categorias profissionais", description = "Retorna as categorias/áreas de atuação disponíveis para dropdown")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    })
+    @GetMapping("/categorias")
+    public ResponseEntity<List<CategoriaProfissionalDTO>> listarCategorias() {
+        List<CategoriaProfissionalDTO> categorias = java.util.Arrays.stream(CategoriaProfissional.values())
+                .map(cat -> new CategoriaProfissionalDTO(cat.name(), cat.getDescricao()))
+                .toList();
+        return ResponseEntity.ok(categorias);
+    }
+    
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'AUDITOR')")
+    @Operation(summary = "Estatísticas do dashboard", description = "Retorna estatísticas importantes sobre profissionais para exibição no dashboard")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estatísticas retornadas com sucesso")
+    })
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<br.com.casadoamor.sgca.modules.funcionario.dto.DashboardStatsDTO> getDashboardStats() {
+        br.com.casadoamor.sgca.modules.funcionario.dto.DashboardStatsDTO stats = profissionalService.getDashboardStats();
+        return ResponseEntity.ok(stats);
     }
 }
