@@ -55,5 +55,5 @@ CREATE TABLE profissionais (
     CONSTRAINT fk_profissionais_endereco FOREIGN KEY (endereco_id) REFERENCES enderecos(id) ON DELETE SET NULL,
     CONSTRAINT fk_profissionais_created_by FOREIGN KEY (created_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL,
     CONSTRAINT fk_profissionais_updated_by FOREIGN KEY (updated_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB
 COMMENT='Tabela unificada de funcionários e voluntários';

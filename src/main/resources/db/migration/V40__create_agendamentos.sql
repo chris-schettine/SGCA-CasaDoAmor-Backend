@@ -84,5 +84,5 @@ CREATE TABLE agendamentos (
         
     -- Constraint para garantir que data_fim > data_inicio
     CONSTRAINT chk_agendamentos_datas CHECK (data_fim > data_inicio)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB
 COMMENT='Agendamentos de serviços e atendimentos individuais';
