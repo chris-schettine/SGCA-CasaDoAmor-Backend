@@ -31,7 +31,7 @@ CREATE TABLE profissionais (
     disponibilidade JSON NULL COMMENT 'Horários e dias disponíveis: {"segunda": ["08:00-12:00"], "terca": ["14:00-18:00"]}',
     
     -- Dados de Endereço (referência à tabela existente)
-    endereco_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'FK para enderecos',
+    endereco_id CHAR(36) NULL COMMENT 'FK para enderecos',
     
     -- Status e Controle
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
