@@ -86,7 +86,9 @@ class ProfissionalControllerIT {
 
     @Test
     void listar_por_categoria_and_listar_ativos() throws Exception {
-        ProfissionalResumoDTO resumoCategoria = ProfissionalResumoDTO.builder().uuid("p2").nome("Dr Category").categoria(br.com.casadoamor.sgca.modules.funcionario.entity.enums.CategoriaProfissional.MEDICO).build();
+        br.com.casadoamor.sgca.modules.funcionario.dto.CategoriaProfissionalDTO categoriaDTO = 
+            new br.com.casadoamor.sgca.modules.funcionario.dto.CategoriaProfissionalDTO("MEDICO", "Médico");
+        ProfissionalResumoDTO resumoCategoria = ProfissionalResumoDTO.builder().uuid("p2").nome("Dr Category").categoria(categoriaDTO).build();
         org.mockito.Mockito.when(profissionalService.listarPorCategoria(org.mockito.ArgumentMatchers.eq(br.com.casadoamor.sgca.modules.funcionario.entity.enums.CategoriaProfissional.MEDICO))).thenReturn(List.of(resumoCategoria));
 
         String byCategory = mvc.perform(get("/api/profissionais/categoria/MEDICO").contentType(MediaType.APPLICATION_JSON))

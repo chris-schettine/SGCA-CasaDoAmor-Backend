@@ -93,8 +93,8 @@ class HospedagemControllerTest {
         assertThat(r7.getBody()).hasSize(1);
 
         // listarComPaginacao
-        when(service.listarComPaginacao(any())).thenReturn(new PageImpl<>(List.of(resp)));
-        var pageRes = controller.listarComPaginacao(org.springframework.data.domain.PageRequest.of(0, 10));
+        when(service.listarComPaginacaoEFiltros(any(), any(), any(), any(), any(), any(), any())).thenReturn(new PageImpl<>(List.of(resp)));
+        var pageRes = controller.listarComPaginacao(null, null, null, null, null, null, org.springframework.data.domain.PageRequest.of(0, 10));
         assertThat(pageRes.getBody().getTotalElements()).isEqualTo(1);
 
         // verificarHospedagemAtiva

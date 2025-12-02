@@ -68,13 +68,10 @@ class QuartoControllerTest {
     }
 
     @Test
-    void listarTodos_andAtivos_forwardToService() {
-        when(quartoService.listarTodos()).thenReturn(List.of());
+    void listarAtivos_forwardToService() {
         when(quartoService.listarAtivos()).thenReturn(List.of());
 
-        assertThat(controller.listarTodos().getStatusCodeValue()).isEqualTo(200);
         assertThat(controller.listarAtivos().getStatusCodeValue()).isEqualTo(200);
-        verify(quartoService).listarTodos();
         verify(quartoService).listarAtivos();
     }
 
