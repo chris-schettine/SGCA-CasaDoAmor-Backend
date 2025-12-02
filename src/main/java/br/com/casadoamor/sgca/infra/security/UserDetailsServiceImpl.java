@@ -60,4 +60,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 authorities
         );
     }
+    
+    /**
+     * Busca a entidade AuthUsuario completa pelo CPF
+     * Usado para obter o usuário completo após validação do JWT
+     */
+    public AuthUsuario findAuthUsuarioByCpf(String cpf) {
+        return authUsuarioRepository.findByCpf(cpf)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com CPF: " + cpf));
+    }
 }

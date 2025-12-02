@@ -150,7 +150,7 @@ public class AdminController {
         try {
             String cpf = authentication.getName();
             Long adminId = authService.findUserIdByCpf(cpf)
-                    .orElseThrow(() -> new RuntimeException("Admin não encontrado"));
+                    .orElseThrow(() -> new RuntimeException("Admin não encontrado para CPF: " + cpf));
 
             UserResponseDTO response = userManagementService.atualizarUsuario(id, request, adminId);
             return ResponseEntity.ok(response);

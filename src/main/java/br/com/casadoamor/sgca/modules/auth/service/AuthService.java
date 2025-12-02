@@ -373,7 +373,8 @@ public class AuthService {
      * @return Optional com o ID do usuário
      */
     public Optional<Long> findUserIdByCpf(String cpf) {
-        return authUsuarioRepository.findByCpf(cpf)
+        String cpfLimpo = CpfUtil.limparCpf(cpf);
+        return authUsuarioRepository.findByCpf(cpfLimpo)
                 .map(AuthUsuario::getId);
     }
 

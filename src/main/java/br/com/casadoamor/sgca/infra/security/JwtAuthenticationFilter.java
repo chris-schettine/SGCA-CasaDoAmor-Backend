@@ -42,20 +42,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Se o token existe e é válido
             if (jwt != null) {
-                // Extrai o email (username) do token
-                String email = jwtUtil.extractUsername(jwt);
+                // Extrai o CPF (username) do token
+                String cpf = jwtUtil.extractUsername(jwt);
 
-                // Se o email existe e não há autenticação no contexto
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Se o CPF existe e não há autenticação no contexto
+                if (cpf != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     // Carrega os detalhes do usuário do banco de dados
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(cpf);
 
                     // Valida o token e verifica se a sessão ainda é válida no banco
                     if (jwtUtil.validateToken(jwt, userDetails) && sessaoService.sessaoValida(jwt)) {
-                        // Cria a autenticação
+                        // Cria a autenticação com UserDetails como principal (contém CPF como username)
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(
-                                        userDetails,
+                                        userDetails, // UserDetails with CPF as username
                                         null,
                                         userDetails.getAuthorities()
                                 );

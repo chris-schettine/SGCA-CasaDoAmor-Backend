@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.casadoamor.sgca.modules.admin.service.SessaoService;
 import br.com.casadoamor.sgca.modules.auth.dtos.SessaoDTO;
 import br.com.casadoamor.sgca.modules.auth.dtos.request.ActivateAccountRequestDTO;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
 import br.com.casadoamor.sgca.modules.auth.dtos.request.ChangePasswordRequestDTO;
 import br.com.casadoamor.sgca.modules.auth.dtos.request.FirstLoginPasswordChangeDTO;
 import br.com.casadoamor.sgca.modules.auth.dtos.request.ForgotPasswordRequestDTO;
@@ -103,7 +106,11 @@ public class AuthController {
     })
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         try {
-            String cpf = authentication.getName();
+            if (authentication == null || authentication.getPrincipal() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErrorResponse("Usuário não autenticado"));
+            }
+            String cpf = authentication.getName(); // Gets CPF from UserDetails username
             var userProfile = authService.getUserProfile(cpf);
             return ResponseEntity.ok(userProfile);
         } catch (RuntimeException e) {
@@ -180,9 +187,9 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequestDTO request,
-                                           Authentication authentication) {
+                                           @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            String cpf = authentication.getName();
+            String cpf = userDetails.getUsername();
             MessageResponseDTO response = authService.changePassword(request, cpf);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
@@ -203,10 +210,10 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Sessão não encontrada")
     })
-    public ResponseEntity<?> logout(Authentication authentication,
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails,
                                    @RequestHeader("Authorization") String token) {
         try {
-            String cpf = authentication.getName();
+            String cpf = userDetails.getUsername();
             Long usuarioId = obterUsuarioId(cpf);
             String tokenJwt = token.replace("Bearer ", "");
             
@@ -229,9 +236,9 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Lista de sessões retornada"),
             @ApiResponse(responseCode = "401", description = "Não autenticado")
     })
-    public ResponseEntity<List<SessaoDTO>> listSessions(Authentication authentication,
+    public ResponseEntity<List<SessaoDTO>> listSessions(@AuthenticationPrincipal UserDetails userDetails,
                                                         @RequestHeader("Authorization") String token) {
-        String cpf = authentication.getName();
+        String cpf = userDetails.getUsername();
         Long usuarioId = obterUsuarioId(cpf);
         String tokenJwt = token.replace("Bearer ", "");
         
@@ -251,9 +258,9 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Não autenticado"),
             @ApiResponse(responseCode = "404", description = "Sessão não encontrada")
     })
-    public ResponseEntity<?> revokeSession(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> revokeSession(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            String cpf = authentication.getName();
+            String cpf = userDetails.getUsername();
             Long usuarioId = obterUsuarioId(cpf);
             
             sessaoService.revogarSessao(id, usuarioId);
@@ -331,10 +338,10 @@ public class AuthController {
     })
     public ResponseEntity<?> firstLoginPasswordChange(
             @Valid @RequestBody FirstLoginPasswordChangeDTO request,
-            Authentication authentication) {
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
             // Implementar lógica de troca de senha temporária
-            String cpf = authentication.getName();
+            String cpf = userDetails.getUsername();
             accountActivationService.trocarSenhaTemporaria(cpf, request);
             return ResponseEntity.ok(MessageResponseDTO.success("Senha alterada com sucesso"));
         } catch (RuntimeException e) {
