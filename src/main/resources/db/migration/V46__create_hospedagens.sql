@@ -56,5 +56,5 @@ CREATE TABLE hospedagens (
     INDEX idx_hospedagens_data_saida (data_saida),
     INDEX idx_hospedagens_deleted_at (deleted_at),
     INDEX idx_hospedagens_ativa (status, data_saida) COMMENT 'Para buscar hospedagens ativas'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Histórico de hospedagens dos pacientes na instituição';

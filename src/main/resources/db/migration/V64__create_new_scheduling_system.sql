@@ -121,7 +121,7 @@ CREATE TABLE agendamentos_pacientes (
     CONSTRAINT fk_agend_pac_canceled_by 
         FOREIGN KEY (canceled_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL
         
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Agendamentos de serviços para pacientes';
 
 -- =====================================================
@@ -237,7 +237,7 @@ CREATE TABLE agendamentos_acompanhantes (
     CONSTRAINT fk_agend_acomp_canceled_by 
         FOREIGN KEY (canceled_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL
         
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Agendamentos de serviços para acompanhantes';
 
 -- =====================================================
@@ -290,7 +290,7 @@ CREATE TABLE profissionais_especialidades (
     CONSTRAINT fk_prof_esp_usuario 
         FOREIGN KEY (profissional_usuario_id) REFERENCES auth_usuarios(id) ON DELETE CASCADE
         
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Especialidades dos profissionais de saúde';
 
 -- =====================================================
@@ -334,7 +334,7 @@ CREATE TABLE horarios_profissionais (
     CONSTRAINT fk_horarios_prof_usuario 
         FOREIGN KEY (profissional_usuario_id) REFERENCES auth_usuarios(id) ON DELETE CASCADE
         
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Horários de trabalho dos profissionais';
 
 -- =====================================================
@@ -379,5 +379,5 @@ CREATE TABLE bloqueios_agenda (
     CONSTRAINT fk_bloqueios_created_by 
         FOREIGN KEY (created_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL
         
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Bloqueios de agenda dos profissionais';
