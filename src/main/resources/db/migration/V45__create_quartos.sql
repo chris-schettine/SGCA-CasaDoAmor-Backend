@@ -43,5 +43,5 @@ CREATE TABLE quartos (
     INDEX idx_quartos_tipo (tipo),
     INDEX idx_quartos_ativo (ativo),
     INDEX idx_quartos_deleted_at (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='Quartos e leitos disponíveis na instituição';

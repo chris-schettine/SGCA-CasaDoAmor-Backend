@@ -6,7 +6,7 @@ CREATE TABLE presencas_atividade (
     
     -- Relacionamentos
     atividade_id BIGINT NOT NULL COMMENT 'FK para atividades_grupo',
-    paciente_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'FK para pacientes',
+    paciente_id CHAR(36) NOT NULL COMMENT 'FK para pacientes',
     
     -- Presença e Participação
     presente BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Se compareceu',
@@ -46,7 +46,7 @@ CREATE TABLE presencas_atividade (
     
     -- Unicidade: um paciente não pode ter dois registros de presença na mesma atividade
     UNIQUE KEY uk_presencas_atividade_paciente (atividade_id, paciente_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB
 COMMENT='Registro de presenças em atividades em grupo';
 
 -- Tabela auxiliar para inscrições em atividades (quando requer_inscricao = true)
@@ -55,7 +55,7 @@ CREATE TABLE inscricoes_atividade (
     
     -- Relacionamentos
     atividade_id BIGINT NOT NULL COMMENT 'FK para atividades_grupo',
-    paciente_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'FK para pacientes',
+    paciente_id CHAR(36) NOT NULL COMMENT 'FK para pacientes',
     
     -- Status da Inscrição
     status ENUM(
@@ -91,5 +91,5 @@ CREATE TABLE inscricoes_atividade (
     
     -- Unicidade: um paciente não pode se inscrever duas vezes na mesma atividade
     UNIQUE KEY uk_inscricoes_atividade_paciente (atividade_id, paciente_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB
 COMMENT='Inscrições em atividades que requerem inscrição prévia';

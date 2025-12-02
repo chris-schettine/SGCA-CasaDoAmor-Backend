@@ -31,7 +31,7 @@ CREATE TABLE profissionais (
     disponibilidade JSON NULL COMMENT 'Horários e dias disponíveis: {"segunda": ["08:00-12:00"], "terca": ["14:00-18:00"]}',
     
     -- Dados de Endereço (referência à tabela existente)
-    endereco_id CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'FK para enderecos',
+    endereco_id CHAR(36) NULL COMMENT 'FK para enderecos',
     
     -- Status e Controle
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
@@ -55,5 +55,5 @@ CREATE TABLE profissionais (
     CONSTRAINT fk_profissionais_endereco FOREIGN KEY (endereco_id) REFERENCES enderecos(id) ON DELETE SET NULL,
     CONSTRAINT fk_profissionais_created_by FOREIGN KEY (created_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL,
     CONSTRAINT fk_profissionais_updated_by FOREIGN KEY (updated_by) REFERENCES auth_usuarios(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB
 COMMENT='Tabela unificada de funcionários e voluntários';

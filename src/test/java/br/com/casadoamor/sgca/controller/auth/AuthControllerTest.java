@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.casadoamor.sgca.modules.admin.dtos.user.UserResponseDTO;
 import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
@@ -105,10 +107,11 @@ class AuthControllerTest {
 
     @Test
     void getCurrentUser_ReturnsProfile() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("12345678901").build();
-    UserResponseDTO profile = UserResponseDTO.builder().id(1L).cpf("12345678901").build();
-    when(authService.getUserProfile("12345678901")).thenReturn(profile);
+        Authentication auth = org.mockito.Mockito.mock(Authentication.class);
+        when(auth.getName()).thenReturn("12345678901");
+
+        UserResponseDTO profile = UserResponseDTO.builder().id(1L).cpf("12345678901").build();
+        when(authService.getUserProfile("12345678901")).thenReturn(profile);
 
         ResponseEntity<?> res = controller.getCurrentUser(auth);
 
@@ -118,8 +121,9 @@ class AuthControllerTest {
 
     @Test
     void getCurrentUser_NotFound_ReturnsNotFound() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("00000000000").build();
+        Authentication auth = org.mockito.Mockito.mock(Authentication.class);
+        when(auth.getName()).thenReturn("00000000000");
+
         when(authService.getUserProfile("00000000000")).thenThrow(new RuntimeException("missing"));
 
         ResponseEntity<?> res = controller.getCurrentUser(auth);
@@ -184,12 +188,14 @@ class AuthControllerTest {
         ChangePasswordRequestDTO request = new ChangePasswordRequestDTO();
         request.setSenhaAtual("OldP@ss1!");
         request.setNovaSenha("N3wP@ss1!");
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("12345678901").build();
+
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("12345678901");
+
         MessageResponseDTO message = MessageResponseDTO.success("changed");
         when(authService.changePassword(request, "12345678901")).thenReturn(message);
 
-        ResponseEntity<?> res = controller.changePassword(request, auth);
+        ResponseEntity<?> res = controller.changePassword(request, userDetails);
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody()).isEqualTo(message);
@@ -197,14 +203,15 @@ class AuthControllerTest {
 
     @Test
     void listSessions_ReturnsList() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("cpf").build();
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("cpf");
+
         when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.of(1L));
 
         SessaoDTO dto = new SessaoDTO();
         when(sessaoService.listarSessoesAtivas(1L, "token")).thenReturn(List.of(dto));
 
-        ResponseEntity<List<SessaoDTO>> res = controller.listSessions(auth, "Bearer token");
+        ResponseEntity<List<SessaoDTO>> res = controller.listSessions(userDetails, "Bearer token");
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(res.getBody()).hasSize(1);
@@ -212,11 +219,12 @@ class AuthControllerTest {
 
     @Test
     void revokeSession_Success_ReturnsOk() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("cpf").build();
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("cpf");
+
         when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.of(1L));
 
-        ResponseEntity<?> res = controller.revokeSession(123L, auth);
+        ResponseEntity<?> res = controller.revokeSession(123L, userDetails);
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(sessaoService).revogarSessao(123L, 1L);
@@ -224,11 +232,12 @@ class AuthControllerTest {
 
     @Test
     void revokeSession_UserNotFound_ReturnsBadRequest() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("cpf").build();
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("cpf");
+
         when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.empty());
 
-        ResponseEntity<?> res = controller.revokeSession(123L, auth);
+        ResponseEntity<?> res = controller.revokeSession(123L, userDetails);
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         verify(sessaoService, never()).revogarSessao(anyLong(), anyLong());
@@ -236,11 +245,12 @@ class AuthControllerTest {
 
     @Test
     void logout_Success_ReturnsOk() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("12345678901").build();
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("12345678901");
+
         when(authService.findUserIdByCpf("12345678901")).thenReturn(Optional.of(5L));
 
-        ResponseEntity<?> res = controller.logout(auth, "Bearer token-value");
+        ResponseEntity<?> res = controller.logout(userDetails, "Bearer token-value");
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(sessaoService).revogarSessaoPorToken("token-value", 5L);
@@ -248,13 +258,14 @@ class AuthControllerTest {
 
     @Test
     void logout_Error_ReturnsNotFound() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("12345678901").build();
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("12345678901");
+
         when(authService.findUserIdByCpf("12345678901")).thenReturn(Optional.of(5L));
         org.mockito.Mockito.doThrow(new RuntimeException("missing"))
                 .when(sessaoService).revogarSessaoPorToken(anyString(), anyLong());
 
-        ResponseEntity<?> res = controller.logout(auth, "Bearer bad-token");
+        ResponseEntity<?> res = controller.logout(userDetails, "Bearer bad-token");
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -306,14 +317,15 @@ class AuthControllerTest {
 
     @Test
     void firstLoginPasswordChange_ReturnsOk() {
-        AuthUsuario auth = AuthUsuario.builder().cpf("12345678901").build();
-        auth = AuthUsuario.builder().cpf("12345678901").build();
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("12345678901");
+
         FirstLoginPasswordChangeDTO request = new FirstLoginPasswordChangeDTO(
                 "Temp@123",
                 "N3wP@ss1!",
                 "N3wP@ss1!");
 
-        ResponseEntity<?> res = controller.firstLoginPasswordChange(request, auth);
+        ResponseEntity<?> res = controller.firstLoginPasswordChange(request, userDetails);
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(accountActivationService).trocarSenhaTemporaria("12345678901", request);
