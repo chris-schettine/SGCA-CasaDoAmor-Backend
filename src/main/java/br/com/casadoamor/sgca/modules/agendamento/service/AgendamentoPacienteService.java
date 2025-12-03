@@ -239,11 +239,14 @@ public class AgendamentoPacienteService {
             .id(agendamento.getId())
             .uuid(agendamento.getUuid())
             .pacienteId(agendamento.getPaciente().getId())
-            .pacienteNome(agendamento.getPaciente().getDadoPessoal().getNome())
+            .pacienteNome(agendamento.getPaciente().getDadoPessoal() != null ? 
+                agendamento.getPaciente().getDadoPessoal().getNome() : "N/A")
             .tipoServicoId(agendamento.getTipoServico().getId())
             .tipoServicoNome(agendamento.getTipoServico().getNome())
-            .profissionalUsuarioId(agendamento.getProfissionalUsuario().getId())
-            .profissionalNome(agendamento.getProfissionalUsuario().getNome())
+            .profissionalUsuarioId(agendamento.getProfissionalUsuario() != null ? 
+                agendamento.getProfissionalUsuario().getId() : null)
+            .profissionalNome(agendamento.getProfissionalUsuario() != null ? 
+                agendamento.getProfissionalUsuario().getNome() : "Não atribuído")
             .hospedagemId(hospedagemId)
             .quartoNome(quartoNome)
             .dataHoraInicio(agendamento.getDataHoraInicio())
