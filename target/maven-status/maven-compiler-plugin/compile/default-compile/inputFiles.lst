@@ -251,7 +251,9 @@ D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\ca
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\lgpd\repository\ConsentimentoLGPDRepository.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\lgpd\service\ConsentimentoLGPDService.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\controller\ContatoEmergenciaController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\controller\EstatisticasPacienteAcompanhanteController.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\controller\PacienteController.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dto\EstatisticasPacienteAcompanhanteDTO.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\ContatoEmergenciaDTO.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\ContatoEmergenciaInputDTO.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\dtos\DadoClinicoDTO.java
@@ -289,6 +291,7 @@ D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\ca
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\repository\ContatoEmergenciaRepository.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\repository\HistoricoPacienteRepository.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\repository\PacienteRepository.java
+D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\service\EstatisticasPacienteAcompanhanteService.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\services\ContatoEmergenciaService.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\services\ContatoEmergenciaServiceImp.java
 D:\Arquivos HD\Documentos\GitHub\SGCA-CasaDoAmor-Backend\src\main\java\br\com\casadoamor\sgca\modules\paciente\services\PacienteService.java

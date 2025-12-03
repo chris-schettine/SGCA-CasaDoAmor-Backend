@@ -1,0 +1,312 @@
+package br.com.casadoamor.sgca.modules.agendamento.controller;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import br.com.casadoamor.sgca.modules.agendamento.dto.TipoServicoResponseDTO;
+import br.com.casadoamor.sgca.modules.agendamento.entity.enums.CategoriaServico;
+import br.com.casadoamor.sgca.modules.agendamento.service.TipoServicoService;
+
+@ExtendWith(MockitoExtension.class)
+class TipoServicoControllerTest {
+
+    @Mock
+    private TipoServicoService tipoServicoService;
+
+    @InjectMocks
+    private TipoServicoController tipoServicoController;
+
+    private MockMvc mockMvc;
+
+    private TipoServicoResponseDTO tipoServicoConsulta;
+    private TipoServicoResponseDTO tipoServicoOdonto;
+    private TipoServicoResponseDTO tipoServicoEnfermagem;
+
+    @BeforeEach
+    void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(tipoServicoController).build();
+
+        tipoServicoConsulta = TipoServicoResponseDTO.builder()
+                .id(1L)
+                .codigo("CONS_MED")
+                .nome("Consulta Médica")
+                .descricao("Consulta médica geral")
+                .categoria(CategoriaServico.MEDICO)
+                .duracaoMinutos(30)
+                .requerProfissional(true)
+                .permiteAcompanhante(true)
+                .ativo(true)
+                .observacoes("Trazer documentos")
+                .build();
+
+        tipoServicoOdonto = TipoServicoResponseDTO.builder()
+                .id(2L)
+                .codigo("CONS_ODONTO")
+                .nome("Consulta Odontológica")
+                .descricao("Consulta odontológica geral")
+                .categoria(CategoriaServico.ODONTOLOGICO)
+                .duracaoMinutos(45)
+                .requerProfissional(true)
+                .permiteAcompanhante(false)
+                .ativo(true)
+                .observacoes(null)
+                .build();
+
+        tipoServicoEnfermagem = TipoServicoResponseDTO.builder()
+                .id(3L)
+                .codigo("ENF_CURATIVO")
+                .nome("Curativo")
+                .descricao("Troca de curativos")
+                .categoria(CategoriaServico.ENFERMAGEM)
+                .duracaoMinutos(15)
+                .requerProfissional(true)
+                .permiteAcompanhante(true)
+                .ativo(true)
+                .build();
+    }
+
+    @Nested
+    @DisplayName("GET /api/tipos-servico/{id} - Buscar por ID")
+    class BuscarPorIdTests {
+
+        @Test
+        @DisplayName("Deve retornar tipo de serviço quando ID existe")
+        void buscarPorId_Success_Returns200() throws Exception {
+            when(tipoServicoService.buscarPorId(1L)).thenReturn(tipoServicoConsulta);
+
+            mockMvc.perform(get("/api/tipos-servico/1")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(1))
+                    .andExpect(jsonPath("$.codigo").value("CONS_MED"))
+                    .andExpect(jsonPath("$.nome").value("Consulta Médica"))
+                    .andExpect(jsonPath("$.descricao").value("Consulta médica geral"))
+                    .andExpect(jsonPath("$.categoria").value("MEDICO"))
+                    .andExpect(jsonPath("$.duracaoMinutos").value(30))
+                    .andExpect(jsonPath("$.requerProfissional").value(true))
+                    .andExpect(jsonPath("$.permiteAcompanhante").value(true))
+                    .andExpect(jsonPath("$.ativo").value(true))
+                    .andExpect(jsonPath("$.observacoes").value("Trazer documentos"));
+
+            verify(tipoServicoService, times(1)).buscarPorId(1L);
+        }
+
+        @Test
+        @DisplayName("Deve retornar tipo de serviço odontológico")
+        void buscarPorId_Odonto_Returns200() throws Exception {
+            when(tipoServicoService.buscarPorId(2L)).thenReturn(tipoServicoOdonto);
+
+            mockMvc.perform(get("/api/tipos-servico/2")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(2))
+                    .andExpect(jsonPath("$.categoria").value("ODONTOLOGICO"))
+                    .andExpect(jsonPath("$.duracaoMinutos").value(45))
+                    .andExpect(jsonPath("$.permiteAcompanhante").value(false));
+
+            verify(tipoServicoService, times(1)).buscarPorId(2L);
+        }
+
+        @Test
+        @DisplayName("Deve retornar tipo de serviço de enfermagem")
+        void buscarPorId_Enfermagem_Returns200() throws Exception {
+            when(tipoServicoService.buscarPorId(3L)).thenReturn(tipoServicoEnfermagem);
+
+            mockMvc.perform(get("/api/tipos-servico/3")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(3))
+                    .andExpect(jsonPath("$.codigo").value("ENF_CURATIVO"))
+                    .andExpect(jsonPath("$.categoria").value("ENFERMAGEM"));
+
+            verify(tipoServicoService, times(1)).buscarPorId(3L);
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/tipos-servico - Listar Ativos")
+    class ListarAtivosTests {
+
+        @Test
+        @DisplayName("Deve retornar lista de tipos de serviço ativos")
+        void listarAtivos_Success_Returns200() throws Exception {
+            when(tipoServicoService.listarAtivos())
+                    .thenReturn(Arrays.asList(tipoServicoConsulta, tipoServicoOdonto));
+
+            mockMvc.perform(get("/api/tipos-servico")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2))
+                    .andExpect(jsonPath("$[0].id").value(1))
+                    .andExpect(jsonPath("$[0].nome").value("Consulta Médica"))
+                    .andExpect(jsonPath("$[1].id").value(2))
+                    .andExpect(jsonPath("$[1].nome").value("Consulta Odontológica"));
+
+            verify(tipoServicoService, times(1)).listarAtivos();
+        }
+
+        @Test
+        @DisplayName("Deve retornar lista vazia quando não há tipos de serviço")
+        void listarAtivos_Empty_Returns200WithEmptyList() throws Exception {
+            when(tipoServicoService.listarAtivos()).thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/api/tipos-servico")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$.length()").value(0));
+
+            verify(tipoServicoService, times(1)).listarAtivos();
+        }
+
+        @Test
+        @DisplayName("Deve retornar lista com único tipo de serviço")
+        void listarAtivos_SingleItem_Returns200() throws Exception {
+            when(tipoServicoService.listarAtivos()).thenReturn(List.of(tipoServicoEnfermagem));
+
+            mockMvc.perform(get("/api/tipos-servico")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].codigo").value("ENF_CURATIVO"));
+
+            verify(tipoServicoService, times(1)).listarAtivos();
+        }
+
+        @Test
+        @DisplayName("Deve retornar múltiplos tipos de categorias diferentes")
+        void listarAtivos_MultipleCategories_Returns200() throws Exception {
+            when(tipoServicoService.listarAtivos())
+                    .thenReturn(Arrays.asList(tipoServicoConsulta, tipoServicoOdonto, tipoServicoEnfermagem));
+
+            mockMvc.perform(get("/api/tipos-servico")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(3))
+                    .andExpect(jsonPath("$[0].categoria").value("MEDICO"))
+                    .andExpect(jsonPath("$[1].categoria").value("ODONTOLOGICO"))
+                    .andExpect(jsonPath("$[2].categoria").value("ENFERMAGEM"));
+
+            verify(tipoServicoService, times(1)).listarAtivos();
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/tipos-servico/por-profissional/{profissionalId} - Listar por Profissional")
+    class ListarPorProfissionalTests {
+
+        @Test
+        @DisplayName("Deve retornar tipos de serviço por profissional")
+        void listarPorProfissional_Success_Returns200() throws Exception {
+            when(tipoServicoService.listarPorProfissional(10L))
+                    .thenReturn(List.of(tipoServicoConsulta));
+
+            mockMvc.perform(get("/api/tipos-servico/por-profissional/10")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].id").value(1))
+                    .andExpect(jsonPath("$[0].categoria").value("MEDICO"));
+
+            verify(tipoServicoService, times(1)).listarPorProfissional(10L);
+        }
+
+        @Test
+        @DisplayName("Deve retornar lista vazia quando profissional não tem serviços")
+        void listarPorProfissional_NoServicesFound_Returns200WithEmptyList() throws Exception {
+            when(tipoServicoService.listarPorProfissional(10L)).thenReturn(Collections.emptyList());
+
+            mockMvc.perform(get("/api/tipos-servico/por-profissional/10")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray())
+                    .andExpect(jsonPath("$.length()").value(0));
+
+            verify(tipoServicoService, times(1)).listarPorProfissional(10L);
+        }
+
+        @Test
+        @DisplayName("Deve retornar múltiplos serviços para um profissional")
+        void listarPorProfissional_MultipleServices_Returns200() throws Exception {
+            when(tipoServicoService.listarPorProfissional(5L))
+                    .thenReturn(Arrays.asList(tipoServicoConsulta, tipoServicoEnfermagem));
+
+            mockMvc.perform(get("/api/tipos-servico/por-profissional/5")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(2))
+                    .andExpect(jsonPath("$[0].nome").value("Consulta Médica"))
+                    .andExpect(jsonPath("$[1].nome").value("Curativo"));
+
+            verify(tipoServicoService, times(1)).listarPorProfissional(5L);
+        }
+
+        @Test
+        @DisplayName("Deve validar profissional com ID diferente")
+        void listarPorProfissional_DifferentId_Returns200() throws Exception {
+            when(tipoServicoService.listarPorProfissional(99L))
+                    .thenReturn(List.of(tipoServicoOdonto));
+
+            mockMvc.perform(get("/api/tipos-servico/por-profissional/99")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(1))
+                    .andExpect(jsonPath("$[0].codigo").value("CONS_ODONTO"));
+
+            verify(tipoServicoService, times(1)).listarPorProfissional(99L);
+        }
+    }
+
+    @Nested
+    @DisplayName("Validação de campos dos DTOs")
+    class ValidacaoCamposTests {
+
+        @Test
+        @DisplayName("Deve retornar todos os campos do DTO corretamente")
+        void deveRetornarTodosCampos() throws Exception {
+            when(tipoServicoService.buscarPorId(1L)).thenReturn(tipoServicoConsulta);
+
+            mockMvc.perform(get("/api/tipos-servico/1")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").exists())
+                    .andExpect(jsonPath("$.codigo").exists())
+                    .andExpect(jsonPath("$.nome").exists())
+                    .andExpect(jsonPath("$.descricao").exists())
+                    .andExpect(jsonPath("$.categoria").exists())
+                    .andExpect(jsonPath("$.duracaoMinutos").exists())
+                    .andExpect(jsonPath("$.requerProfissional").exists())
+                    .andExpect(jsonPath("$.permiteAcompanhante").exists())
+                    .andExpect(jsonPath("$.ativo").exists())
+                    .andExpect(jsonPath("$.observacoes").exists());
+        }
+
+        @Test
+        @DisplayName("Deve retornar campo observacoes null corretamente")
+        void deveRetornarObservacoesNull() throws Exception {
+            when(tipoServicoService.buscarPorId(2L)).thenReturn(tipoServicoOdonto);
+
+            mockMvc.perform(get("/api/tipos-servico/2")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.observacoes").doesNotExist());
+        }
+    }
+}

@@ -109,6 +109,7 @@ class AuthControllerTest {
     void getCurrentUser_ReturnsProfile() {
         Authentication auth = org.mockito.Mockito.mock(Authentication.class);
         when(auth.getName()).thenReturn("12345678901");
+        when(auth.getPrincipal()).thenReturn("12345678901");
 
         UserResponseDTO profile = UserResponseDTO.builder().id(1L).cpf("12345678901").build();
         when(authService.getUserProfile("12345678901")).thenReturn(profile);
@@ -123,6 +124,7 @@ class AuthControllerTest {
     void getCurrentUser_NotFound_ReturnsNotFound() {
         Authentication auth = org.mockito.Mockito.mock(Authentication.class);
         when(auth.getName()).thenReturn("00000000000");
+        when(auth.getPrincipal()).thenReturn("00000000000");
 
         when(authService.getUserProfile("00000000000")).thenThrow(new RuntimeException("missing"));
 
@@ -329,5 +331,145 @@ class AuthControllerTest {
 
         assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(accountActivationService).trocarSenhaTemporaria("12345678901", request);
+    }
+
+    @Test
+    void register_GenericError_ReturnsConflict() {
+        RegisterRequestDTO req = new RegisterRequestDTO();
+        when(authService.register(any())).thenThrow(new IllegalArgumentException("validation error"));
+
+        ResponseEntity<?> result = controller.register(req);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        verify(authService).register(req);
+    }
+
+    @Test
+    void login_GenericError_ReturnsUnauthorized() {
+        LoginRequestDTO req = new LoginRequestDTO();
+        when(authService.login(any(), any())).thenThrow(new IllegalArgumentException("validation error"));
+
+        ResponseEntity<?> result = controller.login(req, null);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void getCurrentUser_NullAuthentication_ReturnsUnauthorized() {
+        ResponseEntity<?> res = controller.getCurrentUser(null);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        verify(authService, never()).getUserProfile(anyString());
+    }
+
+    @Test
+    void verifyEmail_Error_ReturnsBadRequest() {
+        VerifyEmailRequestDTO request = new VerifyEmailRequestDTO();
+        request.setToken("invalid-token");
+        when(authService.verifyEmail(request)).thenThrow(new RuntimeException("token expired"));
+
+        ResponseEntity<?> res = controller.verifyEmail(request);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void changePassword_Error_ReturnsBadRequest() {
+        ChangePasswordRequestDTO request = new ChangePasswordRequestDTO();
+        request.setSenhaAtual("WrongP@ss1!");
+        request.setNovaSenha("N3wP@ss1!");
+
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("12345678901");
+
+        when(authService.changePassword(request, "12345678901"))
+                .thenThrow(new RuntimeException("senha atual incorreta"));
+
+        ResponseEntity<?> res = controller.changePassword(request, userDetails);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void resendActivation_Error_ReturnsBadRequest() {
+        ResendActivationDTO request = new ResendActivationDTO();
+        request.setEmail("notfound@example.com");
+        when(accountActivationService.reenviarEmailAtivacao("notfound@example.com"))
+                .thenThrow(new RuntimeException("user not found"));
+
+        ResponseEntity<?> res = controller.resendActivation(request);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void firstLoginPasswordChange_Error_ReturnsBadRequest() {
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("12345678901");
+
+        FirstLoginPasswordChangeDTO request = new FirstLoginPasswordChangeDTO(
+                "WrongTemp@123",
+                "N3wP@ss1!",
+                "N3wP@ss1!");
+
+        org.mockito.Mockito.doThrow(new RuntimeException("senha temporária inválida"))
+                .when(accountActivationService).trocarSenhaTemporaria("12345678901", request);
+
+        ResponseEntity<?> res = controller.firstLoginPasswordChange(request, userDetails);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void listSessions_EmptyList_ReturnsOk() {
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("cpf");
+
+        when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.of(1L));
+        when(sessaoService.listarSessoesAtivas(1L, "token")).thenReturn(List.of());
+
+        ResponseEntity<List<SessaoDTO>> res = controller.listSessions(userDetails, "Bearer token");
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(res.getBody()).isEmpty();
+    }
+
+    @Test
+    void revokeSession_Error_ReturnsBadRequest() {
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("cpf");
+
+        when(authService.findUserIdByCpf("cpf")).thenReturn(Optional.of(1L));
+        org.mockito.Mockito.doThrow(new RuntimeException("session not found"))
+                .when(sessaoService).revogarSessao(999L, 1L);
+
+        ResponseEntity<?> res = controller.revokeSession(999L, userDetails);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void logout_UserNotFound_ThrowsException() {
+        UserDetails userDetails = org.mockito.Mockito.mock(UserDetails.class);
+        when(userDetails.getUsername()).thenReturn("invalid-cpf");
+
+        when(authService.findUserIdByCpf("invalid-cpf")).thenReturn(Optional.empty());
+
+        try {
+            controller.logout(userDetails, "Bearer token");
+        } catch (RuntimeException e) {
+            assertThat(e.getMessage()).contains("Usuário não encontrado");
+        }
+    }
+
+    @Test
+    void getCurrentUser_NullPrincipal_ReturnsUnauthorized() {
+        Authentication auth = org.mockito.Mockito.mock(Authentication.class);
+        when(auth.getName()).thenReturn("12345678901");
+        when(auth.getPrincipal()).thenReturn(null);
+
+        ResponseEntity<?> res = controller.getCurrentUser(auth);
+
+        assertThat(res.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 }

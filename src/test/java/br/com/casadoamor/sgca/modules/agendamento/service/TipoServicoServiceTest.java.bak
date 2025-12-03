@@ -1,0 +1,250 @@
+package br.com.casadoamor.sgca.modules.agendamento.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import br.com.casadoamor.sgca.modules.agendamento.dto.TipoServicoResponseDTO;
+import br.com.casadoamor.sgca.modules.agendamento.entity.TipoServico;
+import br.com.casadoamor.sgca.modules.agendamento.entity.enums.CategoriaServico;
+import br.com.casadoamor.sgca.modules.agendamento.repository.TipoServicoRepository;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario.TipoUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.AuthUsuarioRepository;
+
+@ExtendWith(MockitoExtension.class)
+class TipoServicoServiceTest {
+
+    @Mock
+    private TipoServicoRepository tipoServicoRepository;
+
+    @Mock
+    private AuthUsuarioRepository authUsuarioRepository;
+
+    @InjectMocks
+    private TipoServicoService tipoServicoService;
+
+    private TipoServico tipoServico1;
+    private TipoServico tipoServico2;
+    private AuthUsuario profissional;
+
+    @BeforeEach
+    void setup() {
+        tipoServico1 = new TipoServico();
+        tipoServico1.setId(1L);
+        tipoServico1.setCodigo("CONS_MED");
+        tipoServico1.setNome("Consulta Médica");
+        tipoServico1.setDescricao("Consulta médica geral");
+        tipoServico1.setCategoria(CategoriaServico.MEDICO);
+        tipoServico1.setDuracaoMinutos(30);
+        tipoServico1.setRequerProfissional(true);
+        tipoServico1.setPermiteAcompanhante(true);
+        tipoServico1.setAtivo(true);
+
+        tipoServico2 = new TipoServico();
+        tipoServico2.setId(2L);
+        tipoServico2.setCodigo("CONS_ODONTO");
+        tipoServico2.setNome("Consulta Odontológica");
+        tipoServico2.setDescricao("Consulta odontológica");
+        tipoServico2.setCategoria(CategoriaServico.ODONTOLOGICO);
+        tipoServico2.setDuracaoMinutos(45);
+        tipoServico2.setRequerProfissional(true);
+        tipoServico2.setPermiteAcompanhante(false);
+        tipoServico2.setAtivo(true);
+
+        profissional = AuthUsuario.builder()
+                .id(10L)
+                .nome("Dr. João")
+                .tipo(TipoUsuario.MEDICO)
+                .build();
+    }
+
+    // ===================== TESTES DE BUSCA POR ID =====================
+
+    @Test
+    void buscarPorId_Success_ReturnsDTO() {
+        when(tipoServicoRepository.findById(1L)).thenReturn(Optional.of(tipoServico1));
+
+        TipoServicoResponseDTO response = tipoServicoService.buscarPorId(1L);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getCodigo()).isEqualTo("CONS_MED");
+        assertThat(response.getNome()).isEqualTo("Consulta Médica");
+        assertThat(response.getCategoria()).isEqualTo(CategoriaServico.MEDICO);
+        assertThat(response.getDuracaoMinutos()).isEqualTo(30);
+    }
+
+    @Test
+    void buscarPorId_NotFound_ThrowsException() {
+        when(tipoServicoRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> tipoServicoService.buscarPorId(999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("não encontrado");
+    }
+
+    // ===================== TESTES DE LISTAGEM DE ATIVOS =====================
+
+    @Test
+    void listarAtivos_Success_ReturnsList() {
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(Arrays.asList(tipoServico1, tipoServico2));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarAtivos();
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).getId()).isEqualTo(1L);
+        assertThat(response.get(1).getId()).isEqualTo(2L);
+    }
+
+    @Test
+    void listarAtivos_Empty_ReturnsEmptyList() {
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(List.of());
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarAtivos();
+
+        assertThat(response).isEmpty();
+    }
+
+    // ===================== TESTES DE LISTAGEM POR PROFISSIONAL
+    // =====================
+
+    @Test
+    void listarPorProfissional_Medico_ReturnsMedicoServices() {
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(Arrays.asList(tipoServico1, tipoServico2));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getCategoria()).isEqualTo(CategoriaServico.MEDICO);
+    }
+
+    @Test
+    void listarPorProfissional_Dentista_ReturnsOdontologicalServices() {
+        profissional.setTipo(TipoUsuario.DENTISTA);
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(Arrays.asList(tipoServico1, tipoServico2));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getCategoria()).isEqualTo(CategoriaServico.ODONTOLOGICO);
+    }
+
+    @Test
+    void listarPorProfissional_Enfermeiro_ReturnsEnfermagemServices() {
+        TipoServico tipoEnfermagem = new TipoServico();
+        tipoEnfermagem.setId(3L);
+        tipoEnfermagem.setCodigo("ENF_GERAL");
+        tipoEnfermagem.setNome("Atendimento de Enfermagem");
+        tipoEnfermagem.setCategoria(CategoriaServico.ENFERMAGEM);
+        tipoEnfermagem.setAtivo(true);
+
+        profissional.setTipo(TipoUsuario.ENFERMEIRO);
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue())
+                .thenReturn(Arrays.asList(tipoServico1, tipoServico2, tipoEnfermagem));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getCategoria()).isEqualTo(CategoriaServico.ENFERMAGEM);
+    }
+
+    @Test
+    void listarPorProfissional_Nutricionista_ReturnsNutricaoServices() {
+        TipoServico tipoNutricao = new TipoServico();
+        tipoNutricao.setId(4L);
+        tipoNutricao.setCodigo("NUT_CONS");
+        tipoNutricao.setNome("Consulta Nutricional");
+        tipoNutricao.setCategoria(CategoriaServico.NUTRICAO);
+        tipoNutricao.setAtivo(true);
+
+        profissional.setTipo(TipoUsuario.NUTRICIONISTA);
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue())
+                .thenReturn(Arrays.asList(tipoServico1, tipoServico2, tipoNutricao));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getCategoria()).isEqualTo(CategoriaServico.NUTRICAO);
+    }
+
+    @Test
+    void listarPorProfissional_Fisioterapeuta_ReturnsFisioterapiaServices() {
+        TipoServico tipoFisio = new TipoServico();
+        tipoFisio.setId(5L);
+        tipoFisio.setCodigo("FISIO_SESS");
+        tipoFisio.setNome("Sessão de Fisioterapia");
+        tipoFisio.setCategoria(CategoriaServico.FISIOTERAPIA);
+        tipoFisio.setAtivo(true);
+
+        profissional.setTipo(TipoUsuario.FISIOTERAPEUTA);
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(Arrays.asList(tipoServico1, tipoServico2, tipoFisio));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getCategoria()).isEqualTo(CategoriaServico.FISIOTERAPIA);
+    }
+
+    @Test
+    void listarPorProfissional_OutrosTipos_ReturnsOutrosServices() {
+        TipoServico tipoOutros = new TipoServico();
+        tipoOutros.setId(6L);
+        tipoOutros.setCodigo("OUTROS");
+        tipoOutros.setNome("Outros Serviços");
+        tipoOutros.setCategoria(CategoriaServico.OUTROS);
+        tipoOutros.setAtivo(true);
+
+        profissional.setTipo(TipoUsuario.RECEPCIONISTA);
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(Arrays.asList(tipoServico1, tipoServico2, tipoOutros));
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isNotNull();
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getCategoria()).isEqualTo(CategoriaServico.OUTROS);
+    }
+
+    @Test
+    void listarPorProfissional_NotFound_ThrowsException() {
+        when(authUsuarioRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> tipoServicoService.listarPorProfissional(999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Profissional não encontrado");
+    }
+
+    @Test
+    void listarPorProfissional_NoMatchingServices_ReturnsEmptyList() {
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(profissional));
+        when(tipoServicoRepository.findByAtivoTrue()).thenReturn(Arrays.asList(tipoServico2)); // Only ODONTO,
+                                                                                               // profissional is MEDICO
+
+        List<TipoServicoResponseDTO> response = tipoServicoService.listarPorProfissional(10L);
+
+        assertThat(response).isEmpty();
+    }
+}

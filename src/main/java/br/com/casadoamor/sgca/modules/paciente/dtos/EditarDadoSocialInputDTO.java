@@ -6,6 +6,10 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 
 @Getter
+@lombok.Setter
+@lombok.Builder
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 public class EditarDadoSocialInputDTO {
   @PositiveOrZero
   private BigDecimal rendaFamiliar;

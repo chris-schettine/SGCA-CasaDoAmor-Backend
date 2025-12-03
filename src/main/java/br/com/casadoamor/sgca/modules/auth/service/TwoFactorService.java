@@ -132,10 +132,9 @@ public class TwoFactorService {
      * Verifica se usuário tem 2FA habilitado
      */
     public boolean usuario2FAHabilitado(Long usuarioId) {
-        // Temporarily disable 2FA system-wide for emergency debugging/maintenance.
-        // To re-enable, restore the original line below.
-        // return autenticacao2FARepository.existsByUsuarioIdAndHabilitado(usuarioId);
-        return false;
+        return autenticacao2FARepository.findByUsuarioId(usuarioId)
+                .map(Autenticacao2FA::getHabilitado)
+                .orElse(false);
     }
 
     /**

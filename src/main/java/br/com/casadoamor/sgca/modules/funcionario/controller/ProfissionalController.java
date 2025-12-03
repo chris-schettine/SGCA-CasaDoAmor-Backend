@@ -197,6 +197,7 @@ public class ProfissionalController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     })
+
     @GetMapping("/tipos-vinculo")
     public ResponseEntity<List<TipoVinculoDTO>> listarTiposVinculo() {
         List<TipoVinculoEntity> tiposEntity = tipoVinculoRepository.findByAtivoTrueOrderByNomeAsc();
@@ -209,7 +210,6 @@ public class ProfissionalController {
                         .ativo(tipo.getAtivo())
                         .build())
                 .toList();
-        
         return ResponseEntity.ok(tipos);
     }
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -55,5 +56,105 @@ class PermissaoServiceTest {
         when(permissaoRepository.findById(3L)).thenReturn(java.util.Optional.of(p));
 
         assertThatThrownBy(() -> permissaoService.deletarPermissao(3L)).isInstanceOf(RuntimeException.class).hasMessageContaining("Não é possível deletar permissão associada a perfis");
+    }
+
+    @Test
+    void listarPermissoes_success() {
+        Permissao p1 = Permissao.builder().id(1L).nome("PERM_A").descricao("Desc A").build();
+        Permissao p2 = Permissao.builder().id(2L).nome("PERM_B").descricao("Desc B").build();
+
+        when(permissaoRepository.findAllAtivas()).thenReturn(java.util.List.of(p1, p2));
+
+        var result = permissaoService.listarPermissoes();
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getNome()).isEqualTo("PERM_A");
+        assertThat(result.get(1).getNome()).isEqualTo("PERM_B");
+    }
+
+    @Test
+    void buscarPorId_success() {
+        Permissao p = Permissao.builder().id(10L).nome("PERM_TEST").descricao("Desc").build();
+        when(permissaoRepository.findById(10L)).thenReturn(java.util.Optional.of(p));
+
+        var result = permissaoService.buscarPorId(10L);
+
+        assertThat(result.getId()).isEqualTo(10L);
+        assertThat(result.getNome()).isEqualTo("PERM_TEST");
+    }
+
+    @Test
+    void atualizarPermissao_success() {
+        Permissao p = Permissao.builder().id(1L).nome("PERM_ORIGINAL").descricao("Old desc").build();
+        when(permissaoRepository.findById(1L)).thenReturn(java.util.Optional.of(p));
+
+        when(permissaoRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        CreatePermissaoDTO dto = new CreatePermissaoDTO();
+        dto.setDescricao("New description");
+
+        var result = permissaoService.atualizarPermissao(1L, dto, 99L);
+
+        assertThat(result.getDescricao()).isEqualTo("New description");
+        assertThat(result.getNome()).isEqualTo("PERM_ORIGINAL");
+        verify(permissaoRepository).save(any());
+    }
+
+    @Test
+    void atualizarPermissao_notFound_throws() {
+        when(permissaoRepository.findById(999L)).thenReturn(java.util.Optional.empty());
+
+        CreatePermissaoDTO dto = new CreatePermissaoDTO();
+        dto.setDescricao("New description");
+
+        assertThatThrownBy(() -> permissaoService.atualizarPermissao(999L, dto, 99L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("não encontrada");
+    }
+
+    @Test
+    void atualizarPermissao_deleted_throws() {
+        Permissao p = Permissao.builder().id(1L).nome("DELETED").build();
+        p.setDeletadoEm(java.time.LocalDateTime.now());
+        when(permissaoRepository.findById(1L)).thenReturn(java.util.Optional.of(p));
+
+        CreatePermissaoDTO dto = new CreatePermissaoDTO();
+        dto.setDescricao("New description");
+
+        assertThatThrownBy(() -> permissaoService.atualizarPermissao(1L, dto, 99L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("foi deletada");
+    }
+
+    @Test
+    void deletarPermissao_success() {
+        Permissao p = Permissao.builder().id(1L).nome("TO_DELETE").build();
+        // Sem perfis associados
+        when(permissaoRepository.findById(1L)).thenReturn(java.util.Optional.of(p));
+        when(permissaoRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        permissaoService.deletarPermissao(1L);
+
+        verify(permissaoRepository).save(any());
+    }
+
+    @Test
+    void deletarPermissao_notFound_throws() {
+        when(permissaoRepository.findById(999L)).thenReturn(java.util.Optional.empty());
+
+        assertThatThrownBy(() -> permissaoService.deletarPermissao(999L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("não encontrada");
+    }
+
+    @Test
+    void deletarPermissao_alreadyDeleted_throws() {
+        Permissao p = Permissao.builder().id(1L).nome("ALREADY_DELETED").build();
+        p.setDeletadoEm(java.time.LocalDateTime.now());
+        when(permissaoRepository.findById(1L)).thenReturn(java.util.Optional.of(p));
+
+        assertThatThrownBy(() -> permissaoService.deletarPermissao(1L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("já foi deletada");
     }
 }

@@ -9,6 +9,10 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @Getter
+@lombok.Setter
+@lombok.Builder
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 public class EditarDadoPessoalInputDTO {
     String nome;
 

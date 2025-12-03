@@ -115,7 +115,7 @@ class HospedagemControllerTest {
         verify(service).listarPorQuarto("q1");
         verify(service).listarPorPeriodo(any(), any());
         verify(service).listarComPrevisaoVencida();
-        verify(service).listarComPaginacao(any());
+        verify(service).listarComPaginacaoEFiltros(any(), any(), any(), any(), any(), any(), any());
         verify(service).pacienteTemHospedagemAtiva("p1");
         verify(service).deletar("h9");
     }

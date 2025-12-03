@@ -1,21 +1,25 @@
 package br.com.casadoamor.sgca.modules.paciente.dtos;
 
 import jakarta.validation.Valid;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EditarPacienteDTO {
-	@Valid
-	EditarDadoPessoalInputDTO dadoPessoal;
+  @Valid
+  private EditarDadoPessoalInputDTO dadoPessoal;
 
   @Valid
-  EditarEnderecoInputDTO endereco;
+  private EditarEnderecoInputDTO endereco;
 
   @Valid
-  EditarDadoSocialInputDTO dadoSocial;
+  private EditarDadoSocialInputDTO dadoSocial;
 
   @Valid
-  EditarInformacaoHospitalarInputDTO informacaoHospitalar;
-  
+  private EditarInformacaoHospitalarInputDTO informacaoHospitalar;
+
   private String email;
 }

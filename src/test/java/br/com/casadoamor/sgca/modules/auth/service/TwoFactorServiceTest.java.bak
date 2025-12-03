@@ -1,0 +1,290 @@
+package br.com.casadoamor.sgca.modules.auth.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import br.com.casadoamor.sgca.modules.auth.dtos.twofactor.Enable2FADTO;
+import br.com.casadoamor.sgca.modules.auth.dtos.twofactor.Setup2FADTO;
+import br.com.casadoamor.sgca.modules.auth.entity.Autenticacao2FA;
+import br.com.casadoamor.sgca.modules.auth.entity.Autenticacao2FARateLimit;
+import br.com.casadoamor.sgca.modules.auth.entity.AuthUsuario;
+import br.com.casadoamor.sgca.modules.auth.repository.Autenticacao2FARateLimitRepository;
+import br.com.casadoamor.sgca.modules.auth.repository.Autenticacao2FARepository;
+import br.com.casadoamor.sgca.modules.auth.repository.AuthUsuarioRepository;
+import br.com.casadoamor.sgca.modules.common.service.EmailService;
+
+@ExtendWith(MockitoExtension.class)
+class TwoFactorServiceTest {
+
+    @Mock
+    private Autenticacao2FARepository autenticacao2FARepository;
+
+    @Mock
+    private Autenticacao2FARateLimitRepository rateLimitRepository;
+
+    @Mock
+    private AuthUsuarioRepository authUsuarioRepository;
+
+    @Mock
+    private EmailService emailService;
+
+    @InjectMocks
+    private TwoFactorService twoFactorService;
+
+    private Autenticacao2FA autenticacao2FA;
+    private AuthUsuario usuarioMock;
+
+    @BeforeEach
+    void setup() {
+        autenticacao2FA = new Autenticacao2FA();
+        autenticacao2FA.setId(1L);
+        autenticacao2FA.setUsuarioId(10L);
+        autenticacao2FA.setHabilitado(false);
+        autenticacao2FA.setTentativasFalhas(0);
+
+        usuarioMock = AuthUsuario.builder()
+                .id(10L)
+                .email("user@example.com")
+                .nome("Test User")
+                .build();
+    }
+
+    // ===================== TESTES DE CONFIGURAÇÃO 2FA =====================
+
+    @Test
+    void configurar2FA_NovoUsuario_CriaConfiguracao() {
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(usuarioMock));
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+        when(rateLimitRepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+        when(rateLimitRepository.save(any(Autenticacao2FARateLimit.class))).thenAnswer(i -> i.getArgument(0));
+
+        Setup2FADTO resultado = twoFactorService.configurar2FA(10L);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.getMensagem()).isNotBlank();
+        verify(autenticacao2FARepository).save(any(Autenticacao2FA.class));
+        verify(emailService).send2FACode(anyString(), anyString());
+    }
+
+    @Test
+    void configurar2FA_UsuarioExistente_EnviaNovoCodigo() {
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(usuarioMock));
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+        when(rateLimitRepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+        when(rateLimitRepository.save(any(Autenticacao2FARateLimit.class))).thenAnswer(i -> i.getArgument(0));
+
+        Setup2FADTO resultado = twoFactorService.configurar2FA(10L);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.getMensagem()).isNotBlank();
+        verify(autenticacao2FARepository).save(autenticacao2FA);
+        verify(emailService).send2FACode(anyString(), anyString());
+    }
+
+    // ===================== TESTES DE HABILITAR/DESABILITAR 2FA
+    // =====================
+
+    @Test
+    void alterarStatus2FA_HabilitarComCodigoValido_RetornaSucesso() {
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(10));
+
+        Enable2FADTO dto = new Enable2FADTO();
+        dto.setHabilitar(true);
+        dto.setCodigo("123456");
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+
+        twoFactorService.alterarStatus2FA(10L, dto);
+
+        assertThat(autenticacao2FA.getHabilitado()).isTrue();
+        verify(autenticacao2FARepository).save(autenticacao2FA);
+    }
+
+    @Test
+    void alterarStatus2FA_CodigoInvalido_LancaExcecao() {
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(10));
+
+        Enable2FADTO dto = new Enable2FADTO();
+        dto.setHabilitar(true);
+        dto.setCodigo("999999");
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+
+        assertThatThrownBy(() -> twoFactorService.alterarStatus2FA(10L, dto))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Código inválido");
+    }
+
+    @Test
+    void alterarStatus2FA_CodigoExpirado_LancaExcecao() {
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().minusMinutes(1));
+
+        Enable2FADTO dto = new Enable2FADTO();
+        dto.setHabilitar(true);
+        dto.setCodigo("123456");
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+
+        assertThatThrownBy(() -> twoFactorService.alterarStatus2FA(10L, dto))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("expirado");
+    }
+
+    @Test
+    void alterarStatus2FA_Desabilitar_RetornaSucesso() {
+        autenticacao2FA.setHabilitado(true);
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(10));
+
+        Enable2FADTO dto = new Enable2FADTO();
+        dto.setHabilitar(false);
+        dto.setCodigo("123456");
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+
+        twoFactorService.alterarStatus2FA(10L, dto);
+
+        assertThat(autenticacao2FA.getHabilitado()).isFalse();
+        verify(autenticacao2FARepository).save(autenticacao2FA);
+    }
+
+    // ===================== TESTES DE VERIFICAÇÃO 2FA =====================
+
+    @Test
+    void usuario2FAHabilitado_Habilitado_RetornaTrue() {
+        autenticacao2FA.setHabilitado(true);
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+
+        boolean resultado = twoFactorService.usuario2FAHabilitado(10L);
+
+        assertThat(resultado).isTrue();
+    }
+
+    @Test
+    void usuario2FAHabilitado_Desabilitado_RetornaFalse() {
+        autenticacao2FA.setHabilitado(false);
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+
+        boolean resultado = twoFactorService.usuario2FAHabilitado(10L);
+
+        assertThat(resultado).isFalse();
+    }
+
+    @Test
+    void usuario2FAHabilitado_SemConfiguracao_RetornaFalse() {
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+
+        boolean resultado = twoFactorService.usuario2FAHabilitado(10L);
+
+        assertThat(resultado).isFalse();
+    }
+
+    // ===================== TESTES DE LOGIN COM 2FA =====================
+
+    @Test
+    void enviarCodigoLogin_Success_EnviaCodigo() {
+        autenticacao2FA.setHabilitado(true);
+        when(authUsuarioRepository.findById(10L)).thenReturn(Optional.of(usuarioMock));
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+        when(rateLimitRepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+        when(rateLimitRepository.save(any(Autenticacao2FARateLimit.class))).thenAnswer(i -> i.getArgument(0));
+
+        twoFactorService.enviarCodigoLogin(10L);
+
+        verify(autenticacao2FARepository).save(autenticacao2FA);
+        verify(emailService).send2FACode(anyString(), anyString());
+        assertThat(autenticacao2FA.getCodigoAtual()).isNotNull();
+        assertThat(autenticacao2FA.getExpiracaoCodigo()).isNotNull();
+    }
+
+    @Test
+    void validarCodigoLogin_CodigoValido_RetornaTrue() {
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(10));
+        autenticacao2FA.setTentativasFalhas(0);
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+
+        boolean resultado = twoFactorService.validarCodigoLogin(10L, "123456");
+
+        assertThat(resultado).isTrue();
+        assertThat(autenticacao2FA.getTentativasFalhas()).isEqualTo(0);
+        verify(autenticacao2FARepository).save(autenticacao2FA);
+    }
+
+    @Test
+    void validarCodigoLogin_CodigoInvalido_RetornaFalse() {
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().plusMinutes(10));
+        autenticacao2FA.setTentativasFalhas(0);
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+
+        boolean resultado = twoFactorService.validarCodigoLogin(10L, "999999");
+
+        assertThat(resultado).isFalse();
+        assertThat(autenticacao2FA.getTentativasFalhas()).isEqualTo(1);
+        verify(autenticacao2FARepository).save(autenticacao2FA);
+    }
+
+    @Test
+    void validarCodigoLogin_CodigoExpirado_LancaExcecao() {
+        autenticacao2FA.setCodigoAtual("123456");
+        autenticacao2FA.setExpiracaoCodigo(LocalDateTime.now().minusMinutes(1));
+
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+
+        assertThatThrownBy(() -> twoFactorService.validarCodigoLogin(10L, "123456"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("expirado");
+    }
+
+    @Test
+    void validarCodigoLogin_UsuarioBloqueado_LancaExcecao() {
+        autenticacao2FA.setBloqueadoAte(LocalDateTime.now().plusMinutes(10));
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.of(autenticacao2FA));
+
+        assertThatThrownBy(() -> twoFactorService.validarCodigoLogin(10L, "123456"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("tentativas");
+    }
+
+    // ===================== TESTES DE ATIVAÇÃO AUTOMÁTICA =====================
+
+    @Test
+    void ativar2FAAutomaticamente_Success_HabilitaEEnviaCodigo() {
+        when(autenticacao2FARepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+        when(rateLimitRepository.findByUsuarioId(10L)).thenReturn(Optional.empty());
+        when(autenticacao2FARepository.save(any(Autenticacao2FA.class))).thenAnswer(i -> i.getArgument(0));
+        when(rateLimitRepository.save(any(Autenticacao2FARateLimit.class))).thenAnswer(i -> i.getArgument(0));
+
+        twoFactorService.ativar2FAAutomaticamente(10L, "user@example.com");
+
+        verify(autenticacao2FARepository).save(any(Autenticacao2FA.class));
+        verify(emailService).send2FACode(anyString(), anyString());
+    }
+}

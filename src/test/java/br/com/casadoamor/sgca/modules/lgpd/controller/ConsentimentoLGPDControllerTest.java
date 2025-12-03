@@ -209,4 +209,234 @@ class ConsentimentoLGPDControllerTest {
         assertThat(usuarios.get("total")).isEqualTo(5L);
         assertThat(stats.getBody().get("totalGeral")).isEqualTo(13L);
     }
+
+    // ==================== TESTES ADICIONAIS PARA COBERTURA ====================
+
+    @Test
+    void obterConsentimentoAtualUsuario_whenConsentimentoExists_returnsConsentimento() {
+        String cpf = "33344455566";
+        AuthUsuario usuario = new AuthUsuario();
+        usuario.setId(4L);
+        usuario.setCpf(cpf);
+
+        ConsentimentoLGPDResponseDTO consentimento = ConsentimentoLGPDResponseDTO.builder()
+                .id(100L)
+                .uuid("consent-uuid")
+                .versaoTermo("v2.0")
+                .concorda(true)
+                .build();
+
+        when(authRepo.findByCpf(cpf)).thenReturn(Optional.of(usuario));
+        when(service.obterConsentimentoAtual(TipoEntidadeLGPD.USUARIO, usuario.getId())).thenReturn(consentimento);
+
+        ResponseEntity<?> resp = controller.obterConsentimentoAtualUsuario(cpf);
+
+        assertThat(resp.getBody()).isInstanceOf(ConsentimentoLGPDResponseDTO.class);
+        ConsentimentoLGPDResponseDTO returned = (ConsentimentoLGPDResponseDTO) resp.getBody();
+        assertThat(returned.getId()).isEqualTo(100L);
+        assertThat(returned.getVersaoTermo()).isEqualTo("v2.0");
+    }
+
+    @Test
+    void registrarConsentimentoProfissional_whenNotFound_andMetadataIsJsonObject_mergesUuid() {
+        String uuid = "uuid-not-found-json";
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        AuthUsuario registrado = new AuthUsuario();
+        registrado.setId(50L);
+        when(authentication.getName()).thenReturn("50");
+        when(authRepo.findByCpf("50")).thenReturn(Optional.of(registrado));
+
+        // Request com metadata que já é um JSON objeto
+        ConsentimentoLGPDRequestDTO req = ConsentimentoLGPDRequestDTO.builder()
+                .versaoTermo("v3").concorda(true).metadata("{\"existingKey\":\"existingValue\"}").build();
+
+        ArgumentCaptor<ConsentimentoLGPDRequestDTO> captor = ArgumentCaptor.forClass(ConsentimentoLGPDRequestDTO.class);
+
+        when(service.registrarConsentimento(eq(TipoEntidadeLGPD.PROFISSIONAL), anyLong(), captor.capture(), any(AuthUsuario.class)))
+                .thenReturn(ConsentimentoLGPDResponseDTO.builder().id(15L).build());
+
+        controller.registrarConsentimentoProfissional(uuid, req, authentication);
+
+        ConsentimentoLGPDRequestDTO passed = captor.getValue();
+        // Deve mesclar o pendingProfessionalUuid no objeto JSON existente
+        assertThat(passed.getMetadata()).contains("pendingProfessionalUuid");
+        assertThat(passed.getMetadata()).contains("existingKey");
+        assertThat(passed.getMetadata()).contains("existingValue");
+    }
+
+    @Test
+    void registrarConsentimentoProfissional_whenNotFound_andMetadataIsNotJsonObject_wrapsInNewObject() {
+        String uuid = "uuid-not-found-raw";
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        AuthUsuario registrado = new AuthUsuario();
+        registrado.setId(60L);
+        when(authentication.getName()).thenReturn("60");
+        when(authRepo.findByCpf("60")).thenReturn(Optional.of(registrado));
+
+        // Request com metadata que NÃO é um JSON objeto (string simples)
+        ConsentimentoLGPDRequestDTO req = ConsentimentoLGPDRequestDTO.builder()
+                .versaoTermo("v4").concorda(true).metadata("raw string metadata").build();
+
+        ArgumentCaptor<ConsentimentoLGPDRequestDTO> captor = ArgumentCaptor.forClass(ConsentimentoLGPDRequestDTO.class);
+
+        when(service.registrarConsentimento(eq(TipoEntidadeLGPD.PROFISSIONAL), anyLong(), captor.capture(), any(AuthUsuario.class)))
+                .thenReturn(ConsentimentoLGPDResponseDTO.builder().id(16L).build());
+
+        controller.registrarConsentimentoProfissional(uuid, req, authentication);
+
+        ConsentimentoLGPDRequestDTO passed = captor.getValue();
+        // Deve encapsular em um novo objeto JSON
+        assertThat(passed.getMetadata()).startsWith("{");
+        assertThat(passed.getMetadata()).contains("pendingProfessionalUuid");
+        assertThat(passed.getMetadata()).contains("raw");
+    }
+
+    @Test
+    void listarConsentimentosProfissional_whenFound_returnsList() {
+        String uuid = "prof-uuid-list";
+        Profissional profissional = new Profissional();
+        profissional.setId(77L);
+
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.of(profissional));
+
+        ConsentimentoLGPDResponseDTO c1 = ConsentimentoLGPDResponseDTO.builder().id(1L).build();
+        ConsentimentoLGPDResponseDTO c2 = ConsentimentoLGPDResponseDTO.builder().id(2L).build();
+        when(service.listarConsentimentos(TipoEntidadeLGPD.PROFISSIONAL, profissional.getId()))
+                .thenReturn(List.of(c1, c2));
+
+        ResponseEntity<List<ConsentimentoLGPDResponseDTO>> resp = controller.listarConsentimentosProfissional(uuid);
+
+        assertThat(resp.getBody()).hasSize(2);
+        verify(service).listarConsentimentos(TipoEntidadeLGPD.PROFISSIONAL, 77L);
+    }
+
+    @Test
+    void listarConsentimentosProfissional_whenNotFound_throws() {
+        String uuid = "non-existent-prof";
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> controller.listarConsentimentosProfissional(uuid));
+    }
+
+    @Test
+    void verificarConsentimentoValidoProfissional_whenValid_returnsTrue() {
+        String uuid = "prof-uuid-valid";
+        Profissional profissional = new Profissional();
+        profissional.setId(88L);
+
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.of(profissional));
+        when(service.hasConsentimentoValido(TipoEntidadeLGPD.PROFISSIONAL, profissional.getId())).thenReturn(true);
+
+        ResponseEntity<Map<String, Boolean>> resp = controller.verificarConsentimentoValidoProfissional(uuid);
+
+        assertThat(resp.getBody()).containsEntry("valido", true);
+    }
+
+    @Test
+    void verificarConsentimentoValidoProfissional_whenInvalid_returnsFalse() {
+        String uuid = "prof-uuid-invalid";
+        Profissional profissional = new Profissional();
+        profissional.setId(89L);
+
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.of(profissional));
+        when(service.hasConsentimentoValido(TipoEntidadeLGPD.PROFISSIONAL, profissional.getId())).thenReturn(false);
+
+        ResponseEntity<Map<String, Boolean>> resp = controller.verificarConsentimentoValidoProfissional(uuid);
+
+        assertThat(resp.getBody()).containsEntry("valido", false);
+    }
+
+    @Test
+    void verificarConsentimentoValidoProfissional_whenNotFound_throws() {
+        String uuid = "non-existent-prof-2";
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> controller.verificarConsentimentoValidoProfissional(uuid));
+    }
+
+    @Test
+    void obterConsentimentoAtualProfissional_whenNull_returnsMessage() {
+        String uuid = "prof-uuid-null";
+        Profissional profissional = new Profissional();
+        profissional.setId(90L);
+
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.of(profissional));
+        when(service.obterConsentimentoAtual(TipoEntidadeLGPD.PROFISSIONAL, profissional.getId())).thenReturn(null);
+
+        ResponseEntity<?> resp = controller.obterConsentimentoAtualProfissional(uuid);
+
+        assertThat(resp.getBody()).isInstanceOf(MessageResponseDTO.class);
+        MessageResponseDTO m = (MessageResponseDTO) resp.getBody();
+        assertThat(m.getSuccess()).isTrue();
+        assertThat(m.getMessage()).contains("Nenhum consentimento encontrado");
+    }
+
+    @Test
+    void obterConsentimentoAtualProfissional_whenExists_returnsConsentimento() {
+        String uuid = "prof-uuid-exists";
+        Profissional profissional = new Profissional();
+        profissional.setId(91L);
+
+        ConsentimentoLGPDResponseDTO consentimento = ConsentimentoLGPDResponseDTO.builder()
+                .id(200L)
+                .uuid("consent-prof-uuid")
+                .versaoTermo("v5.0")
+                .concorda(true)
+                .build();
+
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.of(profissional));
+        when(service.obterConsentimentoAtual(TipoEntidadeLGPD.PROFISSIONAL, profissional.getId())).thenReturn(consentimento);
+
+        ResponseEntity<?> resp = controller.obterConsentimentoAtualProfissional(uuid);
+
+        assertThat(resp.getBody()).isInstanceOf(ConsentimentoLGPDResponseDTO.class);
+        ConsentimentoLGPDResponseDTO returned = (ConsentimentoLGPDResponseDTO) resp.getBody();
+        assertThat(returned.getId()).isEqualTo(200L);
+        assertThat(returned.getVersaoTermo()).isEqualTo("v5.0");
+    }
+
+    @Test
+    void obterConsentimentoAtualProfissional_whenNotFound_throws() {
+        String uuid = "non-existent-prof-3";
+        when(profissionalRepo.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> controller.obterConsentimentoAtualProfissional(uuid));
+    }
+
+    @Test
+    void listarConsentimentosUsuario_whenNotFound_throws() {
+        String cpf = "00000000001";
+        when(authRepo.findByCpf(cpf)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> controller.listarConsentimentosUsuario(cpf));
+    }
+
+    @Test
+    void verificarConsentimentoValidoUsuario_whenNotFound_throws() {
+        String cpf = "00000000002";
+        when(authRepo.findByCpf(cpf)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> controller.verificarConsentimentoValidoUsuario(cpf));
+    }
+
+    @Test
+    void obterConsentimentoAtualUsuario_whenNotFound_throws() {
+        String cpf = "00000000003";
+        when(authRepo.findByCpf(cpf)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> controller.obterConsentimentoAtualUsuario(cpf));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void listarPorTipo_withProfissional_returnsList() {
+        ConsentimentoLGPDResponseDTO c1 = ConsentimentoLGPDResponseDTO.builder().id(1L).build();
+        when(service.listarPorTipo(TipoEntidadeLGPD.PROFISSIONAL)).thenReturn(List.of(c1));
+
+        ResponseEntity<List<ConsentimentoLGPDResponseDTO>> resp = controller.listarPorTipo("profissional");
+
+        assertThat(resp.getBody()).hasSize(1);
+    }
 }

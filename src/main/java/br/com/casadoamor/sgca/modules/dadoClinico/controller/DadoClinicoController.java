@@ -60,7 +60,7 @@ public class DadoClinicoController {
     return ResponseEntity.ok(dadosClinicos);
   }
 
-  @GetMapping("/pacientes/{pacientId}/atual")
+  @GetMapping("/pacientes/{pacienteId}/atual")
   @PreAuthorize("hasAuthority('DADOS_CLINICOS_VER') or hasRole('ADMINISTRADOR') or hasRole('COORDENADOR') or hasRole('PROFISSIONAL_SAUDE') or hasRole('VOLUNTARIO')")
   @Operation(summary = "Buscar dados clínicos atuais",
       description = "Retorna o registro mais recente de dados clínicos do paciente")

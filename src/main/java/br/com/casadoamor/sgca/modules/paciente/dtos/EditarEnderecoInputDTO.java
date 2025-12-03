@@ -6,6 +6,10 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 @Getter
+@lombok.Setter
+@lombok.Builder
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 public class EditarEnderecoInputDTO {
     String logradouro;
 

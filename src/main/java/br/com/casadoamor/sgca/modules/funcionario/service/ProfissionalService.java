@@ -367,7 +367,7 @@ public class ProfissionalService {
                 .fotoUrl(profissional.getFotoUrl())
                 .build();
     }
-    
+
     /**
      * Obter estatísticas para o dashboard
      */
