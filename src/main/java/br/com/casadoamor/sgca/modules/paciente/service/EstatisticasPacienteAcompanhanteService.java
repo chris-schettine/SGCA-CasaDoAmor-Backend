@@ -50,19 +50,19 @@ public class EstatisticasPacienteAcompanhanteService {
         long pacientesInativosCount = totalPacientes - pacientesAtivosCount;
 
         long pacientesRegistradosHoje = pacientesAtivos.stream()
-                .filter(p -> p.getCreatedAt().toLocalDate().equals(hoje))
+                .filter(p -> p.getCreatedAt() != null && p.getCreatedAt().toLocalDate().equals(hoje))
                 .count();
 
         long pacientesRegistradosSemana = pacientesAtivos.stream()
-                .filter(p -> !p.getCreatedAt().toLocalDate().isBefore(inicioSemana))
+                .filter(p -> p.getCreatedAt() != null && !p.getCreatedAt().toLocalDate().isBefore(inicioSemana))
                 .count();
 
         long pacientesRegistradosMes = pacientesAtivos.stream()
-                .filter(p -> !p.getCreatedAt().toLocalDate().isBefore(inicioMes))
+                .filter(p -> p.getCreatedAt() != null && !p.getCreatedAt().toLocalDate().isBefore(inicioMes))
                 .count();
 
         long pacientesRegistradosAno = pacientesAtivos.stream()
-                .filter(p -> !p.getCreatedAt().toLocalDate().isBefore(inicioAno))
+                .filter(p -> p.getCreatedAt() != null && !p.getCreatedAt().toLocalDate().isBefore(inicioAno))
                 .count();
 
         // === ESTATÍSTICAS POR STATUS DE PACIENTE ===
@@ -84,19 +84,19 @@ public class EstatisticasPacienteAcompanhanteService {
         long acompanhantesInativosCount = totalAcompanhantes - acompanhantesAtivosCount;
 
         long acompanhantesRegistradosHoje = acompanhantesAtivos.stream()
-                .filter(a -> a.getCreatedAt().toLocalDate().equals(hoje))
+                .filter(a -> a.getCreatedAt() != null && a.getCreatedAt().toLocalDate().equals(hoje))
                 .count();
 
         long acompanhantesRegistradosSemana = acompanhantesAtivos.stream()
-                .filter(a -> !a.getCreatedAt().toLocalDate().isBefore(inicioSemana))
+                .filter(a -> a.getCreatedAt() != null && !a.getCreatedAt().toLocalDate().isBefore(inicioSemana))
                 .count();
 
         long acompanhantesRegistradosMes = acompanhantesAtivos.stream()
-                .filter(a -> !a.getCreatedAt().toLocalDate().isBefore(inicioMes))
+                .filter(a -> a.getCreatedAt() != null && !a.getCreatedAt().toLocalDate().isBefore(inicioMes))
                 .count();
 
         long acompanhantesRegistradosAno = acompanhantesAtivos.stream()
-                .filter(a -> !a.getCreatedAt().toLocalDate().isBefore(inicioAno))
+                .filter(a -> a.getCreatedAt() != null && !a.getCreatedAt().toLocalDate().isBefore(inicioAno))
                 .count();
 
         // === ESTATÍSTICAS DE RELACIONAMENTO ===
