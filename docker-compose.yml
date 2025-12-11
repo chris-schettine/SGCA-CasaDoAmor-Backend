@@ -4,6 +4,7 @@ services:
     image: mysql:8.0
     container_name: mysql_sgca
     restart: always
+    command: --log_bin_trust_function_creators=1
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-sgca}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

@@ -106,6 +106,91 @@ public class AgendamentoPacienteService {
         return toResponseDTO(agendamento);
     }
 
+    public AgendamentoPacienteResponseDTO atualizar(String uuid, AgendamentoPacienteRequestDTO requestDTO) {
+        log.info("Atualizando agendamento UUID: {}", uuid);
+
+        // Buscar agendamento existente
+        AgendamentoPaciente agendamento = agendamentoPacienteRepository.findByUuid(uuid)
+            .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+
+        // Verificar se o agendamento pode ser atualizado
+        if (agendamento.getStatus() == StatusAgendamento.CANCELADO) {
+            throw new RuntimeException("Não é possível atualizar um agendamento cancelado");
+        }
+        if (agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
+            throw new RuntimeException("Não é possível atualizar um agendamento concluído");
+        }
+
+        // Se houver mudança de horário ou profissional, verificar conflito
+        boolean mudouHorario = !agendamento.getDataHoraInicio().equals(requestDTO.getDataHoraInicio()) 
+            || !agendamento.getDataHoraFim().equals(requestDTO.getDataHoraFim());
+        boolean mudouProfissional = !agendamento.getProfissionalUsuario().getId().equals(requestDTO.getProfissionalUsuarioId());
+
+        if (mudouHorario || mudouProfissional) {
+            ConflictCheckResponseDTO conflictCheck = verificarConflito(
+                requestDTO.getProfissionalUsuarioId(),
+                requestDTO.getDataHoraInicio(),
+                requestDTO.getDataHoraFim()
+            );
+
+            if (conflictCheck.getTemConflito()) {
+                throw new RuntimeException("Conflito de horário: " + conflictCheck.getMensagem());
+            }
+        }
+
+        // Atualizar entidades relacionadas se mudaram
+        if (!agendamento.getPaciente().getId().equals(requestDTO.getPacienteId())) {
+            Paciente paciente = pacienteRepository.findById(requestDTO.getPacienteId())
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+            agendamento.setPaciente(paciente);
+        }
+
+        if (!agendamento.getTipoServico().getId().equals(requestDTO.getTipoServicoId())) {
+            TipoServico tipoServico = tipoServicoRepository.findById(requestDTO.getTipoServicoId())
+                .orElseThrow(() -> new RuntimeException("Tipo de serviço não encontrado"));
+            agendamento.setTipoServico(tipoServico);
+        }
+
+        if (mudouProfissional) {
+            AuthUsuario profissional = authUsuarioRepository.findById(requestDTO.getProfissionalUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+            agendamento.setProfissionalUsuario(profissional);
+        }
+
+        // Atualizar campos
+        agendamento.setDataHoraInicio(requestDTO.getDataHoraInicio());
+        agendamento.setDataHoraFim(requestDTO.getDataHoraFim());
+        
+        int duracaoMinutos = requestDTO.getDuracaoMinutos() != null 
+            ? requestDTO.getDuracaoMinutos()
+            : (int) java.time.Duration.between(
+                requestDTO.getDataHoraInicio(), 
+                requestDTO.getDataHoraFim()
+            ).toMinutes();
+        agendamento.setDuracaoMinutos(duracaoMinutos);
+        
+        agendamento.setTipoAtendimento(requestDTO.getTipoAtendimento());
+        agendamento.setPrioridade(requestDTO.getPrioridade());
+        
+        if (requestDTO.getStatus() != null) {
+            agendamento.setStatus(requestDTO.getStatus());
+        }
+        
+        agendamento.setObservacoes(requestDTO.getObservacoes());
+        
+        if (requestDTO.getConfirmadoPaciente() != null) {
+            agendamento.setConfirmadoPaciente(requestDTO.getConfirmadoPaciente());
+        }
+        if (requestDTO.getConfirmadoProfissional() != null) {
+            agendamento.setConfirmadoProfissional(requestDTO.getConfirmadoProfissional());
+        }
+
+        agendamento = agendamentoPacienteRepository.save(agendamento);
+        log.info("Agendamento atualizado com sucesso: {}", uuid);
+
+        return toResponseDTO(agendamento);
+    }
+
     @Transactional(readOnly = true)
     public ConflictCheckResponseDTO verificarConflito(Long profissionalId, LocalDateTime inicio, LocalDateTime fim) {
         AuthUsuario profissional = authUsuarioRepository.findById(profissionalId)

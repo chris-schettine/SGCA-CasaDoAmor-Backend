@@ -48,6 +48,17 @@ public class AgendamentoPacienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Atualizar agendamento de paciente", description = "Atualiza um agendamento existente de paciente")
+    @PutMapping("/{uuid}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'RECEPCIONISTA')")
+    public ResponseEntity<AgendamentoPacienteResponseDTO> atualizar(
+            @PathVariable String uuid,
+            @Valid @RequestBody AgendamentoPacienteRequestDTO requestDTO) {
+        log.info("Requisição para atualizar agendamento de paciente: {}", uuid);
+        AgendamentoPacienteResponseDTO response = agendamentoPacienteService.atualizar(uuid, requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "Buscar agendamento por UUID", description = "Retorna os detalhes de um agendamento específico")
     @GetMapping("/{uuid}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'GERENTE', 'RECEPCIONISTA', 'MEDICO', 'ENFERMEIRO')")

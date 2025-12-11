@@ -16,6 +16,9 @@ GRANT SELECT ON mysql.user TO 'sgca_user'@'%';
 -- Flush privileges to ensure all changes take effect
 FLUSH PRIVILEGES;
 
+-- Enable log_bin_trust_function_creators for triggers and functions
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 -- Use the sgca database
 USE sgca;
 
